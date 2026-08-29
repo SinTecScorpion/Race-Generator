@@ -40,11 +40,13 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 .fusion-name-box strong{display:block;margin-bottom:8px;color:#f3e8ff}
 .fusion-name-box input{width:100%;box-sizing:border-box}
 
+.save-fusion-wrap{margin-top:12px}
+.save-fusion-main{width:100%;min-height:54px;font-size:1rem}
+#saveFusionHint{text-align:center;margin-top:7px}
+#savedFusionsCard{border:1px solid var(--accent)}
 #savedFusionsCard .mini-item{padding:12px;margin:9px 0;border:1px solid var(--border);border-radius:13px;background:#130f1c}
 .saved-fusion-actions{display:flex;gap:7px;margin-top:9px}
 .saved-fusion-actions button{flex:1;padding:8px}
-#saveFusionBtn.saved-ok{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
-
 </style>
   <link rel="icon" type="image/png" sizes="192x192" href="./Icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./Icons/icon-192.png" />
@@ -111,9 +113,22 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <button id="generateBtn" class="primary">Generate</button>
           <button id="copyBtn">Copy Prompt</button>
           <button id="favoriteBtn">☆ Favorite</button>
-          <button id="saveFusionBtn">💾 Save Fusion</button>
           <button id="rerollDetailsBtn">Reroll Details</button>
         </div>
+        <div class="save-fusion-wrap">
+          <button id="saveFusionBtn" class="primary save-fusion-main">💾 Save Current Fusion</button>
+          <div id="saveFusionHint" class="tiny">Generate a Random Fusion or Manual Fusion, then tap this button to save it.</div>
+        </div>
+      </section>
+
+
+      <section class="card" id="savedFusionsCard">
+        <div class="section-head">
+          <h2>Step 2: Saved Fusions</h2>
+          <span id="savedFusionCount" class="badge">0 saved</span>
+        </div>
+        <p class="tiny">Saved fusion races stay on this device so you can reload or copy them later.</p>
+        <div id="savedFusionList" class="mini-list empty">No saved fusions yet.</div>
       </section>
 
       <section class="card controls-card">
@@ -162,16 +177,6 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <h2>History</h2>
           <div id="historyList" class="mini-list empty">No generations yet.</div>
         </div>
-      </section>
-
-      
-      <section class="card" id="savedFusionsCard">
-        <div class="section-head">
-          <h2>Saved Fusion Library</h2>
-          <span id="savedFusionCount" class="badge">0 saved</span>
-        </div>
-        <p class="tiny">Your custom fusion races are stored on this device for quick access later.</p>
-        <div id="savedFusionList" class="mini-list empty">No saved fusions yet.</div>
       </section>
 
       <section class="card data-card">
@@ -484,11 +489,13 @@ function renderSavedFusions(){
   const list=$('savedFusionList'), count=$('savedFusionCount');
   if(!list||!count)return;
   count.textContent=`${savedFusions.length} saved`;
+
   if(!savedFusions.length){
     list.className='mini-list empty';
     list.innerHTML='No saved fusions yet.';
     return;
   }
+
   list.className='mini-list';
   list.innerHTML=savedFusions.map((f,i)=>`
     <div class="mini-item">
@@ -504,20 +511,22 @@ function renderSavedFusions(){
 
 function saveCurrentFusion(){
   if(!current || !(current.meta||'').includes('FUSION')){
-    alert('Generate a fusion first, then tap Save Fusion.');
+    alert('Generate a Random Fusion or Manual Fusion first.');
     return;
   }
+
   const record={...current,savedAt:Date.now()};
   const duplicate=savedFusions.findIndex(f=>f.title===record.title && f.prompt===record.prompt);
   if(duplicate>=0)savedFusions.splice(duplicate,1);
+
   savedFusions.unshift(record);
   savedFusions=savedFusions.slice(0,100);
   persistSavedFusions();
   renderSavedFusions();
+
   const btn=$('saveFusionBtn');
   btn.textContent='✓ Fusion Saved';
-  btn.classList.add('saved-ok');
-  setTimeout(()=>{btn.textContent='💾 Save Fusion';btn.classList.remove('saved-ok')},1300);
+  setTimeout(()=>btn.textContent='💾 Save Current Fusion',1200);
 }
 
 function loadSavedFusion(index){
@@ -563,6 +572,7 @@ $('savedFusionList').onclick=async e=>{
   const load=e.target.closest('[data-load-saved]');
   const copy=e.target.closest('[data-copy-saved]');
   const del=e.target.closest('[data-delete-saved]');
+
   if(load){
     loadSavedFusion(Number(load.dataset.loadSaved));
     return;
@@ -574,12 +584,13 @@ $('savedFusionList').onclick=async e=>{
       await navigator.clipboard.writeText(f.prompt);
       copy.textContent='Copied!';
       setTimeout(()=>copy.textContent='Copy',1000);
-    }catch(err){prompt('Copy this prompt:',f.prompt);}
+    }catch(err){
+      prompt('Copy this prompt:',f.prompt);
+    }
     return;
   }
   if(del){
-    const i=Number(del.dataset.deleteSaved);
-    savedFusions.splice(i,1);
+    savedFusions.splice(Number(del.dataset.deleteSaved),1);
     persistSavedFusions();
     renderSavedFusions();
   }
