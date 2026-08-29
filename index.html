@@ -21,6 +21,14 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 .manual-note{color:var(--muted);font-size:.79rem;line-height:1.45;margin:10px 0 0}
 @media(max-width:640px){.manual-grid,.manual-actions{grid-template-columns:1fr}.mode-tabs{flex-wrap:wrap}.tab{min-width:30%}}
 
+
+.library-item{cursor:pointer;transition:transform .12s ease,border-color .12s ease,background .12s ease}
+.library-item:active{transform:scale(.985)}
+.library-item.selected-a{border-color:#9f7aea;background:#1b1430}
+.library-item.selected-b{border-color:#d6bcfa;background:#211936}
+.library-item .pick-hint{margin-top:7px;font-size:.72rem;color:var(--accent2);font-weight:700}
+.manual-status{margin-top:10px;padding:9px 11px;border-radius:11px;background:#171221;border:1px solid var(--border);color:var(--accent2);font-size:.8rem}
+
 </style>
   <link rel="icon" type="image/png" sizes="192x192" href="./Icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./Icons/icon-192.png" />
@@ -68,6 +76,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
             <input id="fusionRatio" type="range" min="10" max="90" step="5" value="50" />
           </div>
           <p class="manual-note">The ratio controls visual dominance while both Locked Racial Identities remain protected.</p>
+          <div id="manualPickStatus" class="manual-status">Tap a race in the library to choose Parent A.</div>
         </div>
 
 
@@ -281,10 +290,79 @@ function updateRatioLabels(){
   $('ratioALabel').textContent=`Race A ${a}%`;
   $('ratioBLabel').textContent=`Race B ${100-a}%`;
 }
+
+let manualPickNext='A';
+
+function setManualStatus(msg){
+  const el=$('manualPickStatus');
+  if(el)el.textContent=msg;
+}
+
+function syncManualPickState(){
+  const a=raceFromInput($('parentAInput').value);
+  const b=raceFromInput($('parentBInput').value);
+  if(!a){
+    manualPickNext='A';
+    setManualStatus('Tap a race in the library to choose Parent A.');
+  }else if(!b){
+    manualPickNext='B';
+    setManualStatus(`Parent A: ${a.name}. Tap another race to choose Parent B.`);
+  }else{
+    setManualStatus(`Parent A: ${a.name} • Parent B: ${b.name}. Next library tap replaces Parent ${manualPickNext}.`);
+  }
+  renderLibrary();
+}
+
+function selectRaceForManual(id){
+  const r=db.find(x=>x.id===id);
+  if(!r)return;
+
+  if(mode!=='manual'){
+    mode='manual';
+    document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.mode==='manual'));
+    $('manualFusionPanel').classList.remove('hidden');
+    $('generateBtn').textContent='Generate Manual Fusion';
+  }
+
+  const a=raceFromInput($('parentAInput').value);
+  const b=raceFromInput($('parentBInput').value);
+
+  if(!a){
+    $('parentAInput').value=raceOptionLabel(r);
+    manualPickNext='B';
+    setManualStatus(`Parent A set to ${r.name}. Tap another race for Parent B.`);
+  }else if(!b && (!a || a.id!==r.id)){
+    $('parentBInput').value=raceOptionLabel(r);
+    manualPickNext='A';
+    setManualStatus(`Parent B set to ${r.name}. Both parents selected.`);
+  }else if(manualPickNext==='A'){
+    if(b && b.id===r.id){
+      setManualStatus('Parent A and Parent B must be different races.');
+      return;
+    }
+    $('parentAInput').value=raceOptionLabel(r);
+    manualPickNext='B';
+    setManualStatus(`Parent A changed to ${r.name}. Next library tap replaces Parent B.`);
+  }else{
+    if(a && a.id===r.id){
+      setManualStatus('Parent A and Parent B must be different races.');
+      return;
+    }
+    $('parentBInput').value=raceOptionLabel(r);
+    manualPickNext='A';
+    setManualStatus(`Parent B changed to ${r.name}. Next library tap replaces Parent A.`);
+  }
+
+  renderLibrary();
+}
+
 function randomizeManualParents(){
   let a=pick(db), b=pick(db.filter(r=>r.id!==a.id));
   $('parentAInput').value=raceOptionLabel(a);
   $('parentBInput').value=raceOptionLabel(b);
+  manualPickNext='A';
+  setManualStatus(`Parent A: ${a.name} • Parent B: ${b.name}. Next library tap replaces Parent A.`);
+  renderLibrary();
 }
 
 function generate(){
@@ -304,10 +382,32 @@ function generate(){
   history.unshift({...current,ts:Date.now()});history=history.slice(0,50);save();renderResult();renderLists();
 }
 function renderLibrary(){
+  const previous=$('categoryFilter').value||'all';
   $('categoryFilter').innerHTML='<option value="all">All</option>'+categories().map(c=>`<option>${c}</option>`).join('');
-  const q=$('searchInput').value.toLowerCase(); const rows=db.filter(r=>[r.name,r.category,r.theme,r.rarity,r.affinity,r.visualIdentity,r.description,r.lockedIdentity,...r.traits].join(' ').toLowerCase().includes(q));
+  if([...$('categoryFilter').options].some(o=>o.value===previous))$('categoryFilter').value=previous;
+
+  const q=$('searchInput').value.toLowerCase();
+  const rows=db.filter(r=>[r.name,r.category,r.theme,r.rarity,r.affinity,r.visualIdentity,r.description,r.lockedIdentity,...r.traits].join(' ').toLowerCase().includes(q));
   $('raceCount').textContent=`${db.length} races`;
-  $('libraryList').innerHTML=rows.map(r=>`<div class="library-item"><strong>#${r.number} ${r.name}</strong><span>${r.category} • ${r.theme} • ${r.rarity} • ${r.affinity} • Extremity ${r.extremity}/5</span></div>`).join('');
+
+  const a=raceFromInput($('parentAInput')?.value||'');
+  const b=raceFromInput($('parentBInput')?.value||'');
+
+  $('libraryList').innerHTML=rows.map(r=>{
+    const cls=a&&a.id===r.id?' selected-a':b&&b.id===r.id?' selected-b':'';
+    const hint=a&&a.id===r.id?'Parent A':b&&b.id===r.id?'Parent B':'Tap to add to Manual Fusion';
+    return `<div class="library-item${cls}" data-race-id="${r.id}" role="button" tabindex="0">
+      <strong>#${r.number} ${r.name}</strong>
+      <span>${r.category} • ${r.theme} • ${r.rarity} • ${r.affinity} • Extremity ${r.extremity}/5</span>
+      <span class="pick-hint">${hint}</span>
+    </div>`;
+  }).join('');
+
+  $('libraryList').querySelectorAll('.library-item').forEach(card=>{
+    const choose=()=>selectRaceForManual(card.dataset.raceId);
+    card.onclick=choose;
+    card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose();}};
+  });
 }
 function renderLists(){
   $('favoritesList').className='mini-list'+(favorites.length?'':' empty');$('favoritesList').innerHTML=favorites.length?favorites.map(f=>`<div class="mini-item">★ ${f.title}</div>`).join(''):'No favorites yet.';
@@ -323,12 +423,18 @@ document.querySelectorAll('.tab').forEach(btn=>btn.onclick=()=>{
 });
 
 $('fusionRatio').oninput=updateRatioLabels;
+$('parentAInput').onchange=syncManualPickState;
+$('parentBInput').onchange=syncManualPickState;
 $('randomParentsBtn').onclick=randomizeManualParents;
 $('swapParentsBtn').onclick=()=>{
   const a=$('parentAInput').value,b=$('parentBInput').value;
   $('parentAInput').value=b;$('parentBInput').value=a;
   $('fusionRatio').value=100-Number($('fusionRatio').value);
   updateRatioLabels();
+  manualPickNext='A';
+  const ra=raceFromInput($('parentAInput').value), rb=raceFromInput($('parentBInput').value);
+  if(ra&&rb)setManualStatus(`Parent A: ${ra.name} • Parent B: ${rb.name}. Next library tap replaces Parent A.`);
+  renderLibrary();
 };
 
 $('generateBtn').onclick=generate;
@@ -337,7 +443,7 @@ $('favoriteBtn').onclick=()=>{if(!current)return;const i=favorites.findIndex(f=>
 $('rerollDetailsBtn').onclick=()=>{if(current)generate()};
 $('searchInput').oninput=renderLibrary;
 $('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,races:db,favorites,history},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ourdream-race-generator-backup.json';a.click();URL.revokeObjectURL(a.href)};
-$('importInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(Array.isArray(data))db=data;else {if(data.races)db=data.races;if(data.favorites)favorites=data.favorites;if(data.history)history=data.history}save();renderLibrary();renderLists();populateRaceOptions();randomizeManualParents();updateRatioLabels();alert(`Imported ${db.length} races.`)}catch(err){alert('That JSON file could not be imported.')}};
+$('importInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(Array.isArray(data))db=data;else {if(data.races)db=data.races;if(data.favorites)favorites=data.favorites;if(data.history)history=data.history}save();renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManualPickState();alert(`Imported ${db.length} races.`)}catch(err){alert('That JSON file could not be imported.')}};
 $('resetBtn').onclick=()=>{if(confirm('Reset the race library, favorites, and history to the embedded 2,000-race build?')){db=starterRaces;favorites=[];history=[];save();renderLibrary();renderLists();$('result').innerHTML='<div class="result-placeholder">Tap generate to begin.</div>';current=null}};
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.remove('hidden')});
 $('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.add('hidden')}};
