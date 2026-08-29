@@ -27,7 +27,7 @@
       <section class="card generator-card">
         <div class="mode-tabs">
           <button class="tab active" data-mode="single">Random Race</button>
-          <button class="tab" data-mode="fusion">RG Fusion</button>
+          <button class="tab" data-mode="fusion">RG Fusion 2.0</button>
         </div>
 
         <div id="result" class="result-panel">
@@ -137,10 +137,64 @@ function buildSingle(r){
 }
 function buildFusion(a,b){
   const sex=$('femaleOnly').checked?'female':'humanoid';
-  const name=`${a.name} × ${b.name}`; const t=tone();
-  const traits=[...a.traits.slice(0,2),...b.traits.slice(0,2)];
-  return {title:name,meta:`RG FUSION • ${a.category} + ${b.category} • ${t}`,description:`A fusion lineage combining ${a.name} ancestry with ${b.name} ancestry. ${a.description} ${b.description}`,traits,
-    prompt:`${t} fantasy character portrait of a ${sex} hybrid race combining ${a.name} and ${b.name}. Blend the anatomy and visual identity of both lineages naturally rather than splitting them in half. Primary traits: ${traits.join(', ')}. Cultural influence from ${a.origin} and ${b.origin}. Wearing ${pick(garments)} in ${pick(settings)}. ${pick(lightings)}, ${detailText($('detailSelect').value)}, full-body coherent hybrid anatomy, elegant silhouette, premium fantasy game concept art.`};
+  const t=tone();
+  const clean=v=>(v||'').toString().trim();
+  const splitIdentity=r=>clean(r.lockedIdentity).split(/;|\n|\|/).map(x=>x.trim()).filter(Boolean);
+  const aCore=splitIdentity(a).slice(0,4);
+  const bCore=splitIdentity(b).slice(0,4);
+  const allTraits=[...new Set([...aCore,...bCore,...(a.traits||[]).slice(0,3),...(b.traits||[]).slice(0,3)])].filter(Boolean);
+  const avgExtremity=Math.max(1,Math.min(5,Math.round(((Number(a.extremity)||3)+(Number(b.extremity)||3))/2)));
+  const extremityGuide={
+    1:'subtle hybridization, mostly humanlike silhouette, restrained fantasy traits',
+    2:'light hybridization, clearly visible but elegant racial markers',
+    3:'balanced hybridization, both bloodlines visibly represented',
+    4:'strong hybridization, dramatic anatomy and unmistakable dual ancestry',
+    5:'extreme fantasy hybridization, bold anatomy while remaining coherent and beautiful'
+  }[avgExtremity];
+  const fusionName=`${a.name} × ${b.name}`;
+  const lockedA=aCore.length?aCore.join(', '):clean(a.visualIdentity||a.description);
+  const lockedB=bCore.length?bCore.join(', '):clean(b.visualIdentity||b.description);
+  const affinityText=[a.affinity,b.affinity].filter(Boolean).join(' + ');
+  const categoryText=[a.category,b.category].filter(Boolean).join(' + ');
+  const themeText=[a.theme,b.theme].filter(Boolean).join(' + ');
+  return {
+    title:fusionName,
+    meta:`RG FUSION 2.0 • ${categoryText} • ${t}`,
+    description:`A controlled fusion lineage combining ${a.name} and ${b.name}. The hybrid preserves recognizable locked racial markers from both parent races.`,
+    traits:allTraits.slice(0,10),
+    prompt:`${t} fantasy character portrait of a ${sex} hybrid race formed from ${a.name} and ${b.name}.
+
+FUSION RULE:
+Preserve the locked racial identity of BOTH parent races. Do not replace, dilute, or overwrite the defining anatomy of either ancestry. Merge the traits into one coherent biological design rather than splitting the body into two halves.
+
+PARENT A — ${a.name}
+Category: ${clean(a.category)}
+Theme: ${clean(a.theme)}
+Primary Affinity: ${clean(a.affinity)}
+Visual Identity: ${clean(a.visualIdentity)}
+Locked Racial Identity: ${lockedA}
+
+PARENT B — ${b.name}
+Category: ${clean(b.category)}
+Theme: ${clean(b.theme)}
+Primary Affinity: ${clean(b.affinity)}
+Visual Identity: ${clean(b.visualIdentity)}
+Locked Racial Identity: ${lockedB}
+
+HYBRID DESIGN:
+${extremityGuide}.
+Carry visible traits from both parent lineages across the face, skin, eyes, ears, horns, hair, limbs, tail, wings, scales, markings, or other anatomy where appropriate.
+Shared affinities: ${affinityText||'mixed ancestral magic'}.
+Combined cultural themes: ${themeText||'blended ancestral culture'}.
+Key fused traits: ${allTraits.slice(0,8).join(', ')}.
+
+WARDROBE & SCENE:
+Wearing ${pick(garments)}.
+Standing in ${pick(settings)}.
+${pick(lightings)}.
+${detailText($('detailSelect').value)}.
+Full-body coherent hybrid anatomy, elegant silhouette, realistic materials, premium fantasy game concept art, strong facial readability, no random extra limbs, no duplicated anatomy, no loss of parent identity.`
+  };
 }
 function renderResult(){
   if(!current)return;
