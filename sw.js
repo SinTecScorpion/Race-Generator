@@ -1,4 +1,4 @@
-const CACHE='race-generator-step01-fusion-naming-fixed-v2';
+const CACHE='race-generator-step01-manual-name-v3';
 const CORE=['./','./index.html','./manifest.webmanifest','./Icons/icon-192.png','./Icons/icon-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

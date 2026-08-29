@@ -35,10 +35,10 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 .library-pick-actions .set-a{border-color:#9f7aea}
 .library-pick-actions .set-b{border-color:#d6bcfa}
 
-#fusionNamePanel{border:1px solid var(--accent);box-shadow:0 0 0 1px rgba(159,122,234,.08) inset}
-#fusionNamePanel h3{margin-top:0}
-#fusionNameInput{font-size:1rem;font-weight:700}
-
+.fusion-name-box{margin:12px 0 16px;padding:14px;border-radius:14px;border:2px solid var(--accent);background:#171020}
+.fusion-name-box label{display:block}
+.fusion-name-box strong{display:block;margin-bottom:8px;color:#f3e8ff}
+.fusion-name-box input{width:100%;box-sizing:border-box}
 </style>
   <link rel="icon" type="image/png" sizes="192x192" href="./Icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./Icons/icon-192.png" />
@@ -61,18 +61,15 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <button class="tab" data-mode="fusion">Random Fusion</button>
           <button class="tab" data-mode="manual">Manual Fusion</button>
         </div>
-
-        <div id="fusionNamePanel" class="manual-fusion hidden">
-          <h3>Name This Fusion</h3>
-          <label>
-            Custom Fusion Race Name
-            <input id="fusionNameInput" class="search" placeholder="Example: Starforged Moonkin" autocomplete="off" />
-          </label>
-          <p class="manual-note">Optional. Leave blank to use the automatic parent-race fusion name.</p>
-        </div>
-
         <div id="manualFusionPanel" class="manual-fusion hidden">
           <h3>Manual RG Fusion</h3>
+          <div class="fusion-name-box">
+            <label>
+              <strong>Custom Fusion Race Name</strong>
+              <input id="fusionNameInput" class="search" placeholder="Example: Starforged Moonkin" autocomplete="off" />
+            </label>
+            <p class="manual-note">Optional — leave blank to use the automatic fusion name.</p>
+          </div>
           <div class="manual-grid">
             <label>
               Parent Race A
@@ -360,7 +357,6 @@ function setRaceAsParent(id,parent){
     mode='manual';
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.mode==='manual'));
     $('manualFusionPanel').classList.remove('hidden');
-    $('fusionNamePanel').classList.remove('hidden');
     $('generateBtn').textContent='Generate Manual Fusion';
   }
   renderLibrary();
@@ -374,7 +370,6 @@ function selectRaceForManual(id){
     mode='manual';
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.mode==='manual'));
     $('manualFusionPanel').classList.remove('hidden');
-    $('fusionNamePanel').classList.remove('hidden');
     $('generateBtn').textContent='Generate Manual Fusion';
   }
 
@@ -471,8 +466,7 @@ document.querySelectorAll('.tab').forEach(btn=>btn.onclick=()=>{
   btn.classList.add('active');
   mode=btn.dataset.mode;
   $('manualFusionPanel').classList.toggle('hidden',mode!=='manual');
-  $('fusionNamePanel').classList.toggle('hidden',mode==='random');
-  $('generateBtn').textContent=mode==='manual'?'Generate Manual Fusion':mode==='fusion'?'Generate Random Fusion':'Generate';
+  $('generateBtn').textContent=mode==='manual'?'Generate Manual Fusion':'Generate';
 });
 
 $('fusionRatio').oninput=updateRatioLabels;
