@@ -10,6 +10,17 @@
   <meta name="apple-mobile-web-app-title" content="Race Generator" />
   <title>Race Generator</title>
   <style>:root{--bg:#0c0b11;--panel:#15121f;--panel2:#1c1729;--ink:#f7f1ff;--muted:#aaa1b8;--accent:#9f7aea;--accent2:#d6bcfa;--border:#30283f;--danger:#ff7a90;--shadow:0 18px 60px rgba(0,0,0,.35)}*{box-sizing:border-box}html{background:var(--bg);color-scheme:dark}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top,#211832 0,#0c0b11 38%);color:var(--ink);min-height:100vh}.app-shell{max-width:960px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}.hero{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:8px 4px 18px}.eyebrow{font-size:.72rem;letter-spacing:.22em;color:var(--accent2);margin:0 0 6px;font-weight:800}.hero h1{font-size:clamp(2rem,7vw,3.6rem);margin:0;line-height:1}.subtitle{color:var(--muted);margin:8px 0 0}.card{background:linear-gradient(180deg,rgba(28,23,41,.96),rgba(21,18,31,.96));border:1px solid var(--border);border-radius:22px;padding:18px;margin:0 0 16px;box-shadow:var(--shadow)}.mode-tabs{display:flex;background:#0f0d16;border-radius:14px;padding:4px;gap:4px}.tab{flex:1;border:none;background:transparent}.tab.active{background:var(--panel2);color:#fff}.result-panel{min-height:280px;padding:22px 4px 18px}.result-placeholder{height:230px;display:grid;place-items:center;color:var(--muted);border:1px dashed var(--border);border-radius:18px}.race-name{font-size:2rem;margin:0 0 6px}.race-meta{color:var(--accent2);font-size:.86rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.race-desc{font-size:1.02rem;line-height:1.65;color:#e7dff0}.traits{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.trait{background:#251c36;color:#dbc9f8;border:1px solid #3b2c53;border-radius:999px;padding:7px 10px;font-size:.82rem}.prompt-box{background:#0f0d16;border:1px solid var(--border);border-radius:14px;padding:14px;line-height:1.55;color:#ddd3e8;font-size:.9rem}.actions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.actions-grid.small{grid-template-columns:repeat(3,minmax(0,1fr))}button,.file-button,select,input{font:inherit}button,.file-button{border:1px solid var(--border);background:#211a2f;color:var(--ink);padding:12px 14px;border-radius:13px;font-weight:750;cursor:pointer;text-align:center}.primary{background:linear-gradient(135deg,#8b5cf6,#b76cf0);border:none}.ghost{white-space:nowrap}.danger{color:#ffd4dc;border-color:#56303b}.hidden{display:none!important}h2{font-size:1.05rem;margin:0 0 14px}.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.84rem}select,.search{width:100%;background:#0f0d16;border:1px solid var(--border);color:var(--ink);border-radius:12px;padding:12px}.checkbox-row{flex-direction:row;align-items:center;background:#0f0d16;border:1px solid var(--border);border-radius:12px;padding:12px}.checkbox-row input{accent-color:var(--accent)}.section-head{display:flex;justify-content:space-between;align-items:center}.badge{background:#261d37;color:var(--accent2);border-radius:999px;padding:5px 9px;font-size:.78rem}.library-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px;max-height:420px;overflow:auto}.library-item{background:#100e17;border:1px solid var(--border);border-radius:14px;padding:12px}.library-item strong{display:block}.library-item span{display:block;color:var(--muted);font-size:.8rem;margin-top:4px}.split-card{display:grid;grid-template-columns:1fr 1fr;gap:16px}.mini-list{display:flex;flex-direction:column;gap:8px}.mini-item{background:#100e17;border:1px solid var(--border);border-radius:12px;padding:10px;font-size:.88rem}.empty{color:var(--muted);font-size:.9rem}.data-card p{color:var(--muted);line-height:1.55}.tiny{font-size:.79rem}.file-button input{display:none}@media(max-width:640px){.actions-grid.small,.control-grid,.split-card,.library-list{grid-template-columns:1fr}.hero{align-items:flex-start}.result-panel{min-height:320px}.card{border-radius:18px;padding:15px}}@media(display-mode:standalone){#installBtn{display:none!important}}
+
+.manual-fusion{margin-top:14px;padding:14px;background:#100e17;border:1px solid var(--border);border-radius:16px}
+.manual-fusion h3{margin:0 0 12px;font-size:.95rem}
+.manual-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.manual-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.ratio-wrap{margin-top:14px}
+.ratio-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px;color:var(--accent2);font-weight:800;font-size:.84rem}
+input[type="range"]{width:100%;accent-color:var(--accent)}
+.manual-note{color:var(--muted);font-size:.79rem;line-height:1.45;margin:10px 0 0}
+@media(max-width:640px){.manual-grid,.manual-actions{grid-template-columns:1fr}.mode-tabs{flex-wrap:wrap}.tab{min-width:30%}}
+
 </style>
   <link rel="icon" type="image/png" sizes="192x192" href="./Icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./Icons/icon-192.png" />
@@ -29,8 +40,36 @@
       <section class="card generator-card">
         <div class="mode-tabs">
           <button class="tab active" data-mode="single">Random Race</button>
-          <button class="tab" data-mode="fusion">RG Fusion 2.0</button>
+          <button class="tab" data-mode="fusion">Random Fusion</button>
+          <button class="tab" data-mode="manual">Manual Fusion</button>
         </div>
+        <div id="manualFusionPanel" class="manual-fusion hidden">
+          <h3>Manual RG Fusion</h3>
+          <div class="manual-grid">
+            <label>
+              Parent Race A
+              <input id="parentAInput" class="search" list="raceOptions" placeholder="Search race A..." autocomplete="off" />
+            </label>
+            <label>
+              Parent Race B
+              <input id="parentBInput" class="search" list="raceOptions" placeholder="Search race B..." autocomplete="off" />
+            </label>
+          </div>
+          <datalist id="raceOptions"></datalist>
+          <div class="manual-actions">
+            <button id="randomParentsBtn" type="button">Randomize Parents</button>
+            <button id="swapParentsBtn" type="button">Swap Parents</button>
+          </div>
+          <div class="ratio-wrap">
+            <div class="ratio-head">
+              <span id="ratioALabel">Race A 50%</span>
+              <span id="ratioBLabel">Race B 50%</span>
+            </div>
+            <input id="fusionRatio" type="range" min="10" max="90" step="5" value="50" />
+          </div>
+          <p class="manual-note">The ratio controls visual dominance while both Locked Racial Identities remain protected.</p>
+        </div>
+
 
         <div id="result" class="result-panel">
           <div class="result-placeholder">Tap generate to begin.</div>
@@ -137,37 +176,60 @@ function buildSingle(r){
     prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${garment}. Standing in ${setting}. ${lighting}, ${detail}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
   }
 }
-function buildFusion(a,b){
+function buildFusion(a,b,ratioA=50){
   const sex=$('femaleOnly').checked?'female':'humanoid';
   const t=tone();
+  ratioA=Math.max(10,Math.min(90,Number(ratioA)||50));
+  const ratioB=100-ratioA;
   const clean=v=>(v||'').toString().trim();
   const splitIdentity=r=>clean(r.lockedIdentity).split(/;|\n|\|/).map(x=>x.trim()).filter(Boolean);
-  const aCore=splitIdentity(a).slice(0,4);
-  const bCore=splitIdentity(b).slice(0,4);
-  const allTraits=[...new Set([...aCore,...bCore,...(a.traits||[]).slice(0,3),...(b.traits||[]).slice(0,3)])].filter(Boolean);
-  const avgExtremity=Math.max(1,Math.min(5,Math.round(((Number(a.extremity)||3)+(Number(b.extremity)||3))/2)));
+
+  const aIdentity=splitIdentity(a);
+  const bIdentity=splitIdentity(b);
+  const aTake=ratioA>=70?5:ratioA<=30?2:4;
+  const bTake=ratioB>=70?5:ratioB<=30?2:4;
+  const aCore=aIdentity.slice(0,aTake);
+  const bCore=bIdentity.slice(0,bTake);
+
+  const allTraits=[...new Set([
+    ...aCore,...bCore,
+    ...(a.traits||[]).slice(0,3),
+    ...(b.traits||[]).slice(0,3)
+  ])].filter(Boolean);
+
+  const weightedExtremity=Math.max(1,Math.min(5,Math.round(
+    ((Number(a.extremity)||3)*(ratioA/100))+((Number(b.extremity)||3)*(ratioB/100))
+  )));
+
   const extremityGuide={
-    1:'subtle hybridization, mostly humanlike silhouette, restrained fantasy traits',
-    2:'light hybridization, clearly visible but elegant racial markers',
-    3:'balanced hybridization, both bloodlines visibly represented',
-    4:'strong hybridization, dramatic anatomy and unmistakable dual ancestry',
-    5:'extreme fantasy hybridization, bold anatomy while remaining coherent and beautiful'
-  }[avgExtremity];
-  const fusionName=`${a.name} × ${b.name}`;
+    1:'subtle hybridization with a mostly humanlike silhouette and restrained fantasy anatomy',
+    2:'light hybridization with clearly visible but elegant racial markers',
+    3:'balanced hybridization with strong representation from both bloodlines',
+    4:'dramatic hybrid anatomy with unmistakable dual ancestry',
+    5:'extreme fantasy hybridization with bold anatomy while remaining coherent and beautiful'
+  }[weightedExtremity];
+
+  const dominant=ratioA===ratioB?'Neither parent; keep an even visual balance':ratioA>ratioB?`${a.name} is visually dominant`:`${b.name} is visually dominant`;
+  const fusionName=`${a.name} ${ratioA}% × ${b.name} ${ratioB}%`;
   const lockedA=aCore.length?aCore.join(', '):clean(a.visualIdentity||a.description);
   const lockedB=bCore.length?bCore.join(', '):clean(b.visualIdentity||b.description);
   const affinityText=[a.affinity,b.affinity].filter(Boolean).join(' + ');
-  const categoryText=[a.category,b.category].filter(Boolean).join(' + ');
   const themeText=[a.theme,b.theme].filter(Boolean).join(' + ');
+
   return {
     title:fusionName,
-    meta:`RG FUSION 2.0 • ${categoryText} • ${t}`,
-    description:`A controlled fusion lineage combining ${a.name} and ${b.name}. The hybrid preserves recognizable locked racial markers from both parent races.`,
+    meta:`MANUAL RG FUSION • ${ratioA}/${ratioB} • ${t}`,
+    description:`A controlled ${ratioA}% ${a.name} / ${ratioB}% ${b.name} fusion. Visual dominance follows the selected ratio while both parent races remain unmistakably identifiable.`,
     traits:allTraits.slice(0,10),
-    prompt:`${t} fantasy character portrait of a ${sex} hybrid race formed from ${a.name} and ${b.name}.
+    prompt:`${t} fantasy character portrait of a ${sex} hybrid race: ${ratioA}% ${a.name} and ${ratioB}% ${b.name}.
 
-FUSION RULE:
-Preserve the locked racial identity of BOTH parent races. Do not replace, dilute, or overwrite the defining anatomy of either ancestry. Merge the traits into one coherent biological design rather than splitting the body into two halves.
+FUSION RATIO:
+Parent A — ${a.name}: ${ratioA}%
+Parent B — ${b.name}: ${ratioB}%
+Dominance instruction: ${dominant}. The percentage controls visual emphasis, NOT whether a parent identity disappears.
+
+LOCKED IDENTITY RULE:
+Preserve the Locked Racial Identity of BOTH parent races. Even the lower-percentage parent must retain unmistakable defining racial markers. Do not average both races into a generic humanoid. Do not split the body into two literal halves. Merge both ancestries into one biologically coherent lineage.
 
 PARENT A — ${a.name}
 Category: ${clean(a.category)}
@@ -185,17 +247,17 @@ Locked Racial Identity: ${lockedB}
 
 HYBRID DESIGN:
 ${extremityGuide}.
-Carry visible traits from both parent lineages across the face, skin, eyes, ears, horns, hair, limbs, tail, wings, scales, markings, or other anatomy where appropriate.
-Shared affinities: ${affinityText||'mixed ancestral magic'}.
+Apply the ${ratioA}/${ratioB} ratio across facial structure, skin, eyes, ears, horns, hair, limbs, tail, wings, scales, markings, body proportions, magical effects, and other ancestry-specific anatomy where appropriate.
+Combined affinities: ${affinityText||'mixed ancestral magic'}.
 Combined cultural themes: ${themeText||'blended ancestral culture'}.
-Key fused traits: ${allTraits.slice(0,8).join(', ')}.
+Key preserved traits: ${allTraits.slice(0,8).join(', ')}.
 
 WARDROBE & SCENE:
 Wearing ${pick(garments)}.
 Standing in ${pick(settings)}.
 ${pick(lightings)}.
 ${detailText($('detailSelect').value)}.
-Full-body coherent hybrid anatomy, elegant silhouette, realistic materials, premium fantasy game concept art, strong facial readability, no random extra limbs, no duplicated anatomy, no loss of parent identity.`
+Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art, no random extra limbs, no duplicated anatomy, no loss of either parent identity.`
   };
 }
 function renderResult(){
@@ -203,9 +265,42 @@ function renderResult(){
   $('result').innerHTML=`<div class="race-meta">${current.meta}</div><h2 class="race-name">${current.title}</h2><p class="race-desc">${current.description}</p><div class="traits">${current.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div><div class="prompt-box">${current.prompt}</div>`;
   $('favoriteBtn').textContent=favorites.some(f=>f.title===current.title)?'★ Favorited':'☆ Favorite';
 }
+
+function raceOptionLabel(r){return `#${r.number} — ${r.name}`}
+function raceFromInput(value){
+  const match=(value||'').match(/^#(\d+)/);
+  if(match)return db.find(r=>Number(r.number)===Number(match[1]))||null;
+  const q=(value||'').trim().toLowerCase();
+  return db.find(r=>r.name.toLowerCase()===q)||null;
+}
+function populateRaceOptions(){
+  $('raceOptions').innerHTML=db.map(r=>`<option value="${raceOptionLabel(r).replace(/"/g,'&quot;')}"></option>`).join('');
+}
+function updateRatioLabels(){
+  const a=Number($('fusionRatio').value);
+  $('ratioALabel').textContent=`Race A ${a}%`;
+  $('ratioBLabel').textContent=`Race B ${100-a}%`;
+}
+function randomizeManualParents(){
+  let a=pick(db), b=pick(db.filter(r=>r.id!==a.id));
+  $('parentAInput').value=raceOptionLabel(a);
+  $('parentBInput').value=raceOptionLabel(b);
+}
+
 function generate(){
   const pool=eligible(); if(!pool.length)return;
-  if(mode==='single') current=buildSingle(pick(pool)); else {let a=pick(pool),b=pick(db.filter(x=>x.id!==a.id));current=buildFusion(a,b)}
+  if(mode==='single'){
+    current=buildSingle(pick(pool));
+  }else if(mode==='fusion'){
+    let a=pick(pool),b=pick(db.filter(x=>x.id!==a.id));
+    current=buildFusion(a,b,50);
+  }else{
+    const a=raceFromInput($('parentAInput').value);
+    const b=raceFromInput($('parentBInput').value);
+    if(!a||!b){alert('Choose both parent races from the race list first.');return;}
+    if(a.id===b.id){alert('Choose two different parent races.');return;}
+    current=buildFusion(a,b,Number($('fusionRatio').value));
+  }
   history.unshift({...current,ts:Date.now()});history=history.slice(0,50);save();renderResult();renderLists();
 }
 function renderLibrary(){
@@ -219,14 +314,30 @@ function renderLists(){
   $('historyList').className='mini-list'+(history.length?'':' empty');$('historyList').innerHTML=history.length?history.slice(0,8).map(h=>`<div class="mini-item">${h.title}</div>`).join(''):'No generations yet.';
 }
 
-document.querySelectorAll('.tab').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');mode=btn.dataset.mode;});
+document.querySelectorAll('.tab').forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+  mode=btn.dataset.mode;
+  $('manualFusionPanel').classList.toggle('hidden',mode!=='manual');
+  $('generateBtn').textContent=mode==='manual'?'Generate Manual Fusion':'Generate';
+});
+
+$('fusionRatio').oninput=updateRatioLabels;
+$('randomParentsBtn').onclick=randomizeManualParents;
+$('swapParentsBtn').onclick=()=>{
+  const a=$('parentAInput').value,b=$('parentBInput').value;
+  $('parentAInput').value=b;$('parentBInput').value=a;
+  $('fusionRatio').value=100-Number($('fusionRatio').value);
+  updateRatioLabels();
+};
+
 $('generateBtn').onclick=generate;
 $('copyBtn').onclick=async()=>{if(!current)generate();try{await navigator.clipboard.writeText(current.prompt);$('copyBtn').textContent='Copied!';setTimeout(()=>$('copyBtn').textContent='Copy Prompt',1200)}catch(e){prompt('Copy this prompt:',current.prompt)}};
 $('favoriteBtn').onclick=()=>{if(!current)return;const i=favorites.findIndex(f=>f.title===current.title);if(i>=0)favorites.splice(i,1);else favorites.unshift(current);save();renderResult();renderLists();};
 $('rerollDetailsBtn').onclick=()=>{if(current)generate()};
 $('searchInput').oninput=renderLibrary;
 $('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,races:db,favorites,history},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ourdream-race-generator-backup.json';a.click();URL.revokeObjectURL(a.href)};
-$('importInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(Array.isArray(data))db=data;else {if(data.races)db=data.races;if(data.favorites)favorites=data.favorites;if(data.history)history=data.history}save();renderLibrary();renderLists();alert(`Imported ${db.length} races.`)}catch(err){alert('That JSON file could not be imported.')}};
+$('importInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(Array.isArray(data))db=data;else {if(data.races)db=data.races;if(data.favorites)favorites=data.favorites;if(data.history)history=data.history}save();renderLibrary();renderLists();populateRaceOptions();randomizeManualParents();updateRatioLabels();alert(`Imported ${db.length} races.`)}catch(err){alert('That JSON file could not be imported.')}};
 $('resetBtn').onclick=()=>{if(confirm('Reset the race library, favorites, and history to the embedded 2,000-race build?')){db=starterRaces;favorites=[];history=[];save();renderLibrary();renderLists();$('result').innerHTML='<div class="result-placeholder">Tap generate to begin.</div>';current=null}};
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.remove('hidden')});
 $('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.add('hidden')}};
