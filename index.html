@@ -69,6 +69,12 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
             </label>
           </div>
           <datalist id="raceOptions"></datalist>
+          
+          <label>
+            Custom Fusion Name
+            <input id="fusionNameInput" class="search" placeholder="Optional custom hybrid name..." />
+          </label>
+
           <div class="manual-actions">
             <button id="randomParentsBtn" type="button">Randomize Parents</button>
             <button id="swapParentsBtn" type="button">Swap Parents</button>
@@ -224,7 +230,8 @@ function buildFusion(a,b,ratioA=50){
   }[weightedExtremity];
 
   const dominant=ratioA===ratioB?'Neither parent; keep an even visual balance':ratioA>ratioB?`${a.name} is visually dominant`:`${b.name} is visually dominant`;
-  const fusionName=`${a.name} ${ratioA}% × ${b.name} ${ratioB}%`;
+  const customName=($('fusionNameInput')?.value||'').trim();
+  const fusionName=customName||`${a.name} ${ratioA}% × ${b.name} ${ratioB}%`;
   const lockedA=aCore.length?aCore.join(', '):clean(a.visualIdentity||a.description);
   const lockedB=bCore.length?bCore.join(', '):clean(b.visualIdentity||b.description);
   const affinityText=[a.affinity,b.affinity].filter(Boolean).join(' + ');
