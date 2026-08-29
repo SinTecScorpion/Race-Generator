@@ -39,6 +39,12 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 .fusion-name-box label{display:block}
 .fusion-name-box strong{display:block;margin-bottom:8px;color:#f3e8ff}
 .fusion-name-box input{width:100%;box-sizing:border-box}
+
+#savedFusionsCard .mini-item{padding:12px;margin:9px 0;border:1px solid var(--border);border-radius:13px;background:#130f1c}
+.saved-fusion-actions{display:flex;gap:7px;margin-top:9px}
+.saved-fusion-actions button{flex:1;padding:8px}
+#saveFusionBtn.saved-ok{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+
 </style>
   <link rel="icon" type="image/png" sizes="192x192" href="./Icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./Icons/icon-192.png" />
@@ -105,6 +111,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <button id="generateBtn" class="primary">Generate</button>
           <button id="copyBtn">Copy Prompt</button>
           <button id="favoriteBtn">☆ Favorite</button>
+          <button id="saveFusionBtn">💾 Save Fusion</button>
           <button id="rerollDetailsBtn">Reroll Details</button>
         </div>
       </section>
@@ -155,6 +162,16 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <h2>History</h2>
           <div id="historyList" class="mini-list empty">No generations yet.</div>
         </div>
+      </section>
+
+      
+      <section class="card" id="savedFusionsCard">
+        <div class="section-head">
+          <h2>Saved Fusion Library</h2>
+          <span id="savedFusionCount" class="badge">0 saved</span>
+        </div>
+        <p class="tiny">Your custom fusion races are stored on this device for quick access later.</p>
+        <div id="savedFusionList" class="mini-list empty">No saved fusions yet.</div>
       </section>
 
       <section class="card data-card">
@@ -456,6 +473,61 @@ function renderLibrary(){
     </div>`;
   }).join('');
 }
+
+let savedFusions=JSON.parse(localStorage.getItem('race_generator_saved_fusions')||'[]');
+
+function persistSavedFusions(){
+  localStorage.setItem('race_generator_saved_fusions',JSON.stringify(savedFusions));
+}
+
+function renderSavedFusions(){
+  const list=$('savedFusionList'), count=$('savedFusionCount');
+  if(!list||!count)return;
+  count.textContent=`${savedFusions.length} saved`;
+  if(!savedFusions.length){
+    list.className='mini-list empty';
+    list.innerHTML='No saved fusions yet.';
+    return;
+  }
+  list.className='mini-list';
+  list.innerHTML=savedFusions.map((f,i)=>`
+    <div class="mini-item">
+      <strong>${f.title}</strong>
+      <span>${f.meta||'Saved fusion'}</span>
+      <div class="saved-fusion-actions">
+        <button type="button" data-load-saved="${i}">Load</button>
+        <button type="button" data-copy-saved="${i}">Copy</button>
+        <button type="button" data-delete-saved="${i}">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function saveCurrentFusion(){
+  if(!current || !(current.meta||'').includes('FUSION')){
+    alert('Generate a fusion first, then tap Save Fusion.');
+    return;
+  }
+  const record={...current,savedAt:Date.now()};
+  const duplicate=savedFusions.findIndex(f=>f.title===record.title && f.prompt===record.prompt);
+  if(duplicate>=0)savedFusions.splice(duplicate,1);
+  savedFusions.unshift(record);
+  savedFusions=savedFusions.slice(0,100);
+  persistSavedFusions();
+  renderSavedFusions();
+  const btn=$('saveFusionBtn');
+  btn.textContent='✓ Fusion Saved';
+  btn.classList.add('saved-ok');
+  setTimeout(()=>{btn.textContent='💾 Save Fusion';btn.classList.remove('saved-ok')},1300);
+}
+
+function loadSavedFusion(index){
+  const f=savedFusions[index];
+  if(!f)return;
+  current={...f};
+  renderResult();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
 function renderLists(){
   $('favoritesList').className='mini-list'+(favorites.length?'':' empty');$('favoritesList').innerHTML=favorites.length?favorites.map(f=>`<div class="mini-item">★ ${f.title}</div>`).join(''):'No favorites yet.';
   $('historyList').className='mini-list'+(history.length?'':' empty');$('historyList').innerHTML=history.length?history.slice(0,8).map(h=>`<div class="mini-item">${h.title}</div>`).join(''):'No generations yet.';
@@ -484,6 +556,35 @@ $('swapParentsBtn').onclick=()=>{
   renderLibrary();
 };
 
+
+$('saveFusionBtn').onclick=saveCurrentFusion;
+
+$('savedFusionList').onclick=async e=>{
+  const load=e.target.closest('[data-load-saved]');
+  const copy=e.target.closest('[data-copy-saved]');
+  const del=e.target.closest('[data-delete-saved]');
+  if(load){
+    loadSavedFusion(Number(load.dataset.loadSaved));
+    return;
+  }
+  if(copy){
+    const f=savedFusions[Number(copy.dataset.copySaved)];
+    if(!f)return;
+    try{
+      await navigator.clipboard.writeText(f.prompt);
+      copy.textContent='Copied!';
+      setTimeout(()=>copy.textContent='Copy',1000);
+    }catch(err){prompt('Copy this prompt:',f.prompt);}
+    return;
+  }
+  if(del){
+    const i=Number(del.dataset.deleteSaved);
+    savedFusions.splice(i,1);
+    persistSavedFusions();
+    renderSavedFusions();
+  }
+};
+
 $('generateBtn').onclick=generate;
 $('copyBtn').onclick=async()=>{if(!current)generate();try{await navigator.clipboard.writeText(current.prompt);$('copyBtn').textContent='Copied!';setTimeout(()=>$('copyBtn').textContent='Copy Prompt',1200)}catch(e){prompt('Copy this prompt:',current.prompt)}};
 $('favoriteBtn').onclick=()=>{if(!current)return;const i=favorites.findIndex(f=>f.title===current.title);if(i>=0)favorites.splice(i,1);else favorites.unshift(current);save();renderResult();renderLists();};
@@ -502,7 +603,7 @@ $('libraryList').onclick=e=>{
 };
 
 $('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,races:db,favorites,history},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ourdream-race-generator-backup.json';a.click();URL.revokeObjectURL(a.href)};
-$('importInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(Array.isArray(data))db=data;else {if(data.races)db=data.races;if(data.favorites)favorites=data.favorites;if(data.history)history=data.history}save();renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManualPickState();alert(`Imported ${db.length} races.`)}catch(err){alert('That JSON file could not be imported.')}};
+$('importInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(Array.isArray(data))db=data;else {if(data.races)db=data.races;if(data.favorites)favorites=data.favorites;if(data.history)history=data.history}save();renderLibrary();renderLists();renderSavedFusions();populateRaceOptions();updateRatioLabels();syncManualPickState();alert(`Imported ${db.length} races.`)}catch(err){alert('That JSON file could not be imported.')}};
 $('resetBtn').onclick=()=>{if(confirm('Reset the race library, favorites, and history to the embedded 2,000-race build?')){db=starterRaces;favorites=[];history=[];save();renderLibrary();renderLists();$('result').innerHTML='<div class="result-placeholder">Tap generate to begin.</div>';current=null}};
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.remove('hidden')});
 $('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.add('hidden')}};
