@@ -29,6 +29,11 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 .library-item .pick-hint{margin-top:7px;font-size:.72rem;color:var(--accent2);font-weight:700}
 .manual-status{margin-top:10px;padding:9px 11px;border-radius:11px;background:#171221;border:1px solid var(--border);color:var(--accent2);font-size:.8rem}
 
+
+.library-pick-actions{display:flex;gap:8px;margin-top:9px}
+.library-pick-actions button{flex:1;padding:8px 9px;border-radius:10px;font-size:.76rem}
+.library-pick-actions .set-a{border-color:#9f7aea}
+.library-pick-actions .set-b{border-color:#d6bcfa}
 </style>
   <link rel="icon" type="image/png" sizes="192x192" href="./Icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./Icons/icon-192.png" />
@@ -313,6 +318,37 @@ function syncManualPickState(){
   renderLibrary();
 }
 
+function setRaceAsParent(id,parent){
+  const r=db.find(x=>x.id===id);
+  if(!r)return;
+  const other=parent==='A'
+    ? raceFromInput($('parentBInput').value)
+    : raceFromInput($('parentAInput').value);
+
+  if(other && other.id===r.id){
+    setManualStatus('Parent A and Parent B must be different races.');
+    return;
+  }
+
+  if(parent==='A'){
+    $('parentAInput').value=raceOptionLabel(r);
+    manualPickNext='B';
+    setManualStatus(`Parent A set to ${r.name}. Next tap can fill Parent B.`);
+  }else{
+    $('parentBInput').value=raceOptionLabel(r);
+    manualPickNext='A';
+    setManualStatus(`Parent B set to ${r.name}. Next tap can fill Parent A.`);
+  }
+
+  if(mode!=='manual'){
+    mode='manual';
+    document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.mode==='manual'));
+    $('manualFusionPanel').classList.remove('hidden');
+    $('generateBtn').textContent='Generate Manual Fusion';
+  }
+  renderLibrary();
+}
+
 function selectRaceForManual(id){
   const r=db.find(x=>x.id===id);
   if(!r)return;
@@ -395,19 +431,17 @@ function renderLibrary(){
 
   $('libraryList').innerHTML=rows.map(r=>{
     const cls=a&&a.id===r.id?' selected-a':b&&b.id===r.id?' selected-b':'';
-    const hint=a&&a.id===r.id?'Parent A':b&&b.id===r.id?'Parent B':'Tap to add to Manual Fusion';
+    const hint=a&&a.id===r.id?'Selected as Parent A':b&&b.id===r.id?'Selected as Parent B':'Tap card to fill the next Manual Fusion parent';
     return `<div class="library-item${cls}" data-race-id="${r.id}" role="button" tabindex="0">
-      <strong>#${r.number} ${r.name}</strong>
+      <strong class="race-pick-name">#${r.number} ${r.name}</strong>
       <span>${r.category} • ${r.theme} • ${r.rarity} • ${r.affinity} • Extremity ${r.extremity}/5</span>
       <span class="pick-hint">${hint}</span>
+      <div class="library-pick-actions">
+        <button type="button" class="set-a" data-action="A" data-race-id="${r.id}">Set A</button>
+        <button type="button" class="set-b" data-action="B" data-race-id="${r.id}">Set B</button>
+      </div>
     </div>`;
   }).join('');
-
-  $('libraryList').querySelectorAll('.library-item').forEach(card=>{
-    const choose=()=>selectRaceForManual(card.dataset.raceId);
-    card.onclick=choose;
-    card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose();}};
-  });
 }
 function renderLists(){
   $('favoritesList').className='mini-list'+(favorites.length?'':' empty');$('favoritesList').innerHTML=favorites.length?favorites.map(f=>`<div class="mini-item">★ ${f.title}</div>`).join(''):'No favorites yet.';
@@ -442,13 +476,25 @@ $('copyBtn').onclick=async()=>{if(!current)generate();try{await navigator.clipbo
 $('favoriteBtn').onclick=()=>{if(!current)return;const i=favorites.findIndex(f=>f.title===current.title);if(i>=0)favorites.splice(i,1);else favorites.unshift(current);save();renderResult();renderLists();};
 $('rerollDetailsBtn').onclick=()=>{if(current)generate()};
 $('searchInput').oninput=renderLibrary;
+
+$('libraryList').onclick=e=>{
+  const button=e.target.closest('button[data-action]');
+  if(button){
+    e.stopPropagation();
+    setRaceAsParent(button.dataset.raceId,button.dataset.action);
+    return;
+  }
+  const card=e.target.closest('.library-item[data-race-id]');
+  if(card)selectRaceForManual(card.dataset.raceId);
+};
+
 $('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,races:db,favorites,history},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ourdream-race-generator-backup.json';a.click();URL.revokeObjectURL(a.href)};
 $('importInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(Array.isArray(data))db=data;else {if(data.races)db=data.races;if(data.favorites)favorites=data.favorites;if(data.history)history=data.history}save();renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManualPickState();alert(`Imported ${db.length} races.`)}catch(err){alert('That JSON file could not be imported.')}};
 $('resetBtn').onclick=()=>{if(confirm('Reset the race library, favorites, and history to the embedded 2,000-race build?')){db=starterRaces;favorites=[];history=[];save();renderLibrary();renderLists();$('result').innerHTML='<div class="result-placeholder">Tap generate to begin.</div>';current=null}};
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.remove('hidden')});
 $('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.add('hidden')}};
 
-renderLibrary();renderLists();
+renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManualPickState();
 </script>
 
 <script>
