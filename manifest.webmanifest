@@ -1,0 +1,14 @@
+{
+  "name": "OurDream Race Generator",
+  "short_name": "OurDream Races",
+  "description": "Offline OurDream 2,000-race fantasy humanoid generator.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0c0b11",
+  "theme_color": "#15121f",
+  "icons": [
+    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png"}
+  ]
+}
