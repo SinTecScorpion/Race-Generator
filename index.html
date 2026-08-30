@@ -62,6 +62,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 .master-summary{background:#171221;border:1px solid var(--border);border-radius:13px;padding:12px;color:var(--accent2);font-size:.84rem;line-height:1.5}
 .master-summary strong{color:var(--ink)}
 .master-prompt-box{margin-top:12px;white-space:pre-wrap;max-height:460px;overflow:auto}
+.identity-banner{margin:0 0 14px;padding:10px 12px;border:1px solid var(--accent);border-radius:12px;background:#171020;color:var(--accent2);font-weight:900;letter-spacing:.04em;text-transform:uppercase;line-height:1.35}.identity-banner small{display:block;margin-top:4px;color:var(--muted);font-weight:700;letter-spacing:0;text-transform:none}
 </style>
   <link rel="icon" type="image/png" sizes="192x192" href="./Icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./Icons/icon-192.png" />
@@ -72,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 11R4.8 • Reference Sheets + Random Fusion Ratios</span>
+        <span class="build-version">Build 12R5.0 • Conditional Weapon Profiles</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -555,7 +556,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <h2>Step 11: Character Reference Sheets</h2>
           <span class="badge">Reference</span>
         </div>
-        <p class="tiny">Build a dedicated multi-view character reference sheet from the current race or fusion without changing the normal Master Character Prompt.</p>
+        <p class="tiny">Build a true multi-view character reference sheet from the current race or fusion. These modes replace cinematic scene/pose/camera instructions for the sheet only; the normal Master Character Prompt is unchanged.</p>
         <div class="actions-grid small">
           <button id="realisticSheetBtn" type="button">Realistic Sheet</button>
           <button id="animeSheetBtn" type="button">Anime Sheet</button>
@@ -871,6 +872,31 @@ const weaponTypePool=['no weapon — spellcaster','no weapon — unarmed','longs
 const weaponStylePool=['ancient','medieval','elven','dwarven','barbarian','gothic','regal','arcane','celestial','infernal','primal','nature-grown','crystal-forged','bone-crafted','runic','draconic','fae','void-forged','storm-forged','necromantic','relic','ornate ceremonial','minimalist'];
 const weaponMaterialPool=['steel','blackened iron','bronze','silver','gold-trimmed metal','obsidian','crystal','bone','living wood','dragon-forged metal','arcane alloy','celestial metal','shadow metal','mithril-like alloy','runed stone','volcanic glass','ice crystal','chitin','pearl and coral','ethereal energy','living metal'];
 const weaponEffectPool=['no magical effect','flaming edge','frost aura','lightning arcs','arcane runes','celestial radiance','shadow mist','void energy','nature magic','blood-red energy','prismatic glow','soul-fire','solar radiance','lunar glow','storm charge','poisonous vapor','necrotic aura','spirit wisps','gravity distortion','time shimmer','crystalline growth','water current','wind aura'];
+function weaponProfileText(type){
+  // Only the selected weapon profile is injected. These rules are intentionally
+  // local to weapon construction/handling and must not redesign the character.
+  const profiles=[
+    {match:['longsword','shortsword','broadsword','greatsword','rapier','curved saber','falchion','katana-style blade','spellblade','dagger','kukri','katar / punch dagger','war sickle','scythe'], text:'BLADE PROFILE: preserve one deliberate blade path from hilt to tip, a coherent hilt/guard/grip connection, and the intended straight or curved blade geometry for this weapon. Rigid blade sections must not sag, melt, kink, fork, or become ribbon-like. Keep the cutting edge, spine, point, and handle visually readable; magical effects may surround the blade but should not accidentally replace or deform its physical structure.'},
+    {match:['dual blades','twin daggers','throwing knives'], text:'MULTI-BLADE PROFILE: show the intended number of separate, recognizable blades with coherent hilts and blade geometry. Do not fuse the weapons together, multiply them beyond the requested set, merge them into the hands, or turn rigid blades into bent or melted forms. Keep each weapon independently readable.'},
+    {match:['spear','javelin','harpoon','pike','lance','trident','glaive','halberd','poleaxe','bardiche','naginata-style polearm'], text:'POLEARM PROFILE: preserve a continuous, structurally straight or intentionally shaped haft with the weapon head securely aligned and attached at the proper end. Keep spear points, axe blades, hooks, prongs, or glaive blades distinct and recognizable. Avoid bowed or melted rigid shafts, detached heads, accidental extra heads, and impossible joins.'},
+    {match:['battle axe','greataxe','hand axes','throwing axe'], text:'AXE PROFILE: preserve a coherent haft and clearly attached axe head with a readable cutting edge and believable head-to-handle alignment. Keep rigid handles structurally stable. Avoid melted or drooping heads, floating blades, accidental duplicate heads, warped hafts, or axe geometry turning into an unrelated shield or club.'},
+    {match:['warhammer','maul','mace','morningstar','club','greatclub','war pick'], text:'BLUNT-WEAPON PROFILE: preserve a clear handle/haft and a securely connected striking head or striking end appropriate to the selected weapon. Maintain believable mass and readable silhouette without accidental extreme swelling. Avoid detached, melted, drooping, duplicated, shield-like, or amorphous weapon heads and warped rigid handles.'},
+    {match:['flail','chain weapon','whip'], text:'FLEXIBLE-WEAPON PROFILE: preserve the intended flexible or articulated construction. Chains, cords, lashes, and linked sections may bend naturally, while rigid handles, weights, blades, and attachment points remain coherent. Avoid fused links, disconnected segments, accidental extra chains, melted rigid parts, or flexible sections attaching to anatomically impossible locations.'},
+    {match:['bow','longbow'], text:'BOW PROFILE: preserve the recognizable curved bow body, central grip, and one continuous taut string connected to the limb tips. Keep the bow intentionally curved rather than melted or asymmetrically warped. If an arrow is shown, keep it distinct and plausibly aligned with the string; do not duplicate strings, limbs, arrows, or turn the bow into a blade.'},
+    {match:['crossbow','hand crossbow'], text:'CROSSBOW PROFILE: preserve a recognizable stock/grip, bow limbs, taut string, firing channel, and coherent mechanical alignment. Keep rigid components stable and connected. Avoid duplicated limbs or strings, bent stocks, floating bolts, melted mechanisms, or transformation into a conventional bow or firearm.'},
+    {match:['sling'], text:'SLING PROFILE: preserve a simple flexible sling with a readable pouch and two cords. Flexible cords may curve naturally; avoid extra cords, fused hands, rigid rod-like transformation, or turning the sling into an unrelated weapon.'},
+    {match:['staff','quarterstaff','wand','scepter'], text:'FOCUS/STAFF PROFILE: preserve a single coherent shaft or handle with intentional length and a clearly designed tip, head, or focus where appropriate. Rigid shafts should remain structurally stable; ornament and magic may surround them without melting, branching, duplicating, or obscuring the underlying object.'},
+    {match:['magic tome'], text:'TOME PROFILE: preserve a recognizable book with coherent covers, spine, pages, and intentional open or closed state. Magical effects may emanate from it without turning the book into a weapon blade, shield, or amorphous object. Avoid duplicated covers, impossible page geometry, and fused hand/book forms.'},
+    {match:['arcane focus / orb'], text:'ARCANE-FOCUS PROFILE: preserve a clearly readable orb or compact magical focus with intentional symmetry or designed asymmetry. It may float if appropriate to the magical presentation, but should remain a distinct focus rather than accidentally becoming a shield, weapon blade, or malformed hand-held mass.'},
+    {match:['chakram','boomerang blade'], text:'THROWN-BLADE PROFILE: preserve the selected circular or returning-blade silhouette with a continuous, intentional rigid geometry and readable safe handling area where applicable. Avoid melted loops, broken rings, accidental extra blades, warped symmetry, or transformation into a shield.'},
+    {match:['shield only'], text:'SHIELD PROFILE: preserve one recognizable shield with a coherent face, rim, thickness, and plausible rear grip/strap structure. Keep the shield distinct from the hand and forearm. Avoid extra weapon heads, melted rims, duplicated shields, or accidental transformation into a giant weapon blade.'},
+    {match:['shield and sword'], text:'SWORD-AND-SHIELD PROFILE: preserve exactly one recognizable sword and one recognizable shield as separate pieces of equipment. Keep the sword blade/hilt coherent and the shield face/rim/grip coherent. Do not fuse them together, duplicate either item, or transform one into the other.'},
+    {match:['claws / gauntlets'], text:'GAUNTLET PROFILE: preserve wearable hand/forearm equipment that follows the existing hand and arm anatomy. Keep claws or striking surfaces intentionally attached to the gauntlet rather than growing new racial limbs or fingers. Avoid duplicated fingers, floating claws, fused forearms, or oversized shield-like hand masses.'}
+  ];
+  const profile=profiles.find(p=>p.match.includes(type));
+  return profile ? profile.text : 'WEAPON PROFILE: preserve the selected weapon as a recognizable, intentionally constructed object with coherent connections, functional proportions, and geometry appropriate to that weapon. Avoid unintended warping, melting, drooping, broken joins, or duplicated components.';
+}
+
 function weaponControlText(){
   const typeValue=$('weaponType')?.value||'Random';
   const resolvedType=typeValue==='Random'?pick(weaponTypePool):typeValue.toLowerCase();
@@ -883,7 +909,7 @@ function weaponControlText(){
   const effect=effectValue==='Random'?pick(weaponEffectPool):effectValue.toLowerCase();
   const resolvedHandling=handlingValue==='Random'?pick(weaponHandlingPool):handlingValue;
   const handling=resolvedHandling==='Automatic'?'naturally handled to match the selected pose':resolvedHandling.toLowerCase();
-  return `Equipped with a ${style} ${type} made primarily from ${material}, ${effect}, ${handling}. Keep the weapon compatible with the character's established anatomy, clothing, and pose without inventing new racial anatomy to support it. WEAPON COHERENCE: keep the selected weapon clearly recognizable and naturally constructed. Preserve its intended geometry and functional proportions. Rigid weapon components should remain structurally stable and intentionally shaped; flexible, curved, segmented, organic, magical, or unconventional components should retain the form appropriate to the selected weapon design. Avoid unintended weapon warping, melting, drooping, broken connections, duplicated weapon components, or accidental deformation`;
+  return `Equipped with a ${style} ${type} made primarily from ${material}, ${effect}, ${handling}. Keep the weapon compatible with the character's established anatomy, clothing, and pose without inventing new racial anatomy to support it. CONDITIONAL WEAPON PROFILE — applies only to the selected ${type} and only to weapon/equipment construction and interaction; it must not override racial identity, body design, clothing, pose intent, lighting, environment, or art style. ${weaponProfileText(type)}`;
 }
 
 
@@ -964,8 +990,14 @@ function buildSingle(r){
   return {
     kind:'single', raceId:r.id,
     title:r.name, meta:`${r.category} • ${r.origin} • ${t}`,
+    banner:`RACE IDENTITY • ${r.name}`,
     description:r.description, traits:r.traits,
-    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}.
+    prompt:`=== RACE IDENTITY BANNER — ${r.name} ===
+Locked Racial Identity: ${r.lockedIdentity||r.visualIdentity||r.description}
+Visual Identity: ${r.visualIdentity||r.description}
+=== END RACE IDENTITY BANNER ===
+
+${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}.
 
 ${anatomyAllowlistText(r)}
 
@@ -1018,9 +1050,16 @@ function buildFusion(a,b,ratioA=50){
     kind:'fusion', parentAId:a.id, parentBId:b.id, ratioA,
     title:fusionName,
     meta:`RG FUSION • ${ratioA}/${ratioB} • ${t}`,
+    banner:`RG FUSION • ${a.name} ${ratioA}% × ${b.name} ${ratioB}%`,
     description:`A controlled ${ratioA}% ${a.name} / ${ratioB}% ${b.name} fusion. Visual dominance follows the selected ratio while both parent races remain unmistakably identifiable.`,
     traits:allTraits.slice(0,10),
-    prompt:`${t} fantasy character portrait of a ${sex} hybrid race: ${ratioA}% ${a.name} and ${ratioB}% ${b.name}.
+    prompt:`=== RG FUSION IDENTITY BANNER ===
+Parent A — ${a.name}: ${ratioA}%
+Parent B — ${b.name}: ${ratioB}%
+Both parent identities are mandatory and must remain visibly recognizable.
+=== END RG FUSION IDENTITY BANNER ===
+
+${t} fantasy character portrait of a ${sex} hybrid race: ${ratioA}% ${a.name} and ${ratioB}% ${b.name}.
 
 FUSION RATIO:
 Parent A — ${a.name}: ${ratioA}%
@@ -1186,16 +1225,70 @@ async function copyMasterPrompt(){
 }
 
 function referenceSheetDirective(style){
-  const common=`REFERENCE SHEET OVERRIDE: Create a clean character-design reference sheet, not a cinematic scene. Show the SAME character consistently across synchronized full-body views. Locked Racial Identity, ANATOMY ALLOWLIST, resolved character form, clothing, materials, colors, markings, and selected equipment must remain identical in every view. Prioritize readable silhouette, stable proportions, unobstructed anatomy, and design consistency. Replace dramatic environment, action pose, atmospheric effects, depth-of-field, and perspective exaggeration with a simple neutral presentation appropriate for a professional design sheet. Do not redesign the character between views.`;
+  const common=`REFERENCE SHEET MODE — OUTPUT FORMAT OVERRIDE:
+Create a professional multi-view CHARACTER REFERENCE SHEET, not a cinematic portrait, action illustration, splash art, or environmental scene. The sheet layout is the primary composition. Show the SAME character design repeatedly across synchronized views at consistent scale. Preserve the identity banner, Locked Racial Identity, ANATOMY ALLOWLIST, resolved character form, body proportions, face, skin, hair, markings, clothing, materials, colors, and equipment in every view. Use a plain neutral background, restrained reference lighting, clear spacing between views, readable silhouette, and stable proportions. Do not redesign, mutate, simplify, or swap features between panels. Do not use dramatic scenery, action poses, extreme camera angles, depth-of-field, atmospheric particles, or perspective exaggeration.`;
   if(style==='realistic')return `${common}
 
-REALISTIC REFERENCE SHEET: photorealistic / high-end realistic fantasy character design. Include clear front, three-quarter, side, and back full-body views plus a consistent head/face detail view. Use neutral studio-style lighting, restrained shadows, realistic materials and skin response, clean neutral background, consistent scale, and practical production-reference clarity.`;
+REALISTIC CHARACTER REFERENCE SHEET:
+Use high-end realistic fantasy character rendering with physically believable skin, hair, cloth, armor, and materials. Layout: front full-body, three-quarter full-body, exact side full-body, back full-body, plus one consistent head/face detail panel. Keep all full-body views standing neutrally at matched scale with ordinary reference-lens perspective and restrained studio illumination. Prioritize production clarity over drama.`;
   if(style==='anime')return `${common}
 
-ANIME REFERENCE SHEET: polished professional anime character-design sheet with clean linework, controlled cel-style rendering, readable material separation, consistent palette, and highly stable facial design. Include front, three-quarter, side, and back full-body views plus a face-expression/detail panel while keeping anatomy, outfit, racial markers, and equipment exactly consistent.`;
+ANIME CHARACTER REFERENCE SHEET:
+Use polished professional anime character-design rendering with clean linework, controlled cel-style shading, stable facial construction, readable material separation, and one consistent palette. Layout: front full-body, three-quarter full-body, exact side full-body, back full-body, plus a face/detail panel. Maintain identical anatomy, racial markers, hairstyle, outfit, accessories, and equipment in every view; no chibi proportions unless the source character explicitly requires them.`;
   return `${common}
 
-BLENDER-READY MODELING REFERENCE SHEET: produce a 3D-modeling turnaround reference suitable for building the character in Blender. Show front, exact side, back, and three-quarter views at matched scale with orthographic-style presentation, neutral A-pose or equally modeling-friendly neutral stance, level camera, minimal lens distortion, clear limb separation, unobstructed hands and feet, clean silhouette, visible costume layering, material boundaries, and color breakup. Avoid foreshortening and dramatic perspective. This is a visual modeling reference sheet, not an actual 3D file or topology mesh.`;
+BLENDER-READY MODELING REFERENCE SHEET:
+Create a modeling turnaround intended as visual reference for building the character in Blender. Layout: exact front orthographic-style full-body, exact side orthographic-style full-body, exact back orthographic-style full-body, and a three-quarter reference view, all aligned to the same ground line and matched scale. Use a neutral A-pose or similarly modeling-friendly stance, level camera, minimal lens distortion, no foreshortening, clear limb separation, visible hands and feet, readable costume layers, material boundaries, and color breakup. Keep large equipment from hiding the body; if needed, place the equipment in a separate adjacent reference inset at consistent scale instead of changing or omitting it. This is a visual turnaround sheet, not an actual .blend file, topology mesh, UV map, or rig.`;
+}
+
+function referenceIdentitySource(){
+  if(!current)return '';
+  const clean=v=>(v||'').toString().trim();
+  if(current.kind==='single' && current.raceId){
+    const r=db.find(x=>x.id===current.raceId);
+    if(r)return `=== RACE IDENTITY BANNER — ${r.name} ===
+Race: ${r.name}
+Category: ${clean(r.category)}
+Theme: ${clean(r.theme)}
+Primary Affinity: ${clean(r.affinity)}
+Visual Identity: ${clean(r.visualIdentity)}
+Locked Racial Identity: ${clean(r.lockedIdentity)}
+Defining Traits: ${(r.traits||[]).join(', ')}
+=== END RACE IDENTITY BANNER ===
+
+${anatomyAllowlistText(r)}`;
+  }
+  if(current.kind==='fusion' && current.parentAId && current.parentBId){
+    const a=db.find(x=>x.id===current.parentAId), b=db.find(x=>x.id===current.parentBId);
+    if(a&&b){
+      const ratioA=Math.max(10,Math.min(90,Number(current.ratioA)||50)), ratioB=100-ratioA;
+      return `=== RG FUSION IDENTITY BANNER ===
+Parent A — ${a.name}: ${ratioA}%
+Parent B — ${b.name}: ${ratioB}%
+The percentage controls visual emphasis only. BOTH parent identities must remain unmistakably recognizable in every reference view.
+=== END RG FUSION IDENTITY BANNER ===
+
+PARENT A — ${a.name}
+Category: ${clean(a.category)}
+Theme: ${clean(a.theme)}
+Primary Affinity: ${clean(a.affinity)}
+Visual Identity: ${clean(a.visualIdentity)}
+Locked Racial Identity: ${clean(a.lockedIdentity)}
+
+PARENT B — ${b.name}
+Category: ${clean(b.category)}
+Theme: ${clean(b.theme)}
+Primary Affinity: ${clean(b.affinity)}
+Visual Identity: ${clean(b.visualIdentity)}
+Locked Racial Identity: ${clean(b.lockedIdentity)}
+
+${anatomyAllowlistText(a,b)}`;
+    }
+  }
+  return `=== CHARACTER IDENTITY BANNER — ${current.title} ===
+${current.description||''}
+Defining Traits: ${(current.traits||[]).join(', ')}
+=== END CHARACTER IDENTITY BANNER ===`;
 }
 
 function buildReferenceSheetPrompt(style){
@@ -1203,11 +1296,24 @@ function buildReferenceSheetPrompt(style){
     alert('Generate or load a race/fusion first.');
     return '';
   }
-  const base=buildMasterPrompt();
-  if(!base)return '';
-  referenceSheetPrompt=`${base}
+  beginPromptRandomization();
+  const identity=referenceIdentitySource();
+  const character=characterControlText();
+  const wardrobe=armorClothingControlText();
+  const equipment=weaponControlText();
+  referenceSheetPrompt=`${referenceSheetDirective(style)}
 
-${referenceSheetDirective(style)}`;
+IDENTITY SOURCE — AUTHORITATIVE:
+${identity}
+
+CHARACTER DESIGN TO REPEAT ACROSS ALL VIEWS:
+${character}.
+Wardrobe: ${wardrobe}.
+Equipment: ${equipment}.
+${nsfwPromptText()}.
+
+REFERENCE-SHEET CONSISTENCY RULE:
+The identity source outranks styling. Keep the same face, anatomy, proportions, racial markers, outfit construction, materials, colors, and equipment design in every panel. Do not import the normal generator's environment, cinematic lighting, dynamic pose, action framing, or atmospheric scene into this sheet. The reference-sheet mode above replaces those scene-oriented controls for this output only.`;
   const box=$('referenceSheetPromptBox');
   if(box)box.textContent=referenceSheetPrompt;
   return referenceSheetPrompt;
@@ -1233,9 +1339,15 @@ function clearReferenceSheetPrompt(){
   if(box)box.textContent='Choose Realistic, Anime, or Blender-Ready to build a reference-sheet prompt for the current character.';
 }
 
+function currentIdentityBanner(){
+  if(!current)return '';
+  if(current.banner)return current.banner;
+  if(current.kind==='fusion'||String(current.meta||'').includes('FUSION'))return `RG FUSION IDENTITY • ${current.title}`;
+  return `RACE IDENTITY • ${current.title}`;
+}
 function renderResult(){
   if(!current)return;
-  $('result').innerHTML=`<div class="race-meta">${current.meta}</div><h2 class="race-name">${current.title}</h2><p class="race-desc">${current.description}</p><div class="traits">${current.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div><div class="prompt-box">${current.prompt}</div>`;
+  $('result').innerHTML=`<div class="identity-banner">${currentIdentityBanner()}<small>Identity banner is authoritative for this generation.</small></div><div class="race-meta">${current.meta}</div><h2 class="race-name">${current.title}</h2><p class="race-desc">${current.description}</p><div class="traits">${current.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div><div class="prompt-box">${current.prompt}</div>`;
   $('favoriteBtn').textContent=favorites.some(f=>f.title===current.title)?'★ Remove Favorite':'☆ Save / Favorite';
 }
 
