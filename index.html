@@ -235,6 +235,79 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         </div>
       </section>
 
+      <section class="card" id="poseControlsCard">
+        <div class="section-head">
+          <h2>Step 5: Pose Generator</h2>
+          <span class="badge">Pose</span>
+        </div>
+        <p class="tiny">Control the character's body pose and movement while keeping the race design intact.</p>
+
+        <div class="control-grid">
+          <label>
+            Pose Style
+            <select id="poseStyle">
+              <option>Random</option>
+              <option>Neutral standing</option>
+              <option>Heroic stance</option>
+              <option>Regal stance</option>
+              <option>Elegant contrapposto</option>
+              <option>Walking</option>
+              <option>Running</option>
+              <option>Combat-ready stance</option>
+              <option>Weapon-ready stance</option>
+              <option>Defensive stance</option>
+              <option>Crouching</option>
+              <option>Kneeling</option>
+              <option>Sitting</option>
+              <option>Leaping</option>
+              <option>Landing</option>
+              <option>Spellcasting pose</option>
+              <option>Victory pose</option>
+            </select>
+          </label>
+
+          <label>
+            Pose Energy
+            <select id="poseEnergy">
+              <option>Balanced</option>
+              <option>Relaxed</option>
+              <option>Controlled</option>
+              <option>Dynamic</option>
+              <option>Explosive</option>
+            </select>
+          </label>
+
+          <label>
+            Body Orientation
+            <select id="poseOrientation">
+              <option>Automatic</option>
+              <option>Front-facing</option>
+              <option>Three-quarter left</option>
+              <option>Three-quarter right</option>
+              <option>Profile left</option>
+              <option>Profile right</option>
+              <option>Back three-quarter</option>
+            </select>
+          </label>
+
+          <label>
+            Gesture / Action
+            <select id="poseGesture">
+              <option>Automatic</option>
+              <option>Hands relaxed</option>
+              <option>One hand raised</option>
+              <option>Arms crossed</option>
+              <option>Hands on hips</option>
+              <option>One hand extended</option>
+              <option>Both hands casting</option>
+              <option>Guarding stance</option>
+              <option>Reaching forward</option>
+              <option>Looking over shoulder</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
       <section class="card controls-card">
         <h2>Generation Controls</h2>
         <div class="control-grid">
@@ -366,13 +439,44 @@ function lightingControlText(){
   return `${style}, ${intensity.toLowerCase()} intensity, ${direction.toLowerCase()}, ${atmosphere.toLowerCase()}`;
 }
 
+const poseStylePool=[
+  'neutral standing pose',
+  'heroic stance',
+  'regal stance',
+  'elegant contrapposto pose',
+  'walking pose',
+  'running pose',
+  'combat-ready stance',
+  'weapon-ready stance',
+  'defensive stance',
+  'crouching pose',
+  'kneeling pose',
+  'seated pose',
+  'leaping action pose',
+  'landing pose',
+  'spellcasting pose',
+  'victory pose'
+];
+
+function poseControlText(){
+  const styleValue=$('poseStyle')?.value||'Random';
+  const style=styleValue==='Random'?pick(poseStylePool):styleValue.toLowerCase();
+  const energy=($('poseEnergy')?.value||'Balanced').toLowerCase();
+  const orientation=($('poseOrientation')?.value||'Automatic').toLowerCase();
+  const gesture=($('poseGesture')?.value||'Automatic').toLowerCase();
+
+  const orientationText=orientation==='automatic'?'natural body orientation':orientation;
+  const gestureText=gesture==='automatic'?'natural arm and hand placement':gesture;
+  return `${style}, ${energy} pose energy, ${orientationText}, ${gestureText}, anatomically believable balance and weight distribution`;
+}
+
 function buildSingle(r){
   const sex=$('femaleOnly').checked?'female':'humanoid';
   const t=tone(), adjective=pick(adjectives), garment=pick(garments), setting=pick(settings), lighting=lightingControlText(), detail=detailText($('detailSelect').value);
   return {
     title:r.name, meta:`${r.category} • ${r.origin} • ${t}`,
     description:r.description, traits:r.traits,
-    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${garment}. Standing in ${setting}. ${lighting}, ${detail}, ${characterControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
+    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${garment}. Standing in ${setting}. ${lighting}, ${detail}, ${characterControlText()}, ${poseControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
   }
 }
 function buildFusion(a,b,ratioA=50){
@@ -457,7 +561,7 @@ Wearing ${pick(garments)}.
 Standing in ${pick(settings)}.
 ${lightingControlText()}.
 ${detailText($('detailSelect').value)}.
-${characterControlText()}. Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art, no random extra limbs, no duplicated anatomy, no loss of either parent identity.`
+${characterControlText()}. ${poseControlText()}. Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art, no random extra limbs, no duplicated anatomy, no loss of either parent identity.`
   };
 }
 function renderResult(){

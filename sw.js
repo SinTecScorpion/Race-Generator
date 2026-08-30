@@ -1,4 +1,4 @@
-const CACHE='race-generator-step04-lighting-network-first-v1';
+const CACHE='race-generator-step05-pose-network-first-v1';
 const CORE=[
   './manifest.webmanifest',
   './Icons/icon-192.png',
