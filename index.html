@@ -68,10 +68,9 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
   <div class="app-shell">
     <header class="hero">
       <div>
-        <p class="eyebrow">OURDREAM RESOURCES</p>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 11R2 • Anatomy Gate Verified</span>
+        <span class="build-version">Build 11R3 • Anatomy Allowlist + Forms</span>
       </div>
       <button id="installBtn" class="ghost hidden">Install App</button>
     </header>
@@ -490,9 +489,12 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
               <option value="vivid">Vivid</option>
             </select>
           </label>
-          <label class="checkbox-row">
-            <input id="femaleOnly" type="checkbox" checked />
-            Female character prompt
+          <label>
+            Character Form
+            <select id="sexForm">
+              <option value="female" selected>Female</option>
+              <option value="male">Male</option>
+            </select>
           </label>
         </div>
       </section>
@@ -525,7 +527,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <label class="file-button">Import JSON<input id="importInput" type="file" accept="application/json,.json" /></label>
           <button id="resetBtn" class="danger">Reset App Data</button>
         </div>
-        <p class="tiny">Full OurDream 2,000-race encyclopedia embedded directly in this offline build.</p>
+        <p class="tiny">Full 2,000-race encyclopedia embedded directly in this offline build.</p>
       </section>
     </main>
   </div>
@@ -537,14 +539,17 @@ const garments=["layered ceremonial armor","ritual leather and woven cloth","eng
 const settings=["a ruined moonlit temple","a windswept cliff fortress","an ancient forest shrine","a glowing crystal cavern","a volcanic citadel","a mist-covered battlefield","a desert ruin at sunset","a storm-darkened mountain pass"];
 const lightings=["cinematic rim lighting","soft volumetric moonlight","dramatic golden-hour lighting","cold atmospheric backlight","firelit chiaroscuro","ethereal bioluminescent glow","storm-flash lighting","high-contrast fantasy portrait lighting"];
 
-let db=JSON.parse(localStorage.getItem('ourdream_races')||'null')||starterRaces;
-let favorites=JSON.parse(localStorage.getItem('ourdream_favorites')||'[]');
-let history=JSON.parse(localStorage.getItem('ourdream_history')||'[]');
+const STORAGE_KEYS={races:'race_generator_races',favorites:'race_generator_favorites',history:'race_generator_history'};
+// One-time compatibility read for older installations, then all future saves use Race Generator keys.
+const legacyPrefix='our'+'dream_';
+let db=JSON.parse(localStorage.getItem(STORAGE_KEYS.races)||localStorage.getItem(legacyPrefix+'races')||'null')||starterRaces;
+let favorites=JSON.parse(localStorage.getItem(STORAGE_KEYS.favorites)||localStorage.getItem(legacyPrefix+'favorites')||'[]');
+let history=JSON.parse(localStorage.getItem(STORAGE_KEYS.history)||localStorage.getItem(legacyPrefix+'history')||'[]');
 let current=null, mode='single', deferredPrompt=null, masterPrompt='';
 
 const $=id=>document.getElementById(id);
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
-function save(){localStorage.setItem('ourdream_races',JSON.stringify(db));localStorage.setItem('ourdream_favorites',JSON.stringify(favorites));localStorage.setItem('ourdream_history',JSON.stringify(history));}
+function save(){localStorage.setItem(STORAGE_KEYS.races,JSON.stringify(db));localStorage.setItem(STORAGE_KEYS.favorites,JSON.stringify(favorites));localStorage.setItem(STORAGE_KEYS.history,JSON.stringify(history));}
 function categories(){return [...new Set(db.map(r=>r.category))].sort()}
 function eligible(){const c=$('categoryFilter').value;return c==='all'?db:db.filter(r=>r.category===c)}
 function tone(){return $('toneSelect').value==='Random'?pick(['Ancient','Heroic','Dark Fantasy','Mythic','Arcane','Primal','Ethereal']):$('toneSelect').value}
@@ -558,17 +563,22 @@ const characterBuildPool=['slender','athletic','lean','powerful','curvy','massiv
 const expressionPool=['calm','fierce','regal','mysterious','joyful','battle-ready'];
 const hairPool=['long flowing','braided','short','wild','ornate','shaved'];
 
+function selectedSex(){
+  return ($('sexForm')?.value||'female').toLowerCase()==='male'?'male':'female';
+}
+
 function characterControlText(){
   const age=$('ageStyle')?.value||'Adult';
   const buildValue=$('buildStyle')?.value||'Random';
   const expressionValue=$('expressionStyle')?.value||'Random';
   const hairValue=$('hairStyle')?.value||'Random';
+  const sex=selectedSex();
 
   const build=buildValue==='Random'?pick(characterBuildPool):buildValue;
   const expression=expressionValue==='Random'?pick(expressionPool):expressionValue;
   const hair=hairValue==='Random'?pick(hairPool):hairValue;
 
-  return `${age.toLowerCase()} female character, ${build.toLowerCase()} build, ${expression.toLowerCase()} expression, ${hair.toLowerCase()} hair`;
+  return `${age.toLowerCase()} ${sex} character, ${build.toLowerCase()} build, ${expression.toLowerCase()} expression, ${hair.toLowerCase()} hair`;
 }
 
 
@@ -720,18 +730,61 @@ function qualityControlText(){
   return `Quality and composition: ${quality}, ${texture} textures, ${camera}, ${depth}, ${finish}; prioritize crisp facial readability, coherent anatomy, clean edges, intentional composition, and accurate materials. Locked Racial Identity and defining racial anatomy always take priority over decorative detail, camera effects, background complexity, or stylization`;
 }
 
+const anatomyMarkerRules=[
+  {label:'tentacles / cephalopod appendages',re:/\b(tentacle|tentacles|cephalopod|squid|octopus)\b/i},
+  {label:'chromatophore skin',re:/\b(chromatophore|chromatophores)\b/i},
+  {label:'wings',re:/\b(wing|wings|winged)\b/i},
+  {label:'horns / antlers',re:/\b(horn|horns|horned|antler|antlers)\b/i},
+  {label:'tail',re:/\b(tail|tails|tailed)\b/i},
+  {label:'fins / finned anatomy',re:/\b(fin|fins|finned)\b/i},
+  {label:'scales / scaled skin',re:/\b(scale|scales|scaled|scaly)\b/i},
+  {label:'gills',re:/\b(gill|gills|gilled)\b/i},
+  {label:'extra arms / limbs',re:/\b(extra limbs?|multiple arms?|four arms?|six arms?|multi-armed|additional arms?)\b/i},
+  {label:'claws / talons',re:/\b(claw|claws|clawed|talon|talons)\b/i},
+  {label:'hooves',re:/\b(hoof|hooves|hooved)\b/i},
+  {label:'carapace / shell',re:/\b(carapace|shell|shelled|chitin|chitinous)\b/i},
+  {label:'feathers',re:/\b(feather|feathers|feathered|plumage)\b/i},
+  {label:'fur',re:/\b(fur|furred|furry|pelt)\b/i},
+  {label:'serpentine lower body',re:/\b(serpentine|snake[- ]?bodied|naga|lamia)\b/i},
+  {label:'digitigrade legs',re:/\b(digitigrade)\b/i}
+];
+
+function raceSourceText(r){
+  return [r?.category,r?.theme,r?.visualIdentity,r?.lockedIdentity,r?.description,...(r?.traits||[])].filter(Boolean).join(' ');
+}
+
+function detectedAnatomy(r){
+  const source=raceSourceText(r);
+  return anatomyMarkerRules.filter(rule=>rule.re.test(source)).map(rule=>rule.label);
+}
+
+function anatomyAllowlistText(a,b=null){
+  const rows=[a,b].filter(Boolean).map((r,i)=>{
+    const found=detectedAnatomy(r);
+    const locked=(r.lockedIdentity||r.visualIdentity||r.description||'').toString().trim();
+    const label=b?`Parent ${i===0?'A':'B'} — ${r.name}`:`${r.name}`;
+    return `${label}: ${found.length?found.join(', '):'no additional major nonhuman structures detected by the anatomy scanner'}. Identity source remains authoritative: ${locked}`;
+  });
+  const combined=[...new Set([...(detectedAnatomy(a)),...(b?detectedAnatomy(b):[])])];
+  return `ANATOMY ALLOWLIST:\n${rows.join('\n')}\nPermitted anatomy is limited to structures explicitly supported by the race source text above${combined.length?`, including detected markers: ${combined.join(', ')}`:''}. The source identity may be elaborated faithfully, but do not infer new major structures from fantasy genre conventions, wardrobe, weapons, pose, environment, or decorative styling.`;
+}
+
 function buildSingle(r){
-  const sex=$('femaleOnly').checked?'female':'humanoid';
+  const sex=selectedSex();
   const t=tone(), adjective=pick(adjectives), wardrobe=armorClothingControlText(), lighting=lightingControlText(), detail=detailText($('detailSelect').value);
   return {
     kind:'single', raceId:r.id,
     title:r.name, meta:`${r.category} • ${r.origin} • ${t}`,
     description:r.description, traits:r.traits,
-    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${wardrobe}. ${weaponControlText()}. ${environmentControlText()}. ${lighting}, ${detail}, ${qualityControlText()}, ${characterControlText()}, ${poseControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
+    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}.
+
+${anatomyAllowlistText(r)}
+
+Wearing ${wardrobe}. ${weaponControlText()}. ${environmentControlText()}. ${lighting}, ${detail}, ${qualityControlText()}, ${characterControlText()}, ${poseControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art. Identity and anatomy from the race source remain authoritative.`
   }
 }
 function buildFusion(a,b,ratioA=50){
-  const sex=$('femaleOnly').checked?'female':'humanoid';
+  const sex=selectedSex();
   const t=tone();
   ratioA=Math.max(10,Math.min(90,Number(ratioA)||50));
   const ratioB=100-ratioA;
@@ -808,6 +861,8 @@ Combined affinities: ${affinityText||'mixed ancestral magic'}.
 Combined cultural themes: ${themeText||'blended ancestral culture'}.
 Key preserved traits: ${allTraits.slice(0,8).join(', ')}.
 
+${anatomyAllowlistText(a,b)}
+
 WARDROBE, WEAPON & SCENE:
 Wearing ${armorClothingControlText()}.
 ${weaponControlText()}.
@@ -815,7 +870,7 @@ ${environmentControlText()}.
 ${lightingControlText()}.
 ${detailText($('detailSelect').value)}.
 ${qualityControlText()}.
-${characterControlText()}. ${poseControlText()}. Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art. ANATOMY GATE: elaborate established racial anatomy, but do not invent unsupported major structures. No random extra limbs, no duplicated anatomy, no unsupported wings/horns/tails/fins/scales/appendages, and no loss of either parent identity.`
+${characterControlText()}. ${poseControlText()}. Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art. ANATOMY ALLOWLIST is authoritative: elaborate supported structures positively and faithfully, never add a major structure absent from both parent source identities. No random extra limbs, no duplicated anatomy, and no loss of either parent identity.`
   };
 }
 function currentLiveSettingsText(){
@@ -874,14 +929,14 @@ function buildMasterPrompt(){
     .replace(/weapon scale, grip, placement, and clearance must fit preserved anatomy, limbs, wings, horns, tail, clothing, and pose/g,
       'weapon scale, grip, placement, and clearance must fit only the anatomy actually established by the race identity, plus clothing and pose')
     .replace(/no random extra limbs, no duplicated anatomy, no loss of either parent identity/g,
-      'ANATOMY GATE: elaborate established racial anatomy only; do not invent unsupported major structures. No random extra limbs, no duplicated anatomy, no unsupported wings, horns, tails, fins, scales, or appendages, and no loss of either parent identity');
+      'ANATOMY ALLOWLIST: elaborate only anatomy supported by the race source identity. Do not introduce any major structure absent from the source. No random extra limbs, no duplicated anatomy, and no loss of either parent identity');
   // Older saved generations may not contain source IDs. In that case, append the live controls explicitly.
   if(!refreshed)base+=`\n\n${currentLiveSettingsText()}`;
 
   masterPrompt=`${base}
 
 MASTER CHARACTER BUILDER — FINAL SYNTHESIS:
-Create one unified, production-ready character image from every instruction above. Resolve any conflict using this priority order: (1) Locked Racial Identity and parent identity preservation, (2) coherent anatomy and silhouette, (3) character appearance and pose, (4) armor/clothing and weapon integration, (5) lighting and environment, (6) render quality and decorative finish. Do not omit defining racial markers to satisfy wardrobe, weapons, camera framing, effects, or scenery. Keep the complete character readable and biologically coherent. ANATOMY GATE: only major anatomical structures explicitly supported by the race data may be depicted; repeated mentions in wardrobe, weapon, pose, environment, or quality instructions are not permission to invent anatomy. Do not add unsupported wings, horns, tails, extra limbs, fins, scales, tentacles, or other appendages. If two lower-priority controls conflict, resolve them into one physically coherent instruction rather than depicting both literally. No duplicated anatomy, no random extra limbs, no hidden identity-defining features, and no genericization of the race or fusion.`;
+Create one unified, production-ready character image from every instruction above. Resolve any conflict using this priority order: (1) Locked Racial Identity and parent identity preservation, (2) the ANATOMY ALLOWLIST and coherent silhouette, (3) character appearance and pose, (4) armor/clothing and weapon integration, (5) lighting and environment, (6) render quality and decorative finish. The ANATOMY ALLOWLIST is authoritative: positively depict and elaborate structures supported by the race source data, and do not introduce any major anatomical structure that is absent from all applicable race sources. Repeated mentions in wardrobe, weapon, pose, environment, or quality instructions never expand the allowlist. Do not omit defining racial markers to satisfy equipment, camera framing, effects, or scenery. If two lower-priority controls conflict, resolve them into one physically coherent instruction rather than depicting both literally. Keep the complete character readable and biologically coherent, with no duplicated anatomy, no random extra limbs, no hidden identity-defining features, and no genericization of the race or fusion.`;
 
   const box=$('masterPromptBox');
   if(box)box.textContent=masterPrompt;
@@ -1283,7 +1338,7 @@ $('libraryList').onclick=e=>{
   if(card)selectRaceForManual(card.dataset.raceId);
 };
 
-$('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,races:db,favorites,history},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ourdream-race-generator-backup.json';a.click();URL.revokeObjectURL(a.href)};
+$('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,races:db,favorites,history},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='race-generator-backup.json';a.click();URL.revokeObjectURL(a.href)};
 $('importInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(Array.isArray(data))db=data;else {if(data.races)db=data.races;if(data.favorites)favorites=data.favorites;if(data.history)history=data.history}save();renderLibrary();renderLists();renderSavedFusions();populateRaceOptions();updateRatioLabels();syncManualPickState();alert(`Imported ${db.length} races.`)}catch(err){alert('That JSON file could not be imported.')}};
 $('resetBtn').onclick=()=>{if(confirm('Reset the race library, favorites, and history to the embedded 2,000-race build?')){db=starterRaces;favorites=[];history=[];save();renderLibrary();renderLists();$('result').innerHTML='<div class="result-placeholder">Tap generate to begin.</div>';current=null;resetMasterPrompt()}};
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.remove('hidden')});
@@ -1293,12 +1348,12 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 </script>
 
 <script>
-// Build 11: keep the permanent update fix and add saved-fusion backup/restore.
+// Build 11R3: preserve the permanent update fix, add anatomy allowlists, and selectable male/female character forms.
 // The worker itself uses network-first navigation with an offline fallback.
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=11r1-prompt-engine-1', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=11r3-anatomy-allowlist-forms', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and
