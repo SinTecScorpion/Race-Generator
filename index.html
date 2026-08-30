@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0 • Conditional Weapon Profiles</span>
+        <span class="build-version">Build 12R5.0.1 • Update Reliability Hotfix + Conditional Weapon Profiles</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -1847,12 +1847,12 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 </script>
 
 <script>
-// Build 11R4.8: adds dedicated Realistic, Anime, and Blender-Ready character reference-sheet prompt builders without changing normal Master Prompt behavior, and restores true Random Fusion ancestry ratios using 10–90% values in 5% steps. Expanded arsenal, lightweight Weapon Coherence, wardrobe variety, History Load, 5,000-race external library, Random defaults, Master Reset, anatomy protections, and unrelated systems remain intact.
+// Build 12R5.0.1: update-reliability hotfix. Uses a build-specific service-worker URL and build-specific canonical navigation request so installed PWAs cannot remain pinned to an older HTML shell. Conditional Weapon Profiles and all R4.9/R5.0 features remain intact.
 // The worker itself uses network-first navigation with an offline fallback.
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=11r4-2-5000-auto-library', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-1-update-hotfix', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and
