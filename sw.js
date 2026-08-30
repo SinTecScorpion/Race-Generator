@@ -1,4 +1,4 @@
-const CACHE='race-generator-build10-update-fix-v1';
+const CACHE='race-generator-build11-saved-fusion-backup-v1';
 const OFFLINE_HTML='./index.html';
 const CORE=[
   './manifest.webmanifest',

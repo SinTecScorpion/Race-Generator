@@ -45,6 +45,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 #saveFusionHint{text-align:center;margin-top:7px}
 #savedFusionsCard{border:1px solid var(--accent)}
 #savedFusionsCard .mini-item{padding:12px;margin:9px 0;border:1px solid var(--border);border-radius:13px;background:#130f1c}
+.backup-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 8px}.backup-actions button{min-height:48px}.backup-status{margin-top:8px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#100d17}.backup-status.ok{border-color:#6bdc9a}.backup-status.warn{border-color:#d9a45d}@media(max-width:520px){.backup-actions{grid-template-columns:1fr}}
 .saved-fusion-actions{display:flex;gap:7px;margin-top:9px}
 .saved-fusion-actions button{flex:1;padding:8px}
 
@@ -70,7 +71,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         <p class="eyebrow">OURDREAM RESOURCES</p>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 10 • Update Fix</span>
+        <span class="build-version">Build 11 • Saved Fusion Backup</span>
       </div>
       <button id="installBtn" class="ghost hidden">Install App</button>
     </header>
@@ -141,6 +142,12 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <span id="savedFusionCount" class="badge">0 saved</span>
         </div>
         <p class="tiny">Saved fusion races stay on this device so you can reload or copy them later.</p>
+        <div class="backup-actions">
+          <button type="button" id="exportFusionsBtn">⬇️ Download Fusion Backup</button>
+          <button type="button" id="importFusionsBtn">⬆️ Restore Fusion Backup</button>
+        </div>
+        <input id="importFusionsFile" type="file" accept="application/json,.json" hidden>
+        <div id="fusionBackupStatus" class="tiny backup-status">Step 11 backup is ready. Export creates a JSON backup file; Restore merges saved fusions without deleting existing ones.</div>
         <div id="savedFusionList" class="mini-list empty">No saved fusions yet.</div>
       </section>
 
@@ -1057,6 +1064,71 @@ function persistSavedFusions(){
   localStorage.setItem('race_generator_saved_fusions',JSON.stringify(savedFusions));
 }
 
+function setFusionBackupStatus(message,kind=''){
+  const el=$('fusionBackupStatus');
+  if(!el)return;
+  el.textContent=message;
+  el.className='tiny backup-status'+(kind?` ${kind}`:'');
+}
+
+function exportSavedFusions(){
+  if(!savedFusions.length){
+    setFusionBackupStatus('No saved fusions to back up yet.','warn');
+    return;
+  }
+  const payload={
+    app:'Race Generator',
+    format:'race-generator-saved-fusions',
+    version:1,
+    exportedAt:new Date().toISOString(),
+    count:savedFusions.length,
+    savedFusions
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const stamp=new Date().toISOString().slice(0,10);
+  a.href=url;
+  a.download=`race-generator-fusions-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  setFusionBackupStatus(`Backup downloaded: ${savedFusions.length} saved fusion${savedFusions.length===1?'':'s'}.`,'ok');
+}
+
+async function importSavedFusionsFile(file){
+  if(!file)return;
+  try{
+    const text=await file.text();
+    const data=JSON.parse(text);
+    const incoming=Array.isArray(data)?data:Array.isArray(data.savedFusions)?data.savedFusions:null;
+    if(!incoming)throw new Error('This file does not contain a savedFusions backup.');
+    const valid=incoming.filter(f=>f && typeof f==='object' && typeof f.title==='string' && typeof f.prompt==='string');
+    if(!valid.length)throw new Error('No valid saved fusions were found in this backup.');
+
+    let added=0, skipped=0;
+    const existingKeys=new Set(savedFusions.map(f=>`${f.title}\n${f.prompt}`));
+    for(const f of valid){
+      const key=`${f.title}\n${f.prompt}`;
+      if(existingKeys.has(key)){skipped++;continue;}
+      savedFusions.push({...f,restoredAt:Date.now()});
+      existingKeys.add(key);
+      added++;
+    }
+    savedFusions.sort((a,b)=>(b.savedAt||b.restoredAt||0)-(a.savedAt||a.restoredAt||0));
+    savedFusions=savedFusions.slice(0,100);
+    persistSavedFusions();
+    renderSavedFusions();
+    setFusionBackupStatus(`Restore complete: ${added} added, ${skipped} duplicate${skipped===1?'':'s'} skipped. ${savedFusions.length} saved total.`,'ok');
+  }catch(err){
+    setFusionBackupStatus(`Restore failed: ${err.message}`,'warn');
+  }finally{
+    const input=$('importFusionsFile');
+    if(input)input.value='';
+  }
+}
+
 function renderSavedFusions(){
   const list=$('savedFusionList'), count=$('savedFusionCount');
   if(!list||!count)return;
@@ -1169,6 +1241,10 @@ $('savedFusionList').onclick=async e=>{
   }
 };
 
+$('exportFusionsBtn').onclick=exportSavedFusions;
+$('importFusionsBtn').onclick=()=>$('importFusionsFile').click();
+$('importFusionsFile').onchange=e=>importSavedFusionsFile(e.target.files?.[0]);
+
 $('buildMasterBtn').onclick=buildMasterPrompt;
 $('copyMasterBtn').onclick=copyMasterPrompt;
 
@@ -1199,7 +1275,7 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 </script>
 
 <script>
-// Build 10 update fix: always ask the browser for the newest service worker.
+// Build 11: keep the permanent update fix and add saved-fusion backup/restore.
 // The worker itself uses network-first navigation with an offline fallback.
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
