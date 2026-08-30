@@ -72,7 +72,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 11R4.2 • 5,000 Races + Auto Library Updates</span>
+        <span class="build-version">Build 11R4.3 • Weapon Integrity Engine</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -775,7 +775,7 @@ function weaponControlText(){
   const effect=effectValue==='Random'?pick(weaponEffectPool):effectValue.toLowerCase();
   const resolvedHandling=handlingValue==='Random'?pick(weaponHandlingPool):handlingValue;
   const handling=resolvedHandling==='Automatic'?'naturally handled to match the selected pose':resolvedHandling.toLowerCase();
-  return `Equipped with a ${style} ${type} made primarily from ${material}, ${effect}, ${handling}; weapon scale, grip, placement, and clearance must fit only the anatomy actually established by the race identity, plus the clothing and pose, without clipping or hiding defining racial traits. Do not invent wings, horns, tails, extra limbs, or other anatomy to support the weapon`;
+  return `Equipped with a ${style} ${type} made primarily from ${material}, ${effect}, ${handling}; weapon scale, grip, placement, and clearance must fit only the anatomy actually established by the race identity, plus the clothing and pose, without clipping or hiding defining racial traits. Do not invent wings, horns, tails, extra limbs, or other anatomy to support the weapon. WEAPON STRUCTURAL COHERENCE: preserve the intended construction, geometry, balance, proportions, and functional anatomy of this weapon. Its components must form one deliberately designed, physically coherent object with clear connections and a readable silhouette. Rigid components must keep stable intentional geometry; components that are inherently curved, flexible, segmented, organic, articulated, or energy-based may follow the appropriate designed form for that weapon. Avoid accidental warping, melting, sagging, drooping, malformed geometry, disconnected or floating parts, unintended bends, duplicated components, impossible joins, or incorrectly assembled sections. Magical effects may surround, emanate from, coat, or visually transform supported features without accidentally deforming the underlying weapon unless deformation is explicitly part of the selected weapon design. WEAPON HANDLING INTEGRITY: hands and all relevant interaction points must connect naturally and functionally to the weapon. Preserve believable grip, alignment, clearance, balance, and pose; avoid fused fingers, misplaced grips, intersecting hands, duplicated handles, disconnected sections, or a handling pose that forces malformed weapon geometry`;
 }
 
 
@@ -1538,7 +1538,7 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 </script>
 
 <script>
-// Build 11R4.2: 5,000-race external data library with automatic version refresh; R4.1 Random defaults and Master Reset preserved.
+// Build 11R4.3: Weapon Integrity Engine adds weapon-agnostic structural coherence and handling constraints while preserving the 5,000-race auto-updating external library, Random defaults, Master Reset, anatomy allowlist, saved data, and PWA update behavior.
 // The worker itself uses network-first navigation with an offline fallback.
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {

@@ -1,4 +1,4 @@
-const CACHE = 'race-generator-r4-2-5000-auto-library-v1';
+const CACHE = 'race-generator-r4-3-weapon-integrity-v1';
 const OFFLINE_HTML='./index.html';
 const CORE=[
   './manifest.webmanifest',
