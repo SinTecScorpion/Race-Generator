@@ -1,7 +1,7 @@
 {
   "name": "Race Generator",
   "short_name": "Race Generator",
-  "description": "Offline 5,000-race fantasy humanoid Race Generator with expanded wardrobe variety, expanded weapon choices, lightweight Weapon Coherence, no-weapon spellcasting, History reload, RG Fusion, Random defaults, Master Reset, and Master Character Builder",
+  "description": "Offline 5,000-race fantasy humanoid Race Generator with 5,000 races, Realistic/Anime/Blender-ready character reference sheets, randomized RG Fusion ancestry ratios, expanded wardrobe and weapons, lightweight Weapon Coherence, no-weapon spellcasting, History reload, Random defaults, Master Reset, and Master Character Builder",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -72,7 +72,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 11R4.7 • Weapon Prompt Rebalance + Expanded Arsenal</span>
+        <span class="build-version">Build 11R4.8 • Reference Sheets + Random Fusion Ratios</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -550,6 +550,24 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         <div id="masterPromptBox" class="prompt-box master-prompt-box">Your completed Master Character Prompt will appear here.</div>
       </section>
 
+      <section class="card" id="referenceSheetCard">
+        <div class="section-head">
+          <h2>Step 11: Character Reference Sheets</h2>
+          <span class="badge">Reference</span>
+        </div>
+        <p class="tiny">Build a dedicated multi-view character reference sheet from the current race or fusion without changing the normal Master Character Prompt.</p>
+        <div class="actions-grid small">
+          <button id="realisticSheetBtn" type="button">Realistic Sheet</button>
+          <button id="animeSheetBtn" type="button">Anime Sheet</button>
+          <button id="blenderSheetBtn" type="button">Blender-Ready Sheet</button>
+        </div>
+        <div class="actions-grid" style="margin-top:10px">
+          <button id="copyReferenceSheetBtn" type="button">Copy Reference Sheet Prompt</button>
+          <button id="clearReferenceSheetBtn" type="button">Clear Reference Sheet</button>
+        </div>
+        <div id="referenceSheetPromptBox" class="prompt-box master-prompt-box">Choose Realistic, Anime, or Blender-Ready to build a reference-sheet prompt for the current character.</div>
+      </section>
+
       <section class="card controls-card">
         <h2>Generation Controls</h2>
         <div class="control-grid">
@@ -657,7 +675,7 @@ if(storedLibraryVersion!==BUILTIN_RACE_LIBRARY_VERSION)localStorage.setItem(STOR
 try{localStorage.removeItem('race_generator_races');localStorage.removeItem(legacyPrefix+'races')}catch(e){}
 let favorites=JSON.parse(localStorage.getItem(STORAGE_KEYS.favorites)||localStorage.getItem(legacyPrefix+'favorites')||'[]');
 let history=JSON.parse(localStorage.getItem(STORAGE_KEYS.history)||localStorage.getItem(legacyPrefix+'history')||'[]');
-let current=null, mode='single', deferredPrompt=null, masterPrompt='';
+let current=null, mode='single', deferredPrompt=null, masterPrompt='', referenceSheetPrompt='';
 
 const $=id=>document.getElementById(id);
 if(!starterRaces.length){console.error('Race library failed to load from races.js');setTimeout(()=>{const el=$('raceCount');if(el)el.textContent='Library load error';},0)}
@@ -999,7 +1017,7 @@ function buildFusion(a,b,ratioA=50){
   return {
     kind:'fusion', parentAId:a.id, parentBId:b.id, ratioA,
     title:fusionName,
-    meta:`MANUAL RG FUSION • ${ratioA}/${ratioB} • ${t}`,
+    meta:`RG FUSION • ${ratioA}/${ratioB} • ${t}`,
     description:`A controlled ${ratioA}% ${a.name} / ${ratioB}% ${b.name} fusion. Visual dominance follows the selected ratio while both parent races remain unmistakably identifiable.`,
     traits:allTraits.slice(0,10),
     prompt:`${t} fantasy character portrait of a ${sex} hybrid race: ${ratioA}% ${a.name} and ${ratioB}% ${b.name}.
@@ -1072,8 +1090,11 @@ function updateMasterSummary(){
 
 function resetMasterPrompt(){
   masterPrompt='';
+  referenceSheetPrompt='';
   const box=$('masterPromptBox');
   if(box)box.textContent='Ready. Tap “Build Master Character Prompt” to combine the current identity with your live settings.';
+  const refBox=$('referenceSheetPromptBox');
+  if(refBox)refBox.textContent='Choose Realistic, Anime, or Blender-Ready to build a reference-sheet prompt for the current character.';
   updateMasterSummary();
 }
 
@@ -1094,8 +1115,10 @@ function masterResetGenerator(){
   if($('generateBtn'))$('generateBtn').textContent='Generate';
   current=null;
   masterPrompt='';
+  referenceSheetPrompt='';
   if($('result'))$('result').innerHTML='<div class="result-placeholder">Tap generate to begin.</div>';
   if($('masterPromptBox'))$('masterPromptBox').textContent='Your completed Master Character Prompt will appear here.';
+  if($('referenceSheetPromptBox'))$('referenceSheetPromptBox').textContent='Choose Realistic, Anime, or Blender-Ready to build a reference-sheet prompt for the current character.';
   if($('favoriteBtn'))$('favoriteBtn').textContent='☆ Favorite';
   manualPickNext='A';
   updateRatioLabels();
@@ -1160,6 +1183,54 @@ async function copyMasterPrompt(){
   }catch(err){
     prompt('Copy this Master Character Prompt:',text);
   }
+}
+
+function referenceSheetDirective(style){
+  const common=`REFERENCE SHEET OVERRIDE: Create a clean character-design reference sheet, not a cinematic scene. Show the SAME character consistently across synchronized full-body views. Locked Racial Identity, ANATOMY ALLOWLIST, resolved character form, clothing, materials, colors, markings, and selected equipment must remain identical in every view. Prioritize readable silhouette, stable proportions, unobstructed anatomy, and design consistency. Replace dramatic environment, action pose, atmospheric effects, depth-of-field, and perspective exaggeration with a simple neutral presentation appropriate for a professional design sheet. Do not redesign the character between views.`;
+  if(style==='realistic')return `${common}
+
+REALISTIC REFERENCE SHEET: photorealistic / high-end realistic fantasy character design. Include clear front, three-quarter, side, and back full-body views plus a consistent head/face detail view. Use neutral studio-style lighting, restrained shadows, realistic materials and skin response, clean neutral background, consistent scale, and practical production-reference clarity.`;
+  if(style==='anime')return `${common}
+
+ANIME REFERENCE SHEET: polished professional anime character-design sheet with clean linework, controlled cel-style rendering, readable material separation, consistent palette, and highly stable facial design. Include front, three-quarter, side, and back full-body views plus a face-expression/detail panel while keeping anatomy, outfit, racial markers, and equipment exactly consistent.`;
+  return `${common}
+
+BLENDER-READY MODELING REFERENCE SHEET: produce a 3D-modeling turnaround reference suitable for building the character in Blender. Show front, exact side, back, and three-quarter views at matched scale with orthographic-style presentation, neutral A-pose or equally modeling-friendly neutral stance, level camera, minimal lens distortion, clear limb separation, unobstructed hands and feet, clean silhouette, visible costume layering, material boundaries, and color breakup. Avoid foreshortening and dramatic perspective. This is a visual modeling reference sheet, not an actual 3D file or topology mesh.`;
+}
+
+function buildReferenceSheetPrompt(style){
+  if(!current){
+    alert('Generate or load a race/fusion first.');
+    return '';
+  }
+  const base=buildMasterPrompt();
+  if(!base)return '';
+  referenceSheetPrompt=`${base}
+
+${referenceSheetDirective(style)}`;
+  const box=$('referenceSheetPromptBox');
+  if(box)box.textContent=referenceSheetPrompt;
+  return referenceSheetPrompt;
+}
+
+async function copyReferenceSheetPrompt(){
+  if(!referenceSheetPrompt){
+    alert('Build a Realistic, Anime, or Blender-Ready reference sheet first.');
+    return;
+  }
+  const btn=$('copyReferenceSheetBtn');
+  try{
+    await navigator.clipboard.writeText(referenceSheetPrompt);
+    if(btn){btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy Reference Sheet Prompt',1100);}
+  }catch(err){
+    prompt('Copy this reference-sheet prompt:',referenceSheetPrompt);
+  }
+}
+
+function clearReferenceSheetPrompt(){
+  referenceSheetPrompt='';
+  const box=$('referenceSheetPromptBox');
+  if(box)box.textContent='Choose Realistic, Anime, or Blender-Ready to build a reference-sheet prompt for the current character.';
 }
 
 function renderResult(){
@@ -1280,6 +1351,12 @@ function selectRaceForManual(id){
   renderLibrary();
 }
 
+function randomFusionRatio(){
+  const ratios=[];
+  for(let value=10;value<=90;value+=5)ratios.push(value);
+  return pick(ratios);
+}
+
 function randomizeManualParents(){
   let a=pick(db), b=pick(db.filter(r=>r.id!==a.id));
   $('parentAInput').value=raceOptionLabel(a);
@@ -1295,7 +1372,7 @@ function generate(){
     current=buildSingle(pick(pool));
   }else if(mode==='fusion'){
     let a=pick(pool),b=pick(db.filter(x=>x.id!==a.id));
-    current=buildFusion(a,b,50);
+    current=buildFusion(a,b,randomFusionRatio());
   }else{
     const a=raceFromInput($('parentAInput').value);
     const b=raceFromInput($('parentBInput').value);
@@ -1570,6 +1647,11 @@ $('masterResetBtn').onclick=()=>{if(confirm('Reset all generator tabs, current r
 
 $('buildMasterBtn').onclick=buildMasterPrompt;
 $('copyMasterBtn').onclick=copyMasterPrompt;
+$('realisticSheetBtn').onclick=()=>buildReferenceSheetPrompt('realistic');
+$('animeSheetBtn').onclick=()=>buildReferenceSheetPrompt('anime');
+$('blenderSheetBtn').onclick=()=>buildReferenceSheetPrompt('blender');
+$('copyReferenceSheetBtn').onclick=copyReferenceSheetPrompt;
+$('clearReferenceSheetBtn').onclick=clearReferenceSheetPrompt;
 
 $('generateBtn').onclick=generate;
 $('copyBtn').onclick=async()=>{if(!current)generate();try{await navigator.clipboard.writeText(current.prompt);$('copyBtn').textContent='Copied!';setTimeout(()=>$('copyBtn').textContent='Copy Prompt',1200)}catch(e){prompt('Copy this prompt:',current.prompt)}};
@@ -1653,7 +1735,7 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 </script>
 
 <script>
-// Build 11R4.7: rolls back the over-constrained Weapon Fidelity / hand-interaction experiment to a lightweight Weapon Coherence rule focused only on unintended deformation, while retaining the expanded arsenal, wardrobe variety, no-weapon spellcasting/unarmed modes, History Load, 5,000-race external library, Random defaults, Master Reset, and all unrelated generator systems.
+// Build 11R4.8: adds dedicated Realistic, Anime, and Blender-Ready character reference-sheet prompt builders without changing normal Master Prompt behavior, and restores true Random Fusion ancestry ratios using 10–90% values in 5% steps. Expanded arsenal, lightweight Weapon Coherence, wardrobe variety, History Load, 5,000-race external library, Random defaults, Master Reset, anatomy protections, and unrelated systems remain intact.
 // The worker itself uses network-first navigation with an offline fallback.
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
