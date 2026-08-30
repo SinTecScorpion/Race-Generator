@@ -1,4 +1,5 @@
-const CACHE='race-generator-step10-master-network-first-v1';
+const CACHE='race-generator-build10-update-fix-v1';
+const OFFLINE_HTML='./index.html';
 const CORE=[
   './manifest.webmanifest',
   './Icons/icon-192.png',
@@ -7,55 +8,63 @@ const CORE=[
 
 self.addEventListener('install', event => {
   self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(CORE))
-  );
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)));
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))
-      .then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
 });
 
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-
   const request = event.request;
+  if (request.method !== 'GET') return;
   const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
 
-  const isNavigation =
-    request.mode === 'navigate' ||
-    url.pathname.endsWith('/') ||
-    url.pathname.endsWith('/index.html');
+  const isNavigation = request.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html');
 
   if (isNavigation) {
-    event.respondWith(
-      fetch(request, { cache: 'no-store' })
-        .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE).then(cache => cache.put('./index.html', copy));
-          return response;
-        })
-        .catch(() =>
-          caches.match('./index.html').then(cached => cached || caches.match('./'))
-        )
-    );
+    event.respondWith((async () => {
+      try {
+        // Fetch the canonical index URL, not the query-string navigation URL.
+        // This prevents ?stepX cache-busters from creating separate stale HTML entries.
+        const canonical = new Request(new URL('./index.html', self.registration.scope).href, {
+          method: 'GET',
+          headers: { 'Cache-Control': 'no-cache' },
+          cache: 'reload',
+          credentials: 'same-origin',
+          redirect: 'follow'
+        });
+        const response = await fetch(canonical);
+        if (!response || !response.ok) throw new Error('Network HTML unavailable');
+        const cache = await caches.open(CACHE);
+        await cache.put(OFFLINE_HTML, response.clone());
+        return response;
+      } catch (err) {
+        const cached = await caches.match(OFFLINE_HTML);
+        if (cached) return cached;
+        throw err;
+      }
+    })());
     return;
   }
 
-  event.respondWith(
-    caches.match(request).then(cached => {
-      if (cached) return cached;
-      return fetch(request).then(response => {
-        if (response && response.status === 200 && response.type === 'basic') {
-          const copy = response.clone();
-          caches.open(CACHE).then(cache => cache.put(request, copy));
-        }
-        return response;
-      });
-    })
-  );
+  // Manifest and worker-related files should prefer the network so updates are visible.
+  if (url.pathname.endsWith('/manifest.webmanifest') || url.pathname.endsWith('/sw.js')) {
+    event.respondWith(fetch(request, { cache: 'no-store' }).catch(() => caches.match(request)));
+    return;
+  }
+
+  // Static assets remain cache-first for offline use.
+  event.respondWith(caches.match(request).then(cached => cached || fetch(request).then(response => {
+    if (response && response.ok && response.type === 'basic') {
+      const copy = response.clone();
+      caches.open(CACHE).then(cache => cache.put(request, copy));
+    }
+    return response;
+  })));
 });
