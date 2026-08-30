@@ -1,4 +1,4 @@
-const CACHE = 'race-generator-r4-6-weapon-hand-interaction-v1';
+const CACHE = 'race-generator-r4-7-weapon-prompt-rebalance-v1';
 const OFFLINE_HTML='./index.html';
 const CORE=[
   './manifest.webmanifest',
