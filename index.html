@@ -71,7 +71,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         <p class="eyebrow">OURDREAM RESOURCES</p>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 11 • Saved Fusion Backup</span>
+        <span class="build-version">Build 11R1 • Prompt Engine Refinement</span>
       </div>
       <button id="installBtn" class="ghost hidden">Install App</button>
     </header>
@@ -596,8 +596,16 @@ function lightingControlText(){
   const intensity=$('lightingIntensity')?.value||'Balanced';
   const direction=$('lightingDirection')?.value||'Automatic';
   const atmosphere=$('lightingAtmosphere')?.value||'Clean air';
+  const weather=($('environmentWeather')?.value||'Random').toLowerCase();
+  const effect=($('environmentEffect')?.value||'Random').toLowerCase();
+  let atmosphereText=atmosphere.toLowerCase();
+  const particulateWeather=['sandstorm','ashfall','blizzard','snowfall','heavy rain','thunderstorm','magical storm'];
+  const particulateEffects=['drifting fog','floating embers','windblown dust','falling ash','glowing spores','arcane particles','celestial motes','shadow wisps'];
+  if(atmosphere==='Clean air' && (particulateWeather.includes(weather)||particulateEffects.includes(effect))){
+    atmosphereText='atmosphere consistent with the selected weather and environmental effects; do not add unrelated haze beyond them';
+  }
 
-  return `${style}, ${intensity.toLowerCase()} intensity, ${direction.toLowerCase()}, ${atmosphere.toLowerCase()}`;
+  return `${style}, ${intensity.toLowerCase()} intensity, ${direction.toLowerCase()}, ${atmosphereText}`;
 }
 
 const poseStylePool=[
@@ -665,7 +673,7 @@ function armorClothingControlText(){
   const type=typeValue==='Random'?pick(outfitTypePool):typeValue.toLowerCase();
   const style=styleValue==='Random'?pick(outfitStylePool):styleValue.toLowerCase();
   const material=materialValue==='Random'?pick(outfitMaterialPool):materialValue.toLowerCase();
-  return `${style} ${type}, primarily ${material}, ${coverage} coverage, fitted naturally around all race-specific anatomy, horns, wings, tails, extra joints, scales, fins, or other preserved racial features where present`;
+  return `${style} ${type}, primarily ${material}, ${coverage} coverage, fitted naturally around the race-specific anatomy explicitly established by the race identity. Do not invent horns, wings, tails, extra limbs, fins, scales, or other major anatomical structures merely to accommodate the outfit`;
 }
 
 
@@ -683,7 +691,7 @@ function weaponControlText(){
   const material=materialValue==='Random'?pick(weaponMaterialPool):materialValue.toLowerCase();
   const effect=effectValue==='Random'?pick(weaponEffectPool):effectValue.toLowerCase();
   const handling=handlingValue==='Automatic'?'naturally handled to match the selected pose':handlingValue.toLowerCase();
-  return `Equipped with a ${style} ${type} made primarily from ${material}, ${effect}, ${handling}; weapon scale, grip, placement, and clearance must fit preserved anatomy, limbs, wings, horns, tail, clothing, and pose without clipping or hiding defining racial traits`;
+  return `Equipped with a ${style} ${type} made primarily from ${material}, ${effect}, ${handling}; weapon scale, grip, placement, and clearance must fit only the anatomy actually established by the race identity, plus the clothing and pose, without clipping or hiding defining racial traits. Do not invent wings, horns, tails, extra limbs, or other anatomy to support the weapon`;
 }
 
 
@@ -795,7 +803,7 @@ Locked Racial Identity: ${lockedB}
 
 HYBRID DESIGN:
 ${extremityGuide}.
-Apply the ${ratioA}/${ratioB} ratio across facial structure, skin, eyes, ears, horns, hair, limbs, tail, wings, scales, markings, body proportions, magical effects, and other ancestry-specific anatomy where appropriate.
+Apply the ${ratioA}/${ratioB} ratio only to ancestry-specific features actually established by Parent A or Parent B above: facial structure, coloration, surface traits, markings, proportions, magical effects, and explicit anatomical structures. Do not create a feature merely because it is common in fantasy art. Major anatomy such as horns, wings, tails, extra limbs, fins, tentacles, scales, or nonhuman appendages may appear only when supported by a parent's Visual Identity, Locked Racial Identity, description, or defining traits.
 Combined affinities: ${affinityText||'mixed ancestral magic'}.
 Combined cultural themes: ${themeText||'blended ancestral culture'}.
 Key preserved traits: ${allTraits.slice(0,8).join(', ')}.
@@ -807,7 +815,7 @@ ${environmentControlText()}.
 ${lightingControlText()}.
 ${detailText($('detailSelect').value)}.
 ${qualityControlText()}.
-${characterControlText()}. ${poseControlText()}. Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art, no random extra limbs, no duplicated anatomy, no loss of either parent identity.`
+${characterControlText()}. ${poseControlText()}. Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art. ANATOMY GATE: elaborate established racial anatomy, but do not invent unsupported major structures. No random extra limbs, no duplicated anatomy, no unsupported wings/horns/tails/fins/scales/appendages, and no loss of either parent identity.`
   };
 }
 function currentLiveSettingsText(){
@@ -863,7 +871,7 @@ function buildMasterPrompt(){
   masterPrompt=`${base}
 
 MASTER CHARACTER BUILDER — FINAL SYNTHESIS:
-Create one unified, production-ready character image from every instruction above. Resolve any conflict using this priority order: (1) Locked Racial Identity and parent identity preservation, (2) coherent anatomy and silhouette, (3) character appearance and pose, (4) armor/clothing and weapon integration, (5) lighting and environment, (6) render quality and decorative finish. Do not omit defining racial markers to satisfy wardrobe, weapons, camera framing, effects, or scenery. Keep the complete character readable and biologically coherent, with no duplicated anatomy, no random extra limbs, no hidden identity-defining features, and no genericization of the race or fusion.`;
+Create one unified, production-ready character image from every instruction above. Resolve any conflict using this priority order: (1) Locked Racial Identity and parent identity preservation, (2) coherent anatomy and silhouette, (3) character appearance and pose, (4) armor/clothing and weapon integration, (5) lighting and environment, (6) render quality and decorative finish. Do not omit defining racial markers to satisfy wardrobe, weapons, camera framing, effects, or scenery. Keep the complete character readable and biologically coherent. ANATOMY GATE: only major anatomical structures explicitly supported by the race data may be depicted; repeated mentions in wardrobe, weapon, pose, environment, or quality instructions are not permission to invent anatomy. Do not add unsupported wings, horns, tails, extra limbs, fins, scales, tentacles, or other appendages. If two lower-priority controls conflict, resolve them into one physically coherent instruction rather than depicting both literally. No duplicated anatomy, no random extra limbs, no hidden identity-defining features, and no genericization of the race or fusion.`;
 
   const box=$('masterPromptBox');
   if(box)box.textContent=masterPrompt;
@@ -1280,7 +1288,7 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=10-update-fix-1', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=11r1-prompt-engine-1', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and
