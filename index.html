@@ -47,6 +47,9 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 #savedFusionsCard .mini-item{padding:12px;margin:9px 0;border:1px solid var(--border);border-radius:13px;background:#130f1c}
 .saved-fusion-actions{display:flex;gap:7px;margin-top:9px}
 .saved-fusion-actions button{flex:1;padding:8px}
+
+#characterControlsCard{border:1px solid var(--accent)}
+#characterControlsCard .control-grid{margin-top:12px}
 </style>
   <link rel="icon" type="image/png" sizes="192x192" href="./Icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./Icons/icon-192.png" />
@@ -129,6 +132,37 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         </div>
         <p class="tiny">Saved fusion races stay on this device so you can reload or copy them later.</p>
         <div id="savedFusionList" class="mini-list empty">No saved fusions yet.</div>
+      </section>
+
+      
+      <section class="card" id="characterControlsCard">
+        <div class="section-head">
+          <h2>Step 3: Character Controls</h2>
+          <span class="badge">Character</span>
+        </div>
+        <p class="tiny">Customize the individual character while preserving the race's Locked Racial Identity.</p>
+        <div class="control-grid">
+          <label>Age Style
+            <select id="ageStyle">
+              <option>Adult</option><option>Young Adult</option><option>Mature</option><option>Ancient</option>
+            </select>
+          </label>
+          <label>Body Build
+            <select id="buildStyle">
+              <option>Random</option><option>Slender</option><option>Athletic</option><option>Lean</option><option>Powerful</option><option>Curvy</option><option>Massive</option>
+            </select>
+          </label>
+          <label>Expression
+            <select id="expressionStyle">
+              <option>Random</option><option>Calm</option><option>Fierce</option><option>Regal</option><option>Mysterious</option><option>Joyful</option><option>Battle-ready</option>
+            </select>
+          </label>
+          <label>Hair Style
+            <select id="hairStyle">
+              <option>Random</option><option>Long flowing</option><option>Braided</option><option>Short</option><option>Wild</option><option>Ornate</option><option>Shaved</option>
+            </select>
+          </label>
+        </div>
       </section>
 
       <section class="card controls-card">
@@ -215,13 +249,31 @@ function detailText(level){
   if(level==='vivid') return 'intricate material textures, micro-detailed skin and eyes, elaborate cultural ornamentation, cinematic depth, richly layered environment, premium fantasy concept art detail';
   return 'highly detailed face, distinctive racial anatomy, cultural clothing details, cinematic environment';
 }
+
+const characterBuildPool=['slender','athletic','lean','powerful','curvy','massive'];
+const expressionPool=['calm','fierce','regal','mysterious','joyful','battle-ready'];
+const hairPool=['long flowing','braided','short','wild','ornate','shaved'];
+
+function characterControlText(){
+  const age=$('ageStyle')?.value||'Adult';
+  const buildValue=$('buildStyle')?.value||'Random';
+  const expressionValue=$('expressionStyle')?.value||'Random';
+  const hairValue=$('hairStyle')?.value||'Random';
+
+  const build=buildValue==='Random'?pick(characterBuildPool):buildValue;
+  const expression=expressionValue==='Random'?pick(expressionPool):expressionValue;
+  const hair=hairValue==='Random'?pick(hairPool):hairValue;
+
+  return `${age.toLowerCase()} female character, ${build.toLowerCase()} build, ${expression.toLowerCase()} expression, ${hair.toLowerCase()} hair`;
+}
+
 function buildSingle(r){
   const sex=$('femaleOnly').checked?'female':'humanoid';
   const t=tone(), adjective=pick(adjectives), garment=pick(garments), setting=pick(settings), lighting=pick(lightings), detail=detailText($('detailSelect').value);
   return {
     title:r.name, meta:`${r.category} • ${r.origin} • ${t}`,
     description:r.description, traits:r.traits,
-    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${garment}. Standing in ${setting}. ${lighting}, ${detail}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
+    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${garment}. Standing in ${setting}. ${lighting}, ${detail}, ${characterControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
   }
 }
 function buildFusion(a,b,ratioA=50){
@@ -306,7 +358,7 @@ Wearing ${pick(garments)}.
 Standing in ${pick(settings)}.
 ${pick(lightings)}.
 ${detailText($('detailSelect').value)}.
-Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art, no random extra limbs, no duplicated anatomy, no loss of either parent identity.`
+${characterControlText()}. Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art, no random extra limbs, no duplicated anatomy, no loss of either parent identity.`
   };
 }
 function renderResult(){
