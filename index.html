@@ -308,6 +308,92 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         </div>
       </section>
 
+
+      <section class="card" id="armorClothingControlsCard">
+        <div class="section-head">
+          <h2>Step 6: Armor / Clothing Controls</h2>
+          <span class="badge">Wardrobe</span>
+        </div>
+        <p class="tiny">Customize armor and clothing without changing the race's Locked Racial Identity or anatomy.</p>
+
+        <div class="control-grid">
+          <label>
+            Outfit Type
+            <select id="outfitType">
+              <option>Random</option>
+              <option>Unarmored clothing</option>
+              <option>Light armor</option>
+              <option>Medium armor</option>
+              <option>Heavy armor</option>
+              <option>Battle robes</option>
+              <option>Ceremonial attire</option>
+              <option>Royal attire</option>
+              <option>Tribal attire</option>
+              <option>Ranger gear</option>
+              <option>Assassin attire</option>
+              <option>Mage robes</option>
+              <option>Priestess vestments</option>
+              <option>Nomadic travel wear</option>
+              <option>Fantasy adventurer gear</option>
+            </select>
+          </label>
+
+          <label>
+            Armor / Clothing Style
+            <select id="outfitStyle">
+              <option>Random</option>
+              <option>Ancient</option>
+              <option>Medieval</option>
+              <option>Elven</option>
+              <option>Dwarven</option>
+              <option>Arcane</option>
+              <option>Gothic</option>
+              <option>Barbarian</option>
+              <option>Regal</option>
+              <option>Primal</option>
+              <option>Celestial</option>
+              <option>Infernal</option>
+              <option>Nature-grown</option>
+              <option>Crystal-forged</option>
+              <option>Bone-crafted</option>
+            </select>
+          </label>
+
+          <label>
+            Primary Material
+            <select id="outfitMaterial">
+              <option>Random</option>
+              <option>Cloth and leather</option>
+              <option>Fine silk</option>
+              <option>Hardened leather</option>
+              <option>Iron</option>
+              <option>Steel</option>
+              <option>Bronze</option>
+              <option>Silver</option>
+              <option>Gold-trimmed metal</option>
+              <option>Dragon scale</option>
+              <option>Bone and hide</option>
+              <option>Living wood</option>
+              <option>Crystal</option>
+              <option>Obsidian</option>
+              <option>Arcane-infused metal</option>
+            </select>
+          </label>
+
+          <label>
+            Coverage
+            <select id="outfitCoverage">
+              <option>Balanced</option>
+              <option>Minimal</option>
+              <option>Light</option>
+              <option>Moderate</option>
+              <option>Full coverage</option>
+              <option>Layered full-body</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
       <section class="card controls-card">
         <h2>Generation Controls</h2>
         <div class="control-grid">
@@ -470,13 +556,50 @@ function poseControlText(){
   return `${style}, ${energy} pose energy, ${orientationText}, ${gestureText}, anatomically believable balance and weight distribution`;
 }
 
+
+const outfitTypePool=[
+  'unarmored fantasy clothing',
+  'light armor',
+  'medium armor',
+  'heavy armor',
+  'battle robes',
+  'ceremonial attire',
+  'royal battle attire',
+  'tribal attire',
+  'ranger gear',
+  'assassin attire',
+  'mage robes',
+  'priestess vestments',
+  'nomadic travel wear',
+  'fantasy adventurer gear'
+];
+const outfitStylePool=[
+  'ancient','medieval','elven','dwarven','arcane','gothic','barbarian','regal',
+  'primal','celestial','infernal','nature-grown','crystal-forged','bone-crafted'
+];
+const outfitMaterialPool=[
+  'cloth and leather','fine silk','hardened leather','iron','steel','bronze','silver',
+  'gold-trimmed metal','dragon scale','bone and hide','living wood','crystal','obsidian','arcane-infused metal'
+];
+
+function armorClothingControlText(){
+  const typeValue=$('outfitType')?.value||'Random';
+  const styleValue=$('outfitStyle')?.value||'Random';
+  const materialValue=$('outfitMaterial')?.value||'Random';
+  const coverage=($('outfitCoverage')?.value||'Balanced').toLowerCase();
+  const type=typeValue==='Random'?pick(outfitTypePool):typeValue.toLowerCase();
+  const style=styleValue==='Random'?pick(outfitStylePool):styleValue.toLowerCase();
+  const material=materialValue==='Random'?pick(outfitMaterialPool):materialValue.toLowerCase();
+  return `${style} ${type}, primarily ${material}, ${coverage} coverage, fitted naturally around all race-specific anatomy, horns, wings, tails, extra joints, scales, fins, or other preserved racial features where present`;
+}
+
 function buildSingle(r){
   const sex=$('femaleOnly').checked?'female':'humanoid';
-  const t=tone(), adjective=pick(adjectives), garment=pick(garments), setting=pick(settings), lighting=lightingControlText(), detail=detailText($('detailSelect').value);
+  const t=tone(), adjective=pick(adjectives), wardrobe=armorClothingControlText(), setting=pick(settings), lighting=lightingControlText(), detail=detailText($('detailSelect').value);
   return {
     title:r.name, meta:`${r.category} • ${r.origin} • ${t}`,
     description:r.description, traits:r.traits,
-    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${garment}. Standing in ${setting}. ${lighting}, ${detail}, ${characterControlText()}, ${poseControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
+    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${wardrobe}. Standing in ${setting}. ${lighting}, ${detail}, ${characterControlText()}, ${poseControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
   }
 }
 function buildFusion(a,b,ratioA=50){
@@ -557,7 +680,7 @@ Combined cultural themes: ${themeText||'blended ancestral culture'}.
 Key preserved traits: ${allTraits.slice(0,8).join(', ')}.
 
 WARDROBE & SCENE:
-Wearing ${pick(garments)}.
+Wearing ${armorClothingControlText()}.
 Standing in ${pick(settings)}.
 ${lightingControlText()}.
 ${detailText($('detailSelect').value)}.
