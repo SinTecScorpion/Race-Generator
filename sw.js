@@ -1,4 +1,4 @@
-const CACHE = 'race-generator-r4-3-weapon-integrity-v1';
+const CACHE = 'race-generator-r4-5-wardrobe-magic-history-v1';
 const OFFLINE_HTML='./index.html';
 const CORE=[
   './manifest.webmanifest',

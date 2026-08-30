@@ -72,7 +72,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 11R4.3 • Weapon Integrity Engine</span>
+        <span class="build-version">Build 11R4.5 • Wardrobe + Magic + History Load</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -355,6 +355,32 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
               <option>Priestess vestments</option>
               <option>Nomadic travel wear</option>
               <option>Fantasy adventurer gear</option>
+              <option>Scholar robes</option>
+              <option>Alchemist attire</option>
+              <option>Warlock vestments</option>
+              <option>Healer robes</option>
+              <option>Monastic robes</option>
+              <option>Oracle vestments</option>
+              <option>Spellblade attire</option>
+              <option>Witch hunter attire</option>
+              <option>Knightly surcoat</option>
+              <option>Officer uniform</option>
+              <option>Mercenary gear</option>
+              <option>Gladiator attire</option>
+              <option>Swashbuckler attire</option>
+              <option>Rogue leathers</option>
+              <option>Hunter leathers</option>
+              <option>Desert traveler attire</option>
+              <option>Winter expedition clothing</option>
+              <option>Seafarer attire</option>
+              <option>Formal courtwear</option>
+              <option>High-fashion fantasy attire</option>
+              <option>Flowing gown</option>
+              <option>Battle gown</option>
+              <option>Long coat ensemble</option>
+              <option>Layered tunic and trousers</option>
+              <option>Skirted armor ensemble</option>
+              <option>Draped ceremonial robes</option>
             </select>
           </label>
 
@@ -376,6 +402,19 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
               <option>Nature-grown</option>
               <option>Crystal-forged</option>
               <option>Bone-crafted</option>
+              <option>Shadow-weave</option>
+              <option>Runic</option>
+              <option>Draconic</option>
+              <option>Fae</option>
+              <option>Desert nomad</option>
+              <option>Seafaring</option>
+              <option>Scholar</option>
+              <option>Military</option>
+              <option>Renaissance-inspired</option>
+              <option>Eastern-fantasy inspired</option>
+              <option>High-fashion fantasy</option>
+              <option>Minimalist</option>
+              <option>Ornate ceremonial</option>
             </select>
           </label>
 
@@ -397,6 +436,20 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
               <option>Crystal</option>
               <option>Obsidian</option>
               <option>Arcane-infused metal</option>
+              <option>Velvet</option>
+              <option>Linen</option>
+              <option>Wool</option>
+              <option>Fur-lined cloth</option>
+              <option>Chainmail</option>
+              <option>Scale mail</option>
+              <option>Mithril-like alloy</option>
+              <option>Living metal</option>
+              <option>Chitin</option>
+              <option>Pearl and coral</option>
+              <option>Ethereal fabric</option>
+              <option>Shadow silk</option>
+              <option>Runed cloth</option>
+              <option>Feathered textile</option>
             </select>
           </label>
 
@@ -412,6 +465,27 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
               <option>Layered full-body</option>
             </select>
           </label>
+          <label>
+            Outfit Silhouette
+            <select id="outfitSilhouette">
+              <option selected>Random</option>
+              <option>Form-adaptive</option>
+              <option>Tailored</option>
+              <option>Flowing</option>
+              <option>Layered</option>
+              <option>Fitted</option>
+              <option>Relaxed</option>
+              <option>Draped</option>
+              <option>Structured</option>
+              <option>Asymmetrical</option>
+              <option>Long-line</option>
+              <option>Short-layered</option>
+              <option>Skirted</option>
+              <option>Trousered</option>
+              <option>Robed</option>
+              <option>Coat-based</option>
+            </select>
+          </label>
         </div>
       </section>
 
@@ -422,12 +496,12 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <h2>Step 7: Weapon Controls</h2>
           <span class="badge">Weapons</span>
         </div>
-        <p class="tiny">Choose the character's weapon design and how it is carried or used while preserving race anatomy, pose, and silhouette.</p>
+        <p class="tiny">Choose a weapon, go fully unarmed, or reserve both hands for spellcasting while preserving race anatomy, pose, and silhouette.</p>
         <div class="control-grid">
-          <label>Weapon Type<select id="weaponType"><option>Random</option><option>None</option><option>Longsword</option><option>Greatsword</option><option>Dual blades</option><option>Dagger</option><option>Spear</option><option>Halberd</option><option>Battle axe</option><option>Warhammer</option><option>Mace</option><option>Bow</option><option>Crossbow</option><option>Staff</option><option>Wand</option><option>Scythe</option><option>Whip</option><option>Shield and sword</option><option>Claws / gauntlets</option></select></label>
-          <label>Weapon Style<select id="weaponStyle"><option>Random</option><option>Ancient</option><option>Medieval</option><option>Elven</option><option>Dwarven</option><option>Barbarian</option><option>Gothic</option><option>Regal</option><option>Arcane</option><option>Celestial</option><option>Infernal</option><option>Primal</option><option>Nature-grown</option><option>Crystal-forged</option><option>Bone-crafted</option><option>Runic</option></select></label>
-          <label>Weapon Material<select id="weaponMaterial"><option>Random</option><option>Steel</option><option>Blackened iron</option><option>Bronze</option><option>Silver</option><option>Gold-trimmed metal</option><option>Obsidian</option><option>Crystal</option><option>Bone</option><option>Living wood</option><option>Dragon-forged metal</option><option>Arcane alloy</option><option>Celestial metal</option><option>Shadow metal</option></select></label>
-          <label>Magical Effect<select id="weaponEffect"><option>Random</option><option>None</option><option>Flaming edge</option><option>Frost aura</option><option>Lightning arcs</option><option>Arcane runes</option><option>Celestial radiance</option><option>Shadow mist</option><option>Void energy</option><option>Nature magic</option><option>Blood-red energy</option><option>Prismatic glow</option><option>Soul-fire</option></select></label>
+          <label>Weapon Type<select id="weaponType"><option>Random</option><option>No weapon — spellcaster</option><option>No weapon — unarmed</option><option>Longsword</option><option>Shortsword</option><option>Greatsword</option><option>Rapier</option><option>Curved saber</option><option>Katana-style blade</option><option>Dual blades</option><option>Dagger</option><option>Throwing knives</option><option>Spear</option><option>Javelin</option><option>Pike</option><option>Lance</option><option>Trident</option><option>Glaive</option><option>Halberd</option><option>Battle axe</option><option>Greataxe</option><option>Hand axes</option><option>Warhammer</option><option>Mace</option><option>Morningstar</option><option>Flail</option><option>Club</option><option>Bow</option><option>Longbow</option><option>Crossbow</option><option>Hand crossbow</option><option>Staff</option><option>Wand</option><option>Magic tome</option><option>Arcane focus / orb</option><option>Scythe</option><option>War sickle</option><option>Whip</option><option>Chain weapon</option><option>Chakram</option><option>Shield only</option><option>Shield and sword</option><option>Claws / gauntlets</option></select></label>
+          <label>Weapon Style<select id="weaponStyle"><option>Random</option><option>Ancient</option><option>Medieval</option><option>Elven</option><option>Dwarven</option><option>Barbarian</option><option>Gothic</option><option>Regal</option><option>Arcane</option><option>Celestial</option><option>Infernal</option><option>Primal</option><option>Nature-grown</option><option>Crystal-forged</option><option>Bone-crafted</option><option>Runic</option><option>Draconic</option><option>Fae</option><option>Void-forged</option><option>Storm-forged</option><option>Necromantic</option><option>Relic</option><option>Ornate ceremonial</option><option>Minimalist</option></select></label>
+          <label>Weapon Material<select id="weaponMaterial"><option>Random</option><option>Steel</option><option>Blackened iron</option><option>Bronze</option><option>Silver</option><option>Gold-trimmed metal</option><option>Obsidian</option><option>Crystal</option><option>Bone</option><option>Living wood</option><option>Dragon-forged metal</option><option>Arcane alloy</option><option>Celestial metal</option><option>Shadow metal</option><option>Mithril-like alloy</option><option>Runed stone</option><option>Volcanic glass</option><option>Ice crystal</option><option>Chitin</option><option>Pearl and coral</option><option>Ethereal energy</option><option>Living metal</option></select></label>
+          <label>Magical Effect<select id="weaponEffect"><option>Random</option><option>None</option><option>Flaming edge</option><option>Frost aura</option><option>Lightning arcs</option><option>Arcane runes</option><option>Celestial radiance</option><option>Shadow mist</option><option>Void energy</option><option>Nature magic</option><option>Blood-red energy</option><option>Prismatic glow</option><option>Soul-fire</option><option>Solar radiance</option><option>Lunar glow</option><option>Storm charge</option><option>Poisonous vapor</option><option>Necrotic aura</option><option>Spirit wisps</option><option>Gravity distortion</option><option>Time shimmer</option><option>Crystalline growth</option><option>Water current</option><option>Wind aura</option></select></label>
           <label>Weapon Handling<select id="weaponHandling"><option selected>Random</option><option>Automatic</option><option>Held at rest</option><option>Weapon-ready stance</option><option>Raised defensively</option><option>Raised overhead</option><option>Pointed forward</option><option>Two-handed grip</option><option>One-handed grip</option><option>Dual-wielding</option><option>Slung across back</option><option>Sheathed at hip</option><option>Planted beside character</option></select></label>
         </div>
       </section>
@@ -545,6 +619,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 
       <section class="card">
         <div class="section-head"><h2>History</h2><span class="badge">Recent</span></div>
+        <p class="tiny">Reload a previous generation exactly as it was saved, or copy its original prompt.</p>
         <div id="historyList" class="mini-list empty">No generations yet.</div>
       </section>
 
@@ -734,16 +809,26 @@ const outfitTypePool=[
   'mage robes',
   'priestess vestments',
   'nomadic travel wear',
-  'fantasy adventurer gear'
+  'fantasy adventurer gear',
+  'scholar robes','alchemist attire','warlock vestments','healer robes','monastic robes','oracle vestments',
+  'spellblade attire','witch hunter attire','knightly surcoat','officer uniform','mercenary gear','gladiator attire',
+  'swashbuckler attire','rogue leathers','hunter leathers','desert traveler attire','winter expedition clothing',
+  'seafarer attire','formal courtwear','high-fashion fantasy attire','flowing gown','battle gown','long coat ensemble',
+  'layered tunic and trousers','skirted armor ensemble','draped ceremonial robes'
 ];
 const outfitStylePool=[
   'ancient','medieval','elven','dwarven','arcane','gothic','barbarian','regal',
-  'primal','celestial','infernal','nature-grown','crystal-forged','bone-crafted'
+  'primal','celestial','infernal','nature-grown','crystal-forged','bone-crafted','shadow-weave','runic','draconic','fae',
+  'desert nomad','seafaring','scholar','military','renaissance-inspired','eastern-fantasy inspired',
+  'high-fashion fantasy','minimalist','ornate ceremonial'
 ];
 const outfitCoveragePool=['Balanced','Minimal','Light','Moderate','Full coverage','Layered full-body'];
+const outfitSilhouettePool=['Form-adaptive','Tailored','Flowing','Layered','Fitted','Relaxed','Draped','Structured','Asymmetrical','Long-line','Short-layered','Skirted','Trousered','Robed','Coat-based'];
 const outfitMaterialPool=[
   'cloth and leather','fine silk','hardened leather','iron','steel','bronze','silver',
-  'gold-trimmed metal','dragon scale','bone and hide','living wood','crystal','obsidian','arcane-infused metal'
+  'gold-trimmed metal','dragon scale','bone and hide','living wood','crystal','obsidian','arcane-infused metal',
+  'velvet','linen','wool','fur-lined cloth','chainmail','scale mail','mithril-like alloy','living metal','chitin',
+  'pearl and coral','ethereal fabric','shadow silk','runed cloth','feathered textile'
 ];
 
 function armorClothingControlText(){
@@ -751,31 +836,36 @@ function armorClothingControlText(){
   const styleValue=$('outfitStyle')?.value||'Random';
   const materialValue=$('outfitMaterial')?.value||'Random';
   const coverageValue=$('outfitCoverage')?.value||'Random';
+  const silhouetteValue=$('outfitSilhouette')?.value||'Random';
   const coverage=(coverageValue==='Random'?pick(outfitCoveragePool):coverageValue).toLowerCase();
   const type=typeValue==='Random'?pick(outfitTypePool):typeValue.toLowerCase();
   const style=styleValue==='Random'?pick(outfitStylePool):styleValue.toLowerCase();
   const material=materialValue==='Random'?pick(outfitMaterialPool):materialValue.toLowerCase();
-  return `${style} ${type}, primarily ${material}, ${coverage} coverage, fitted naturally around the race-specific anatomy explicitly established by the race identity. Do not invent horns, wings, tails, extra limbs, fins, scales, or other major anatomical structures merely to accommodate the outfit`;
+  const silhouette=(silhouetteValue==='Random'?pick(outfitSilhouettePool):silhouetteValue).toLowerCase();
+  const form=selectedSex().toLowerCase();
+  return `${style} ${type}, primarily ${material}, ${coverage} coverage, ${silhouette} silhouette adapted naturally to the ${form} character form. Clothing variety may include traditionally masculine, feminine, and androgynous fantasy cuts when compatible with the selected outfit; do not force stereotypes or alter the character's resolved form. Fit garments naturally around only race-specific anatomy explicitly established by the race identity. Do not invent horns, wings, tails, extra limbs, fins, scales, or other major anatomical structures merely to accommodate the outfit`;
 }
 
 
 
 const weaponHandlingPool=['Automatic','Held at rest','Weapon-ready stance','Raised defensively','Raised overhead','Pointed forward','Two-handed grip','One-handed grip','Dual-wielding','Slung across back','Sheathed at hip','Planted beside character'];
-const weaponTypePool=['longsword','greatsword','dual blades','dagger','spear','halberd','battle axe','warhammer','mace','bow','crossbow','staff','wand','scythe','whip','shield and sword','claws / gauntlets'];
-const weaponStylePool=['ancient','medieval','elven','dwarven','barbarian','gothic','regal','arcane','celestial','infernal','primal','nature-grown','crystal-forged','bone-crafted','runic'];
-const weaponMaterialPool=['steel','blackened iron','bronze','silver','gold-trimmed metal','obsidian','crystal','bone','living wood','dragon-forged metal','arcane alloy','celestial metal','shadow metal'];
-const weaponEffectPool=['no magical effect','flaming edge','frost aura','lightning arcs','arcane runes','celestial radiance','shadow mist','void energy','nature magic','blood-red energy','prismatic glow','soul-fire'];
+const weaponTypePool=['no weapon — spellcaster','no weapon — unarmed','longsword','shortsword','greatsword','rapier','curved saber','katana-style blade','dual blades','dagger','throwing knives','spear','javelin','pike','lance','trident','glaive','halberd','battle axe','greataxe','hand axes','warhammer','mace','morningstar','flail','club','bow','longbow','crossbow','hand crossbow','staff','wand','magic tome','arcane focus / orb','scythe','war sickle','whip','chain weapon','chakram','shield only','shield and sword','claws / gauntlets'];
+const weaponStylePool=['ancient','medieval','elven','dwarven','barbarian','gothic','regal','arcane','celestial','infernal','primal','nature-grown','crystal-forged','bone-crafted','runic','draconic','fae','void-forged','storm-forged','necromantic','relic','ornate ceremonial','minimalist'];
+const weaponMaterialPool=['steel','blackened iron','bronze','silver','gold-trimmed metal','obsidian','crystal','bone','living wood','dragon-forged metal','arcane alloy','celestial metal','shadow metal','mithril-like alloy','runed stone','volcanic glass','ice crystal','chitin','pearl and coral','ethereal energy','living metal'];
+const weaponEffectPool=['no magical effect','flaming edge','frost aura','lightning arcs','arcane runes','celestial radiance','shadow mist','void energy','nature magic','blood-red energy','prismatic glow','soul-fire','solar radiance','lunar glow','storm charge','poisonous vapor','necrotic aura','spirit wisps','gravity distortion','time shimmer','crystalline growth','water current','wind aura'];
 function weaponControlText(){
   const typeValue=$('weaponType')?.value||'Random';
-  if(typeValue==='None') return 'Unarmed, with no weapon visible';
+  const resolvedType=typeValue==='Random'?pick(weaponTypePool):typeValue.toLowerCase();
+  if(resolvedType==='no weapon — spellcaster') return 'NO WEAPON — SPELLCASTER: keep both hands free for magic-based character generation. Show intentional spellcasting through hands, gestures, racial markings, aura, summoned light, elemental or arcane effects as appropriate to the character, but do not convert those effects into a sword, staff, wand, shield, bow, blade, gun, or other weapon-shaped object. EQUIPMENT COUNT: no weapon, no shield, no secondary weapon, and no weapon-like combat prop unless another explicit control requires one. Hands and fingers remain anatomically coherent and clearly readable while casting';
+  if(resolvedType==='no weapon — unarmed') return 'NO WEAPON — UNARMED: no weapon visible. Keep hands free and naturally posed for the selected action. EQUIPMENT COUNT: do not add weapons, shields, weapon-like props, or combat equipment unless another explicit control requires them';
   const styleValue=$('weaponStyle')?.value||'Random', materialValue=$('weaponMaterial')?.value||'Random', effectValue=$('weaponEffect')?.value||'Random', handlingValue=$('weaponHandling')?.value||'Random';
-  const type=typeValue==='Random'?pick(weaponTypePool):typeValue.toLowerCase();
+  const type=resolvedType;
   const style=styleValue==='Random'?pick(weaponStylePool):styleValue.toLowerCase();
   const material=materialValue==='Random'?pick(weaponMaterialPool):materialValue.toLowerCase();
   const effect=effectValue==='Random'?pick(weaponEffectPool):effectValue.toLowerCase();
   const resolvedHandling=handlingValue==='Random'?pick(weaponHandlingPool):handlingValue;
   const handling=resolvedHandling==='Automatic'?'naturally handled to match the selected pose':resolvedHandling.toLowerCase();
-  return `Equipped with a ${style} ${type} made primarily from ${material}, ${effect}, ${handling}; weapon scale, grip, placement, and clearance must fit only the anatomy actually established by the race identity, plus the clothing and pose, without clipping or hiding defining racial traits. Do not invent wings, horns, tails, extra limbs, or other anatomy to support the weapon. WEAPON STRUCTURAL COHERENCE: preserve the intended construction, geometry, balance, proportions, and functional anatomy of this weapon. Its components must form one deliberately designed, physically coherent object with clear connections and a readable silhouette. Rigid components must keep stable intentional geometry; components that are inherently curved, flexible, segmented, organic, articulated, or energy-based may follow the appropriate designed form for that weapon. Avoid accidental warping, melting, sagging, drooping, malformed geometry, disconnected or floating parts, unintended bends, duplicated components, impossible joins, or incorrectly assembled sections. Magical effects may surround, emanate from, coat, or visually transform supported features without accidentally deforming the underlying weapon unless deformation is explicitly part of the selected weapon design. WEAPON HANDLING INTEGRITY: hands and all relevant interaction points must connect naturally and functionally to the weapon. Preserve believable grip, alignment, clearance, balance, and pose; avoid fused fingers, misplaced grips, intersecting hands, duplicated handles, disconnected sections, or a handling pose that forces malformed weapon geometry`;
+  return `Equipped with a ${style} ${type} made primarily from ${material}, ${effect}, ${handling}. Weapon scale, grip, placement, and clearance must fit only the anatomy actually established by the race identity, plus the clothing and pose, without clipping or hiding defining racial traits. Do not invent wings, horns, tails, extra limbs, or other anatomy to support the weapon. WEAPON FIDELITY: render the selected weapon as a clearly recognizable, functionally coherent example of its specified weapon type. Preserve the defining topology of that type: the correct number, arrangement, and relationship of handles, shafts, blades, heads, limbs, strings, guards, grips, projectiles, or other functional components that actually apply. Do not substitute a different weapon class merely because it shares a similar fantasy style. WEAPON SCALE & PROPORTION: keep the weapon coherently scaled to the character and selected handling. Stylized exaggeration is allowed when it reads as intentional design, but ornamentation and magical effects must not unintentionally enlarge, shrink, multiply, obscure, replace, or distort functional components. STRUCTURAL COHERENCE: maintain believable connections, intentional geometry, usable proportions, sensible mass distribution, and a readable silhouette. Rigid structures must remain structurally stable; deliberately curved, flexible, segmented, articulated, organic, floating, transforming, or energy-based structures may retain those properties when supported by the selected weapon type, style, material, magical effect, or handling. EQUIPMENT COUNT: generate only the selected weapon configuration and equipment explicitly required by it. Do not spontaneously add unrelated shields, secondary weapons, duplicate weapons, extra blades, extra heads, ammunition, or combat props unless the selected weapon configuration logically requires them. WEAPON HANDLING: hands and relevant interaction points must connect naturally and functionally. Preserve believable grip, finger placement, alignment, clearance, balance, and pose while respecting one-handed, two-handed, dual-wielded, ranged, flexible, floating, or planted handling when selected. WEAPON ERROR EXCLUSIONS: avoid accidental weapon substitution, malformed topology, incorrect component count, duplicated parts, unintended extra weapons or shields, floating parts that are not intentionally floating, disconnected pieces, impossible joins, melted or drooping rigid structures, unintended bends, warped shafts, broken silhouettes, unusable grips, fused fingers, intersecting hands, implausible balance, inconsistent weapon perspective, accidental scale changes, ornamentation replacing functional components, and magical effects obscuring or deforming the intended construction. These exclusions apply only to unintended defects; preserve deliberate curvature, flexibility, asymmetry, segmentation, unusual proportions, supernatural construction, floating elements, transformations, and unconventional geometry when explicitly supported by the selected design`;
 }
 
 
@@ -988,7 +1078,7 @@ function resetMasterPrompt(){
 }
 
 function masterResetGenerator(){
-  const randomSelects=['ageStyle','buildStyle','expressionStyle','hairStyle','lightingStyle','lightingIntensity','lightingDirection','lightingAtmosphere','poseStyle','poseEnergy','poseOrientation','poseGesture','outfitType','outfitStyle','outfitMaterial','outfitCoverage','weaponType','weaponStyle','weaponMaterial','weaponEffect','weaponHandling','environmentType','environmentStyle','environmentWeather','environmentTime','environmentEffect','renderQuality','textureDetail','cameraComposition','depthFocus','finalFinish','toneSelect','detailSelect','sexForm'];
+  const randomSelects=['ageStyle','buildStyle','expressionStyle','hairStyle','lightingStyle','lightingIntensity','lightingDirection','lightingAtmosphere','poseStyle','poseEnergy','poseOrientation','poseGesture','outfitType','outfitStyle','outfitMaterial','outfitCoverage','outfitSilhouette','weaponType','weaponStyle','weaponMaterial','weaponEffect','weaponHandling','environmentType','environmentStyle','environmentWeather','environmentTime','environmentEffect','renderQuality','textureDetail','cameraComposition','depthFocus','finalFinish','toneSelect','detailSelect','sexForm'];
   randomSelects.forEach(id=>{const el=$(id);if(!el)return;const option=[...el.options].find(o=>o.value==='random'||o.textContent==='Random');if(option)el.value=option.value;});
   if($('categoryFilter'))$('categoryFilter').value='all';
   if($('nsfwMode'))$('nsfwMode').value='off';
@@ -1419,7 +1509,13 @@ function renderLists(){
     </div>`;
   }).join(''):'No saved races or favorites yet.';
   $('historyList').className='mini-list'+(history.length?'':' empty');
-  $('historyList').innerHTML=history.length?history.slice(0,8).map(h=>`<div class="mini-item">${h.title}</div>`).join(''):'No generations yet.';
+  $('historyList').innerHTML=history.length?history.slice(0,12).map((h,i)=>`<div class="mini-item favorite-item">
+    <div class="favorite-item-head"><div><div class="favorite-item-title">${h.title||'Past generation'}</div><div class="favorite-item-meta">${h.meta||h.kind||'Generated character'}${h.ts?` • ${new Date(h.ts).toLocaleString()}`:''}</div></div></div>
+    <div class="favorite-actions">
+      <button type="button" data-history-load="${i}">Load</button>
+      <button type="button" data-history-copy="${i}">Copy</button>
+    </div>
+  </div>`).join(''):'No generations yet.';
 }
 
 
@@ -1517,6 +1613,25 @@ $('favoritesList').onclick=async e=>{
   }
 };
 
+$('historyList').onclick=async e=>{
+  const load=e.target.closest('[data-history-load]');
+  const copy=e.target.closest('[data-history-copy]');
+  if(load){
+    const h=history[Number(load.dataset.historyLoad)];
+    if(!h)return;
+    current={...h};
+    resetMasterPrompt();
+    renderResult();
+    window.scrollTo({top:0,behavior:'smooth'});
+    return;
+  }
+  if(copy){
+    const h=history[Number(copy.dataset.historyCopy)];
+    if(!h)return;
+    try{await navigator.clipboard.writeText(h.prompt||'');copy.textContent='Copied!';setTimeout(()=>copy.textContent='Copy',900);}catch(err){prompt('Copy this prompt:',h.prompt||'');}
+  }
+};
+
 $('libraryList').onclick=e=>{
   const button=e.target.closest('button[data-action]');
   if(button){
@@ -1538,7 +1653,7 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 </script>
 
 <script>
-// Build 11R4.3: Weapon Integrity Engine adds weapon-agnostic structural coherence and handling constraints while preserving the 5,000-race auto-updating external library, Random defaults, Master Reset, anatomy allowlist, saved data, and PWA update behavior.
+// Build 11R4.5: expands wardrobe variety and silhouettes, adds explicit no-weapon spellcaster/unarmed modes, and lets History reload/copy prior generations. Preserves Weapon Fidelity, the 5,000-race auto-updating external library, and all prior generator features.
 // The worker itself uses network-first navigation with an offline fallback.
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
