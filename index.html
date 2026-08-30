@@ -53,6 +53,12 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 
 #lightingControlsCard{border:1px solid var(--accent)}
 #lightingControlsCard .control-grid{margin-top:12px}
+
+#masterBuilderCard{border:1px solid var(--accent);box-shadow:0 0 0 1px rgba(159,122,234,.08),var(--shadow)}
+#masterBuilderCard .actions-grid{margin-top:14px}
+.master-summary{background:#171221;border:1px solid var(--border);border-radius:13px;padding:12px;color:var(--accent2);font-size:.84rem;line-height:1.5}
+.master-summary strong{color:var(--ink)}
+.master-prompt-box{margin-top:12px;white-space:pre-wrap;max-height:460px;overflow:auto}
 </style>
   <link rel="icon" type="image/png" sizes="192x192" href="./Icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./Icons/icon-192.png" />
@@ -441,6 +447,20 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         </div>
       </section>
 
+      <section class="card" id="masterBuilderCard">
+        <div class="section-head">
+          <h2>Step 10: Master Character Builder</h2>
+          <span class="badge">Master</span>
+        </div>
+        <p class="tiny">Combine the current race or fusion with your live Character, Lighting, Pose, Armor / Clothing, Weapon, Environment, and Quality settings into one final image-generation prompt.</p>
+        <div id="masterSummary" class="master-summary">Generate or load a race/fusion first.</div>
+        <div class="actions-grid">
+          <button id="buildMasterBtn" class="primary" type="button">Build Master Character Prompt</button>
+          <button id="copyMasterBtn" type="button">Copy Master Prompt</button>
+        </div>
+        <div id="masterPromptBox" class="prompt-box master-prompt-box">Your completed Master Character Prompt will appear here.</div>
+      </section>
+
       <section class="card controls-card">
         <h2>Generation Controls</h2>
         <div class="control-grid">
@@ -512,7 +532,7 @@ const lightings=["cinematic rim lighting","soft volumetric moonlight","dramatic 
 let db=JSON.parse(localStorage.getItem('ourdream_races')||'null')||starterRaces;
 let favorites=JSON.parse(localStorage.getItem('ourdream_favorites')||'[]');
 let history=JSON.parse(localStorage.getItem('ourdream_history')||'[]');
-let current=null, mode='single', deferredPrompt=null;
+let current=null, mode='single', deferredPrompt=null, masterPrompt='';
 
 const $=id=>document.getElementById(id);
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
@@ -688,6 +708,7 @@ function buildSingle(r){
   const sex=$('femaleOnly').checked?'female':'humanoid';
   const t=tone(), adjective=pick(adjectives), wardrobe=armorClothingControlText(), lighting=lightingControlText(), detail=detailText($('detailSelect').value);
   return {
+    kind:'single', raceId:r.id,
     title:r.name, meta:`${r.category} • ${r.origin} • ${t}`,
     description:r.description, traits:r.traits,
     prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${wardrobe}. ${weaponControlText()}. ${environmentControlText()}. ${lighting}, ${detail}, ${qualityControlText()}, ${characterControlText()}, ${poseControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
@@ -735,6 +756,7 @@ function buildFusion(a,b,ratioA=50){
   const themeText=[a.theme,b.theme].filter(Boolean).join(' + ');
 
   return {
+    kind:'fusion', parentAId:a.id, parentBId:b.id, ratioA,
     title:fusionName,
     meta:`MANUAL RG FUSION • ${ratioA}/${ratioB} • ${t}`,
     description:`A controlled ${ratioA}% ${a.name} / ${ratioB}% ${b.name} fusion. Visual dominance follows the selected ratio while both parent races remain unmistakably identifiable.`,
@@ -780,6 +802,83 @@ ${qualityControlText()}.
 ${characterControlText()}. ${poseControlText()}. Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art, no random extra limbs, no duplicated anatomy, no loss of either parent identity.`
   };
 }
+function currentLiveSettingsText(){
+  return `CURRENT LIVE SETTINGS:
+${characterControlText()}.
+${poseControlText()}.
+Wearing ${armorClothingControlText()}.
+${weaponControlText()}.
+${environmentControlText()}.
+${lightingControlText()}.
+${detailText($('detailSelect').value)}.
+${qualityControlText()}.`;
+}
+
+function updateMasterSummary(){
+  const el=$('masterSummary');
+  if(!el)return;
+  if(!current){
+    el.textContent='Generate or load a race/fusion first.';
+    return;
+  }
+  const type=(current.kind==='fusion'||(current.meta||'').includes('FUSION'))?'Fusion':'Race';
+  el.innerHTML=`<strong>Current ${type}:</strong> ${current.title}<br><span>Build uses the selections currently shown in Steps 3–9.</span>`;
+}
+
+function resetMasterPrompt(){
+  masterPrompt='';
+  const box=$('masterPromptBox');
+  if(box)box.textContent='Ready. Tap “Build Master Character Prompt” to combine the current identity with your live settings.';
+  updateMasterSummary();
+}
+
+function buildMasterPrompt(){
+  if(!current){
+    alert('Generate or load a race/fusion first.');
+    return '';
+  }
+
+  let refreshed=null;
+  if(current.kind==='single' && current.raceId){
+    const race=db.find(r=>r.id===current.raceId);
+    if(race)refreshed=buildSingle(race);
+  }else if(current.kind==='fusion' && current.parentAId && current.parentBId){
+    const a=db.find(r=>r.id===current.parentAId);
+    const b=db.find(r=>r.id===current.parentBId);
+    if(a&&b)refreshed=buildFusion(a,b,Number(current.ratioA)||50);
+  }
+
+  let base=refreshed?.prompt||current.prompt||'';
+  // Older saved generations may not contain source IDs. In that case, append the live controls explicitly.
+  if(!refreshed)base+=`\n\n${currentLiveSettingsText()}`;
+
+  masterPrompt=`${base}
+
+MASTER CHARACTER BUILDER — FINAL SYNTHESIS:
+Create one unified, production-ready character image from every instruction above. Resolve any conflict using this priority order: (1) Locked Racial Identity and parent identity preservation, (2) coherent anatomy and silhouette, (3) character appearance and pose, (4) armor/clothing and weapon integration, (5) lighting and environment, (6) render quality and decorative finish. Do not omit defining racial markers to satisfy wardrobe, weapons, camera framing, effects, or scenery. Keep the complete character readable and biologically coherent, with no duplicated anatomy, no random extra limbs, no hidden identity-defining features, and no genericization of the race or fusion.`;
+
+  const box=$('masterPromptBox');
+  if(box)box.textContent=masterPrompt;
+  const btn=$('buildMasterBtn');
+  if(btn){
+    btn.textContent='✓ Master Prompt Built';
+    setTimeout(()=>btn.textContent='Build Master Character Prompt',1100);
+  }
+  return masterPrompt;
+}
+
+async function copyMasterPrompt(){
+  const text=masterPrompt||buildMasterPrompt();
+  if(!text)return;
+  const btn=$('copyMasterBtn');
+  try{
+    await navigator.clipboard.writeText(text);
+    if(btn){btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy Master Prompt',1100);}
+  }catch(err){
+    prompt('Copy this Master Character Prompt:',text);
+  }
+}
+
 function renderResult(){
   if(!current)return;
   $('result').innerHTML=`<div class="race-meta">${current.meta}</div><h2 class="race-name">${current.title}</h2><p class="race-desc">${current.description}</p><div class="traits">${current.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div><div class="prompt-box">${current.prompt}</div>`;
@@ -921,6 +1020,7 @@ function generate(){
     if(a.id===b.id){alert('Choose two different parent races.');return;}
     current=buildFusion(a,b,Number($('fusionRatio').value));
   }
+  resetMasterPrompt();
   history.unshift({...current,ts:Date.now()});history=history.slice(0,50);save();renderResult();renderLists();
 }
 function renderLibrary(){
@@ -1004,6 +1104,7 @@ function loadSavedFusion(index){
   const f=savedFusions[index];
   if(!f)return;
   current={...f};
+  resetMasterPrompt();
   renderResult();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1067,6 +1168,9 @@ $('savedFusionList').onclick=async e=>{
   }
 };
 
+$('buildMasterBtn').onclick=buildMasterPrompt;
+$('copyMasterBtn').onclick=copyMasterPrompt;
+
 $('generateBtn').onclick=generate;
 $('copyBtn').onclick=async()=>{if(!current)generate();try{await navigator.clipboard.writeText(current.prompt);$('copyBtn').textContent='Copied!';setTimeout(()=>$('copyBtn').textContent='Copy Prompt',1200)}catch(e){prompt('Copy this prompt:',current.prompt)}};
 $('favoriteBtn').onclick=()=>{if(!current)return;const i=favorites.findIndex(f=>f.title===current.title);if(i>=0)favorites.splice(i,1);else favorites.unshift(current);save();renderResult();renderLists();};
@@ -1086,11 +1190,11 @@ $('libraryList').onclick=e=>{
 
 $('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,races:db,favorites,history},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ourdream-race-generator-backup.json';a.click();URL.revokeObjectURL(a.href)};
 $('importInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(Array.isArray(data))db=data;else {if(data.races)db=data.races;if(data.favorites)favorites=data.favorites;if(data.history)history=data.history}save();renderLibrary();renderLists();renderSavedFusions();populateRaceOptions();updateRatioLabels();syncManualPickState();alert(`Imported ${db.length} races.`)}catch(err){alert('That JSON file could not be imported.')}};
-$('resetBtn').onclick=()=>{if(confirm('Reset the race library, favorites, and history to the embedded 2,000-race build?')){db=starterRaces;favorites=[];history=[];save();renderLibrary();renderLists();$('result').innerHTML='<div class="result-placeholder">Tap generate to begin.</div>';current=null}};
+$('resetBtn').onclick=()=>{if(confirm('Reset the race library, favorites, and history to the embedded 2,000-race build?')){db=starterRaces;favorites=[];history=[];save();renderLibrary();renderLists();$('result').innerHTML='<div class="result-placeholder">Tap generate to begin.</div>';current=null;resetMasterPrompt()}};
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.remove('hidden')});
 $('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.add('hidden')}};
 
-renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManualPickState();
+renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManualPickState();updateMasterSummary();
 </script>
 
 <script>

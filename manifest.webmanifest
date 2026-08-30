@@ -1,7 +1,7 @@
 {
   "name": "Race Generator",
   "short_name": "Race Generator",
-  "description": "Offline 2000-race fantasy humanoid generator with RG Fusion 2.0",
+  "description": "Offline 2000-race fantasy humanoid generator with RG Fusion 2.0 and Master Character Builder",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
