@@ -411,6 +411,21 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         </div>
       </section>
 
+      <section class="card" id="environmentControlsCard">
+        <div class="section-head">
+          <h2>Step 8: Environment Controls</h2>
+          <span class="badge">Environment</span>
+        </div>
+        <p class="tiny">Build the world around the character without allowing the background to obscure the race, pose, clothing, or weapon silhouette.</p>
+        <div class="control-grid">
+          <label>Environment Type<select id="environmentType"><option>Random</option><option>Ancient temple</option><option>Enchanted forest</option><option>Crystal cavern</option><option>Mountain fortress</option><option>Ruined city</option><option>Royal palace</option><option>Desert ruins</option><option>Volcanic citadel</option><option>Frozen wasteland</option><option>Moonlit coastline</option><option>Swamp shrine</option><option>Floating islands</option><option>Celestial realm</option><option>Infernal realm</option><option>Void landscape</option><option>Battlefield</option><option>Village</option><option>Arcane laboratory</option></select></label>
+          <label>Environment Style<select id="environmentStyle"><option>Random</option><option>Ancient</option><option>Medieval</option><option>Gothic</option><option>Elven</option><option>Dwarven</option><option>Primal</option><option>Regal</option><option>Arcane</option><option>Celestial</option><option>Infernal</option><option>Ethereal</option><option>Overgrown</option><option>Ruined</option><option>Monumental</option><option>Dreamlike</option></select></label>
+          <label>Weather<select id="environmentWeather"><option>Random</option><option>Clear</option><option>Light rain</option><option>Heavy rain</option><option>Thunderstorm</option><option>Snowfall</option><option>Blizzard</option><option>Windy</option><option>Sandstorm</option><option>Magical storm</option><option>Ashfall</option><option>Still and silent</option></select></label>
+          <label>Time of Day<select id="environmentTime"><option>Random</option><option>Dawn</option><option>Morning</option><option>Midday</option><option>Golden hour</option><option>Sunset</option><option>Twilight</option><option>Night</option><option>Moonlit night</option><option>Eternal darkness</option><option>Eternal daylight</option></select></label>
+          <label>Environmental Effect<select id="environmentEffect"><option>Random</option><option>None</option><option>Drifting fog</option><option>Floating embers</option><option>Falling leaves</option><option>Glowing spores</option><option>Arcane particles</option><option>Celestial motes</option><option>Shadow wisps</option><option>Lightning in distance</option><option>Windblown dust</option><option>Falling ash</option><option>Floating crystals</option><option>Bioluminescent flora</option></select></label>
+        </div>
+      </section>
+
       <section class="card controls-card">
         <h2>Generation Controls</h2>
         <div class="control-grid">
@@ -628,13 +643,29 @@ function weaponControlText(){
   return `Equipped with a ${style} ${type} made primarily from ${material}, ${effect}, ${handling}; weapon scale, grip, placement, and clearance must fit preserved anatomy, limbs, wings, horns, tail, clothing, and pose without clipping or hiding defining racial traits`;
 }
 
+
+const environmentTypePool=['ancient temple','enchanted forest','crystal cavern','mountain fortress','ruined city','royal palace','desert ruins','volcanic citadel','frozen wasteland','moonlit coastline','swamp shrine','floating islands','celestial realm','infernal realm','void landscape','battlefield','village','arcane laboratory'];
+const environmentStylePool=['ancient','medieval','gothic','elven','dwarven','primal','regal','arcane','celestial','infernal','ethereal','overgrown','ruined','monumental','dreamlike'];
+const environmentWeatherPool=['clear weather','light rain','heavy rain','thunderstorm','snowfall','blizzard','strong winds','sandstorm','magical storm','ashfall','still and silent air'];
+const environmentTimePool=['dawn','morning','midday','golden hour','sunset','twilight','night','moonlit night','eternal darkness','eternal daylight'];
+const environmentEffectPool=['no additional environmental effect','drifting fog','floating embers','falling leaves','glowing spores','arcane particles','celestial motes','shadow wisps','lightning in the distance','windblown dust','falling ash','floating crystals','bioluminescent flora'];
+function environmentControlText(){
+  const typeValue=$('environmentType')?.value||'Random', styleValue=$('environmentStyle')?.value||'Random', weatherValue=$('environmentWeather')?.value||'Random', timeValue=$('environmentTime')?.value||'Random', effectValue=$('environmentEffect')?.value||'Random';
+  const type=typeValue==='Random'?pick(environmentTypePool):typeValue.toLowerCase();
+  const style=styleValue==='Random'?pick(environmentStylePool):styleValue.toLowerCase();
+  const weather=weatherValue==='Random'?pick(environmentWeatherPool):weatherValue.toLowerCase();
+  const time=timeValue==='Random'?pick(environmentTimePool):timeValue.toLowerCase();
+  const effect=effectValue==='Random'?pick(environmentEffectPool):effectValue.toLowerCase();
+  return `Scene: a ${style} ${type} at ${time}, ${weather}, ${effect}; environment supports the composition and remains visually secondary to the character, preserving a clear full-body silhouette and unobstructed defining racial traits, clothing, pose, and weapon`;
+}
+
 function buildSingle(r){
   const sex=$('femaleOnly').checked?'female':'humanoid';
-  const t=tone(), adjective=pick(adjectives), wardrobe=armorClothingControlText(), setting=pick(settings), lighting=lightingControlText(), detail=detailText($('detailSelect').value);
+  const t=tone(), adjective=pick(adjectives), wardrobe=armorClothingControlText(), lighting=lightingControlText(), detail=detailText($('detailSelect').value);
   return {
     title:r.name, meta:`${r.category} • ${r.origin} • ${t}`,
     description:r.description, traits:r.traits,
-    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${wardrobe}. ${weaponControlText()}. Standing in ${setting}. ${lighting}, ${detail}, ${characterControlText()}, ${poseControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
+    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${wardrobe}. ${weaponControlText()}. ${environmentControlText()}. ${lighting}, ${detail}, ${characterControlText()}, ${poseControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
   }
 }
 function buildFusion(a,b,ratioA=50){
@@ -717,7 +748,7 @@ Key preserved traits: ${allTraits.slice(0,8).join(', ')}.
 WARDROBE, WEAPON & SCENE:
 Wearing ${armorClothingControlText()}.
 ${weaponControlText()}.
-Standing in ${pick(settings)}.
+${environmentControlText()}.
 ${lightingControlText()}.
 ${detailText($('detailSelect').value)}.
 ${characterControlText()}. ${poseControlText()}. Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art, no random extra limbs, no duplicated anatomy, no loss of either parent identity.`
