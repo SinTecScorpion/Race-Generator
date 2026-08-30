@@ -1,4 +1,4 @@
-const CACHE='race-generator-step03-network-first-v1';
+const CACHE='race-generator-step04-lighting-network-first-v1';
 const CORE=[
   './manifest.webmanifest',
   './Icons/icon-192.png',
@@ -49,7 +49,6 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(request).then(cached => {
       if (cached) return cached;
-
       return fetch(request).then(response => {
         if (response && response.status === 200 && response.type === 'basic') {
           const copy = response.clone();

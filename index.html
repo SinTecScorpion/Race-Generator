@@ -50,6 +50,9 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 
 #characterControlsCard{border:1px solid var(--accent)}
 #characterControlsCard .control-grid{margin-top:12px}
+
+#lightingControlsCard{border:1px solid var(--accent)}
+#lightingControlsCard .control-grid{margin-top:12px}
 </style>
   <link rel="icon" type="image/png" sizes="192x192" href="./Icons/icon-192.png" />
   <link rel="apple-touch-icon" href="./Icons/icon-192.png" />
@@ -165,6 +168,73 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         </div>
       </section>
 
+      
+      <section class="card" id="lightingControlsCard">
+        <div class="section-head">
+          <h2>Step 4: Lighting Controls</h2>
+          <span class="badge">Lighting</span>
+        </div>
+        <p class="tiny">Choose the lighting style used in the generated character prompt.</p>
+
+        <div class="control-grid">
+          <label>
+            Lighting Style
+            <select id="lightingStyle">
+              <option>Random</option>
+              <option>Cinematic rim lighting</option>
+              <option>Soft volumetric moonlight</option>
+              <option>Golden-hour lighting</option>
+              <option>Firelit chiaroscuro</option>
+              <option>Bioluminescent glow</option>
+              <option>Storm-flash lighting</option>
+              <option>High-key portrait lighting</option>
+              <option>Low-key dramatic lighting</option>
+              <option>God rays through mist</option>
+              <option>Cold blue twilight</option>
+              <option>Warm torchlight</option>
+              <option>Arcane magical glow</option>
+              <option>Divine radiant backlight</option>
+              <option>Infernal red underlighting</option>
+              <option>Ethereal soft bloom</option>
+            </select>
+          </label>
+
+          <label>
+            Lighting Intensity
+            <select id="lightingIntensity">
+              <option>Balanced</option>
+              <option>Soft</option>
+              <option>Strong</option>
+              <option>Extreme cinematic</option>
+            </select>
+          </label>
+
+          <label>
+            Light Direction
+            <select id="lightingDirection">
+              <option>Automatic</option>
+              <option>Front-lit</option>
+              <option>Side-lit</option>
+              <option>Backlit</option>
+              <option>Top-lit</option>
+              <option>Underlit</option>
+            </select>
+          </label>
+
+          <label>
+            Atmosphere
+            <select id="lightingAtmosphere">
+              <option>Clean air</option>
+              <option>Light mist</option>
+              <option>Heavy fog</option>
+              <option>Dust particles</option>
+              <option>Floating embers</option>
+              <option>Magical particles</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
       <section class="card controls-card">
         <h2>Generation Controls</h2>
         <div class="control-grid">
@@ -267,9 +337,38 @@ function characterControlText(){
   return `${age.toLowerCase()} female character, ${build.toLowerCase()} build, ${expression.toLowerCase()} expression, ${hair.toLowerCase()} hair`;
 }
 
+
+const lightingStylePool=[
+  'cinematic rim lighting',
+  'soft volumetric moonlight',
+  'golden-hour lighting',
+  'firelit chiaroscuro',
+  'bioluminescent glow',
+  'storm-flash lighting',
+  'high-key portrait lighting',
+  'low-key dramatic lighting',
+  'god rays through mist',
+  'cold blue twilight',
+  'warm torchlight',
+  'arcane magical glow',
+  'divine radiant backlight',
+  'infernal red underlighting',
+  'ethereal soft bloom'
+];
+
+function lightingControlText(){
+  const styleValue=$('lightingStyle')?.value||'Random';
+  const style=styleValue==='Random'?pick(lightingStylePool):styleValue;
+  const intensity=$('lightingIntensity')?.value||'Balanced';
+  const direction=$('lightingDirection')?.value||'Automatic';
+  const atmosphere=$('lightingAtmosphere')?.value||'Clean air';
+
+  return `${style}, ${intensity.toLowerCase()} intensity, ${direction.toLowerCase()}, ${atmosphere.toLowerCase()}`;
+}
+
 function buildSingle(r){
   const sex=$('femaleOnly').checked?'female':'humanoid';
-  const t=tone(), adjective=pick(adjectives), garment=pick(garments), setting=pick(settings), lighting=pick(lightings), detail=detailText($('detailSelect').value);
+  const t=tone(), adjective=pick(adjectives), garment=pick(garments), setting=pick(settings), lighting=lightingControlText(), detail=detailText($('detailSelect').value);
   return {
     title:r.name, meta:`${r.category} • ${r.origin} • ${t}`,
     description:r.description, traits:r.traits,
@@ -356,7 +455,7 @@ Key preserved traits: ${allTraits.slice(0,8).join(', ')}.
 WARDROBE & SCENE:
 Wearing ${pick(garments)}.
 Standing in ${pick(settings)}.
-${pick(lightings)}.
+${lightingControlText()}.
 ${detailText($('detailSelect').value)}.
 ${characterControlText()}. Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art, no random extra limbs, no duplicated anatomy, no loss of either parent identity.`
   };
