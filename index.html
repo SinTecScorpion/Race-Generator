@@ -71,7 +71,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         <p class="eyebrow">OURDREAM RESOURCES</p>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 11R1 • Prompt Engine Refinement</span>
+        <span class="build-version">Build 11R2 • Anatomy Gate Verified</span>
       </div>
       <button id="installBtn" class="ghost hidden">Install App</button>
     </header>
@@ -865,6 +865,16 @@ function buildMasterPrompt(){
   }
 
   let base=refreshed?.prompt||current.prompt||'';
+  // R2 legacy sanitizer: rewrite anatomy-seeding language from older saved/current generations.
+  base=base
+    .replace(/Apply the (\d+\/\d+) ratio across facial structure, skin, eyes, ears, horns, hair, limbs, tail, wings, scales, markings, body proportions, magical effects, and other ancestry-specific anatomy where appropriate\./g,
+      "Apply the $1 ratio only to ancestry-specific features actually established by Parent A or Parent B above: facial structure, coloration, surface traits, markings, proportions, magical effects, and explicit anatomical structures. Do not create a feature merely because it is common in fantasy art. Major anatomy may appear only when supported by a parent's Visual Identity, Locked Racial Identity, description, or defining traits.")
+    .replace(/fitted naturally around all race-specific anatomy, horns, wings, tails, extra joints, scales, fins, or other preserved racial features where present/g,
+      'fitted naturally around only the race-specific anatomy explicitly established by the race identity; do not invent major anatomical structures to accommodate the outfit')
+    .replace(/weapon scale, grip, placement, and clearance must fit preserved anatomy, limbs, wings, horns, tail, clothing, and pose/g,
+      'weapon scale, grip, placement, and clearance must fit only the anatomy actually established by the race identity, plus clothing and pose')
+    .replace(/no random extra limbs, no duplicated anatomy, no loss of either parent identity/g,
+      'ANATOMY GATE: elaborate established racial anatomy only; do not invent unsupported major structures. No random extra limbs, no duplicated anatomy, no unsupported wings, horns, tails, fins, scales, or appendages, and no loss of either parent identity');
   // Older saved generations may not contain source IDs. In that case, append the live controls explicitly.
   if(!refreshed)base+=`\n\n${currentLiveSettingsText()}`;
 

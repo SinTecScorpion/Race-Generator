@@ -1,4 +1,4 @@
-const CACHE='race-generator-build11r1-prompt-engine-v1';
+const CACHE = 'race-generator-r2-anatomy-gate-v1';
 const OFFLINE_HTML='./index.html';
 const CORE=[
   './manifest.webmanifest',
