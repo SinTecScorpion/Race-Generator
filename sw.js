@@ -1,4 +1,4 @@
-const CACHE='race-generator-step06-armor-clothing-network-first-v1';
+const CACHE='race-generator-step07-weapons-network-first-v1';
 const CORE=[
   './manifest.webmanifest',
   './Icons/icon-192.png',
