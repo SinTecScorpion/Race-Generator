@@ -426,6 +426,21 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         </div>
       </section>
 
+      <section class="card" id="qualityControlsCard">
+        <div class="section-head">
+          <h2>Step 9: Detail / Quality Controls</h2>
+          <span class="badge">Quality</span>
+        </div>
+        <p class="tiny">Fine-tune rendering quality and image finish while keeping Locked Racial Identity and defining anatomy as the highest visual priority.</p>
+        <div class="control-grid">
+          <label>Render Quality<select id="renderQuality"><option>High quality</option><option>Standard</option><option>Ultra detailed</option><option>Premium concept art</option><option>Masterpiece finish</option></select></label>
+          <label>Texture Detail<select id="textureDetail"><option>Detailed</option><option>Clean</option><option>High detail</option><option>Micro-detailed</option><option>Hyper-detailed materials</option></select></label>
+          <label>Camera / Composition<select id="cameraComposition"><option>Full-body character focus</option><option>Portrait focus</option><option>Three-quarter character view</option><option>Low-angle heroic view</option><option>Eye-level cinematic view</option><option>Wide environmental composition</option><option>Dynamic action framing</option></select></label>
+          <label>Depth / Focus<select id="depthFocus"><option>Balanced cinematic depth</option><option>Sharp character, soft background</option><option>Deep focus</option><option>Shallow depth of field</option><option>Dramatic foreground depth</option></select></label>
+          <label>Final Finish<select id="finalFinish"><option>Polished fantasy concept art</option><option>Realistic materials</option><option>Cinematic realism</option><option>Painterly realism</option><option>High-end game character art</option><option>Epic illustration finish</option></select></label>
+        </div>
+      </section>
+
       <section class="card controls-card">
         <h2>Generation Controls</h2>
         <div class="control-grid">
@@ -659,13 +674,23 @@ function environmentControlText(){
   return `Scene: a ${style} ${type} at ${time}, ${weather}, ${effect}; environment supports the composition and remains visually secondary to the character, preserving a clear full-body silhouette and unobstructed defining racial traits, clothing, pose, and weapon`;
 }
 
+
+function qualityControlText(){
+  const quality=($('renderQuality')?.value||'High quality').toLowerCase();
+  const texture=($('textureDetail')?.value||'Detailed').toLowerCase();
+  const camera=($('cameraComposition')?.value||'Full-body character focus').toLowerCase();
+  const depth=($('depthFocus')?.value||'Balanced cinematic depth').toLowerCase();
+  const finish=($('finalFinish')?.value||'Polished fantasy concept art').toLowerCase();
+  return `Quality and composition: ${quality}, ${texture} textures, ${camera}, ${depth}, ${finish}; prioritize crisp facial readability, coherent anatomy, clean edges, intentional composition, and accurate materials. Locked Racial Identity and defining racial anatomy always take priority over decorative detail, camera effects, background complexity, or stylization`;
+}
+
 function buildSingle(r){
   const sex=$('femaleOnly').checked?'female':'humanoid';
   const t=tone(), adjective=pick(adjectives), wardrobe=armorClothingControlText(), lighting=lightingControlText(), detail=detailText($('detailSelect').value);
   return {
     title:r.name, meta:`${r.category} • ${r.origin} • ${t}`,
     description:r.description, traits:r.traits,
-    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${wardrobe}. ${weaponControlText()}. ${environmentControlText()}. ${lighting}, ${detail}, ${characterControlText()}, ${poseControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
+    prompt:`${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}. Wearing ${wardrobe}. ${weaponControlText()}. ${environmentControlText()}. ${lighting}, ${detail}, ${qualityControlText()}, ${characterControlText()}, ${poseControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art.`
   }
 }
 function buildFusion(a,b,ratioA=50){
@@ -751,6 +776,7 @@ ${weaponControlText()}.
 ${environmentControlText()}.
 ${lightingControlText()}.
 ${detailText($('detailSelect').value)}.
+${qualityControlText()}.
 ${characterControlText()}. ${poseControlText()}. Full-body coherent hybrid anatomy, elegant silhouette, strong facial readability, realistic materials, premium fantasy game concept art, no random extra limbs, no duplicated anatomy, no loss of either parent identity.`
   };
 }
