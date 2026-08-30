@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Race Generator" />
   <title>Race Generator</title>
-  <style>:root{--bg:#0c0b11;--panel:#15121f;--panel2:#1c1729;--ink:#f7f1ff;--muted:#aaa1b8;--accent:#9f7aea;--accent2:#d6bcfa;--border:#30283f;--danger:#ff7a90;--shadow:0 18px 60px rgba(0,0,0,.35)}*{box-sizing:border-box}html{background:var(--bg);color-scheme:dark}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top,#211832 0,#0c0b11 38%);color:var(--ink);min-height:100vh}.app-shell{max-width:960px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}.hero{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:8px 4px 18px}.eyebrow{font-size:.72rem;letter-spacing:.22em;color:var(--accent2);margin:0 0 6px;font-weight:800}.hero h1{font-size:clamp(2rem,7vw,3.6rem);margin:0;line-height:1}.subtitle{color:var(--muted);margin:8px 0 0}.build-version{display:inline-block;margin-top:9px;padding:4px 8px;border:1px solid var(--border);border-radius:999px;color:var(--accent2);font-size:.72rem;font-weight:800;letter-spacing:.04em}.card{background:linear-gradient(180deg,rgba(28,23,41,.96),rgba(21,18,31,.96));border:1px solid var(--border);border-radius:22px;padding:18px;margin:0 0 16px;box-shadow:var(--shadow)}.mode-tabs{display:flex;background:#0f0d16;border-radius:14px;padding:4px;gap:4px}.tab{flex:1;border:none;background:transparent}.tab.active{background:var(--panel2);color:#fff}.result-panel{min-height:280px;padding:22px 4px 18px}.result-placeholder{height:230px;display:grid;place-items:center;color:var(--muted);border:1px dashed var(--border);border-radius:18px}.race-name{font-size:2rem;margin:0 0 6px}.race-meta{color:var(--accent2);font-size:.86rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.race-desc{font-size:1.02rem;line-height:1.65;color:#e7dff0}.traits{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.trait{background:#251c36;color:#dbc9f8;border:1px solid #3b2c53;border-radius:999px;padding:7px 10px;font-size:.82rem}.prompt-box{background:#0f0d16;border:1px solid var(--border);border-radius:14px;padding:14px;line-height:1.55;color:#ddd3e8;font-size:.9rem}.actions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.actions-grid.small{grid-template-columns:repeat(3,minmax(0,1fr))}button,.file-button,select,input{font:inherit}button,.file-button{border:1px solid var(--border);background:#211a2f;color:var(--ink);padding:12px 14px;border-radius:13px;font-weight:750;cursor:pointer;text-align:center}.primary{background:linear-gradient(135deg,#8b5cf6,#b76cf0);border:none}.ghost{white-space:nowrap}.danger{color:#ffd4dc;border-color:#56303b}.hidden{display:none!important}h2{font-size:1.05rem;margin:0 0 14px}.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.84rem}select,.search{width:100%;background:#0f0d16;border:1px solid var(--border);color:var(--ink);border-radius:12px;padding:12px}.checkbox-row{flex-direction:row;align-items:center;background:#0f0d16;border:1px solid var(--border);border-radius:12px;padding:12px}.checkbox-row input{accent-color:var(--accent)}.section-head{display:flex;justify-content:space-between;align-items:center}.badge{background:#261d37;color:var(--accent2);border-radius:999px;padding:5px 9px;font-size:.78rem}.library-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px;max-height:420px;overflow:auto}.library-item{background:#100e17;border:1px solid var(--border);border-radius:14px;padding:12px}.library-item strong{display:block}.library-item span{display:block;color:var(--muted);font-size:.8rem;margin-top:4px}.split-card{display:grid;grid-template-columns:1fr 1fr;gap:16px}.mini-list{display:flex;flex-direction:column;gap:8px}.mini-item{background:#100e17;border:1px solid var(--border);border-radius:12px;padding:10px;font-size:.88rem}.empty{color:var(--muted);font-size:.9rem}.data-card p{color:var(--muted);line-height:1.55}.tiny{font-size:.79rem}.file-button input{display:none}
+  <style>:root{--bg:#0c0b11;--panel:#15121f;--panel2:#1c1729;--ink:#f7f1ff;--muted:#aaa1b8;--accent:#9f7aea;--accent2:#d6bcfa;--border:#30283f;--danger:#ff7a90;--shadow:0 18px 60px rgba(0,0,0,.35)}*{box-sizing:border-box}html{background:var(--bg);color-scheme:dark}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top,#211832 0,#0c0b11 38%);color:var(--ink);min-height:100vh}.app-shell{max-width:960px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}.hero{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:8px 4px 18px}.eyebrow{font-size:.72rem;letter-spacing:.22em;color:var(--accent2);margin:0 0 6px;font-weight:800}.hero h1{font-size:clamp(2rem,7vw,3.6rem);margin:0;line-height:1}.hero-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.hero-actions button{padding:10px 12px}.subtitle{color:var(--muted);margin:8px 0 0}.build-version{display:inline-block;margin-top:9px;padding:4px 8px;border:1px solid var(--border);border-radius:999px;color:var(--accent2);font-size:.72rem;font-weight:800;letter-spacing:.04em}.card{background:linear-gradient(180deg,rgba(28,23,41,.96),rgba(21,18,31,.96));border:1px solid var(--border);border-radius:22px;padding:18px;margin:0 0 16px;box-shadow:var(--shadow)}.mode-tabs{display:flex;background:#0f0d16;border-radius:14px;padding:4px;gap:4px}.tab{flex:1;border:none;background:transparent}.tab.active{background:var(--panel2);color:#fff}.result-panel{min-height:280px;padding:22px 4px 18px}.result-placeholder{height:230px;display:grid;place-items:center;color:var(--muted);border:1px dashed var(--border);border-radius:18px}.race-name{font-size:2rem;margin:0 0 6px}.race-meta{color:var(--accent2);font-size:.86rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.race-desc{font-size:1.02rem;line-height:1.65;color:#e7dff0}.traits{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.trait{background:#251c36;color:#dbc9f8;border:1px solid #3b2c53;border-radius:999px;padding:7px 10px;font-size:.82rem}.prompt-box{background:#0f0d16;border:1px solid var(--border);border-radius:14px;padding:14px;line-height:1.55;color:#ddd3e8;font-size:.9rem}.actions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.actions-grid.small{grid-template-columns:repeat(3,minmax(0,1fr))}button,.file-button,select,input{font:inherit}button,.file-button{border:1px solid var(--border);background:#211a2f;color:var(--ink);padding:12px 14px;border-radius:13px;font-weight:750;cursor:pointer;text-align:center}.primary{background:linear-gradient(135deg,#8b5cf6,#b76cf0);border:none}.ghost{white-space:nowrap}.danger{color:#ffd4dc;border-color:#56303b}.hidden{display:none!important}h2{font-size:1.05rem;margin:0 0 14px}.control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.84rem}select,.search{width:100%;background:#0f0d16;border:1px solid var(--border);color:var(--ink);border-radius:12px;padding:12px}.checkbox-row{flex-direction:row;align-items:center;background:#0f0d16;border:1px solid var(--border);border-radius:12px;padding:12px}.checkbox-row input{accent-color:var(--accent)}.section-head{display:flex;justify-content:space-between;align-items:center}.badge{background:#261d37;color:var(--accent2);border-radius:999px;padding:5px 9px;font-size:.78rem}.library-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px;max-height:420px;overflow:auto}.library-item{background:#100e17;border:1px solid var(--border);border-radius:14px;padding:12px}.library-item strong{display:block}.library-item span{display:block;color:var(--muted);font-size:.8rem;margin-top:4px}.split-card{display:grid;grid-template-columns:1fr 1fr;gap:16px}.mini-list{display:flex;flex-direction:column;gap:8px}.mini-item{background:#100e17;border:1px solid var(--border);border-radius:12px;padding:10px;font-size:.88rem}.empty{color:var(--muted);font-size:.9rem}.data-card p{color:var(--muted);line-height:1.55}.tiny{font-size:.79rem}.file-button input{display:none}
 .library-filter-grid{margin-top:12px}.library-filter-actions{display:flex;justify-content:flex-end;margin-top:10px}.favorite-item{display:flex;flex-direction:column;gap:8px}.favorite-item-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.favorite-item-title{font-weight:800;color:var(--ink)}.favorite-item-meta{color:var(--muted);font-size:.78rem}.favorite-actions{display:flex;flex-wrap:wrap;gap:7px}.favorite-actions button{padding:8px 10px;font-size:.78rem}.library-item.is-favorite{border-color:#7456a0}.favorite-star{color:var(--accent2);font-weight:900}.library-filter-actions button{padding:9px 12px}
 @media(max-width:640px){.actions-grid.small,.control-grid,.split-card,.library-list{grid-template-columns:1fr}.hero{align-items:flex-start}.result-panel{min-height:320px}.card{border-radius:18px;padding:15px}}@media(display-mode:standalone){#installBtn{display:none!important}}
 
@@ -72,9 +72,9 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 11R4 • Saved Library + Filters</span>
+        <span class="build-version">Build 11R4.1 • Random Defaults + Master Reset</span>
       </div>
-      <button id="installBtn" class="ghost hidden">Install App</button>
+      <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
 
     <main>
@@ -161,7 +161,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         <div class="control-grid">
           <label>Age Style
             <select id="ageStyle">
-              <option>Adult</option><option>Young Adult</option><option>Mature</option><option>Ancient</option>
+              <option selected>Random</option><option>Adult</option><option>Young Adult</option><option>Mature</option><option>Ancient</option>
             </select>
           </label>
           <label>Body Build
@@ -216,6 +216,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <label>
             Lighting Intensity
             <select id="lightingIntensity">
+              <option selected>Random</option>
               <option>Balanced</option>
               <option>Soft</option>
               <option>Strong</option>
@@ -226,6 +227,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <label>
             Light Direction
             <select id="lightingDirection">
+              <option selected>Random</option>
               <option>Automatic</option>
               <option>Front-lit</option>
               <option>Side-lit</option>
@@ -238,6 +240,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <label>
             Atmosphere
             <select id="lightingAtmosphere">
+              <option selected>Random</option>
               <option>Clean air</option>
               <option>Light mist</option>
               <option>Heavy fog</option>
@@ -283,6 +286,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <label>
             Pose Energy
             <select id="poseEnergy">
+              <option selected>Random</option>
               <option>Balanced</option>
               <option>Relaxed</option>
               <option>Controlled</option>
@@ -294,6 +298,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <label>
             Body Orientation
             <select id="poseOrientation">
+              <option selected>Random</option>
               <option>Automatic</option>
               <option>Front-facing</option>
               <option>Three-quarter left</option>
@@ -307,6 +312,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <label>
             Gesture / Action
             <select id="poseGesture">
+              <option selected>Random</option>
               <option>Automatic</option>
               <option>Hands relaxed</option>
               <option>One hand raised</option>
@@ -397,6 +403,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <label>
             Coverage
             <select id="outfitCoverage">
+              <option selected>Random</option>
               <option>Balanced</option>
               <option>Minimal</option>
               <option>Light</option>
@@ -421,7 +428,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <label>Weapon Style<select id="weaponStyle"><option>Random</option><option>Ancient</option><option>Medieval</option><option>Elven</option><option>Dwarven</option><option>Barbarian</option><option>Gothic</option><option>Regal</option><option>Arcane</option><option>Celestial</option><option>Infernal</option><option>Primal</option><option>Nature-grown</option><option>Crystal-forged</option><option>Bone-crafted</option><option>Runic</option></select></label>
           <label>Weapon Material<select id="weaponMaterial"><option>Random</option><option>Steel</option><option>Blackened iron</option><option>Bronze</option><option>Silver</option><option>Gold-trimmed metal</option><option>Obsidian</option><option>Crystal</option><option>Bone</option><option>Living wood</option><option>Dragon-forged metal</option><option>Arcane alloy</option><option>Celestial metal</option><option>Shadow metal</option></select></label>
           <label>Magical Effect<select id="weaponEffect"><option>Random</option><option>None</option><option>Flaming edge</option><option>Frost aura</option><option>Lightning arcs</option><option>Arcane runes</option><option>Celestial radiance</option><option>Shadow mist</option><option>Void energy</option><option>Nature magic</option><option>Blood-red energy</option><option>Prismatic glow</option><option>Soul-fire</option></select></label>
-          <label>Weapon Handling<select id="weaponHandling"><option>Automatic</option><option>Held at rest</option><option>Weapon-ready stance</option><option>Raised defensively</option><option>Raised overhead</option><option>Pointed forward</option><option>Two-handed grip</option><option>One-handed grip</option><option>Dual-wielding</option><option>Slung across back</option><option>Sheathed at hip</option><option>Planted beside character</option></select></label>
+          <label>Weapon Handling<select id="weaponHandling"><option selected>Random</option><option>Automatic</option><option>Held at rest</option><option>Weapon-ready stance</option><option>Raised defensively</option><option>Raised overhead</option><option>Pointed forward</option><option>Two-handed grip</option><option>One-handed grip</option><option>Dual-wielding</option><option>Slung across back</option><option>Sheathed at hip</option><option>Planted beside character</option></select></label>
         </div>
       </section>
 
@@ -447,11 +454,11 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         </div>
         <p class="tiny">Fine-tune rendering quality and image finish while keeping Locked Racial Identity and defining anatomy as the highest visual priority.</p>
         <div class="control-grid">
-          <label>Render Quality<select id="renderQuality"><option>High quality</option><option>Standard</option><option>Ultra detailed</option><option>Premium concept art</option><option>Masterpiece finish</option></select></label>
-          <label>Texture Detail<select id="textureDetail"><option>Detailed</option><option>Clean</option><option>High detail</option><option>Micro-detailed</option><option>Hyper-detailed materials</option></select></label>
-          <label>Camera / Composition<select id="cameraComposition"><option>Full-body character focus</option><option>Portrait focus</option><option>Three-quarter character view</option><option>Low-angle heroic view</option><option>Eye-level cinematic view</option><option>Wide environmental composition</option><option>Dynamic action framing</option></select></label>
-          <label>Depth / Focus<select id="depthFocus"><option>Balanced cinematic depth</option><option>Sharp character, soft background</option><option>Deep focus</option><option>Shallow depth of field</option><option>Dramatic foreground depth</option></select></label>
-          <label>Final Finish<select id="finalFinish"><option>Polished fantasy concept art</option><option>Realistic materials</option><option>Cinematic realism</option><option>Painterly realism</option><option>High-end game character art</option><option>Epic illustration finish</option></select></label>
+          <label>Render Quality<select id="renderQuality"><option selected>Random</option><option>High quality</option><option>Standard</option><option>Ultra detailed</option><option>Premium concept art</option><option>Masterpiece finish</option></select></label>
+          <label>Texture Detail<select id="textureDetail"><option selected>Random</option><option>Detailed</option><option>Clean</option><option>High detail</option><option>Micro-detailed</option><option>Hyper-detailed materials</option></select></label>
+          <label>Camera / Composition<select id="cameraComposition"><option selected>Random</option><option>Full-body character focus</option><option>Portrait focus</option><option>Three-quarter character view</option><option>Low-angle heroic view</option><option>Eye-level cinematic view</option><option>Wide environmental composition</option><option>Dynamic action framing</option></select></label>
+          <label>Depth / Focus<select id="depthFocus"><option selected>Random</option><option>Balanced cinematic depth</option><option>Sharp character, soft background</option><option>Deep focus</option><option>Shallow depth of field</option><option>Dramatic foreground depth</option></select></label>
+          <label>Final Finish<select id="finalFinish"><option selected>Random</option><option>Polished fantasy concept art</option><option>Realistic materials</option><option>Cinematic realism</option><option>Painterly realism</option><option>High-end game character art</option><option>Epic illustration finish</option></select></label>
         </div>
       </section>
 
@@ -485,15 +492,17 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <label>
             Detail Level
             <select id="detailSelect">
+              <option value="random" selected>Random</option>
               <option value="compact">Compact</option>
-              <option value="standard" selected>Standard</option>
+              <option value="standard">Standard</option>
               <option value="vivid">Vivid</option>
             </select>
           </label>
           <label>
             Character Form
             <select id="sexForm">
-              <option value="female" selected>Female</option>
+              <option value="random" selected>Random</option>
+              <option value="female">Female</option>
               <option value="male">Male</option>
             </select>
           </label>
@@ -574,6 +583,7 @@ function categories(){return [...new Set(db.map(r=>r.category))].sort()}
 function eligible(){const c=$('categoryFilter').value;return c==='all'?db:db.filter(r=>r.category===c)}
 function tone(){return $('toneSelect').value==='Random'?pick(['Ancient','Heroic','Dark Fantasy','Mythic','Arcane','Primal','Ethereal']):$('toneSelect').value}
 function detailText(level){
+  if(level==='random') level=pick(['compact','standard','vivid']);
   if(level==='compact') return 'clean silhouette, readable racial traits, detailed face';
   if(level==='vivid') return 'intricate material textures, micro-detailed skin and eyes, elaborate cultural ornamentation, cinematic depth, richly layered environment, premium fantasy concept art detail';
   return 'highly detailed face, distinctive racial anatomy, cultural clothing details, cinematic environment';
@@ -582,9 +592,18 @@ function detailText(level){
 const characterBuildPool=['slender','athletic','lean','powerful','curvy','massive'];
 const expressionPool=['calm','fierce','regal','mysterious','joyful','battle-ready'];
 const hairPool=['long flowing','braided','short','wild','ornate','shaved'];
+const agePool=['Adult','Young Adult','Mature','Ancient'];
+let randomSexResolution=null;
+function beginPromptRandomization(){randomSexResolution=null;}
 
 function selectedSex(){
-  return ($('sexForm')?.value||'female').toLowerCase()==='male'?'male':'female';
+  const value=($('sexForm')?.value||'random').toLowerCase();
+  if(value==='random'){
+    if(!randomSexResolution)randomSexResolution=pick(['female','male']);
+    return randomSexResolution;
+  }
+  randomSexResolution=value==='male'?'male':'female';
+  return randomSexResolution;
 }
 
 function nsfwPromptText(){
@@ -595,7 +614,8 @@ function nsfwPromptText(){
 }
 
 function characterControlText(){
-  const age=$('ageStyle')?.value||'Adult';
+  const ageValue=$('ageStyle')?.value||'Random';
+  const age=ageValue==='Random'?pick(agePool):ageValue;
   const buildValue=$('buildStyle')?.value||'Random';
   const expressionValue=$('expressionStyle')?.value||'Random';
   const hairValue=$('hairStyle')?.value||'Random';
@@ -608,6 +628,10 @@ function characterControlText(){
   return `${age.toLowerCase()} ${sex} character, ${build.toLowerCase()} build, ${expression.toLowerCase()} expression, ${hair.toLowerCase()} hair`;
 }
 
+
+const lightingIntensityPool=['Balanced','Soft','Strong','Extreme cinematic'];
+const lightingDirectionPool=['Automatic','Front-lit','Side-lit','Backlit','Top-lit','Underlit'];
+const lightingAtmospherePool=['Clean air','Light mist','Heavy fog','Dust particles','Floating embers','Magical particles'];
 
 const lightingStylePool=[
   'cinematic rim lighting',
@@ -630,9 +654,12 @@ const lightingStylePool=[
 function lightingControlText(){
   const styleValue=$('lightingStyle')?.value||'Random';
   const style=styleValue==='Random'?pick(lightingStylePool):styleValue;
-  const intensity=$('lightingIntensity')?.value||'Balanced';
-  const direction=$('lightingDirection')?.value||'Automatic';
-  const atmosphere=$('lightingAtmosphere')?.value||'Clean air';
+  const intensityValue=$('lightingIntensity')?.value||'Random';
+  const directionValue=$('lightingDirection')?.value||'Random';
+  const atmosphereValue=$('lightingAtmosphere')?.value||'Random';
+  const intensity=intensityValue==='Random'?pick(lightingIntensityPool):intensityValue;
+  const direction=directionValue==='Random'?pick(lightingDirectionPool):directionValue;
+  const atmosphere=atmosphereValue==='Random'?pick(lightingAtmospherePool):atmosphereValue;
   const weather=($('environmentWeather')?.value||'Random').toLowerCase();
   const effect=($('environmentEffect')?.value||'Random').toLowerCase();
   let atmosphereText=atmosphere.toLowerCase();
@@ -644,6 +671,10 @@ function lightingControlText(){
 
   return `${style}, ${intensity.toLowerCase()} intensity, ${direction.toLowerCase()}, ${atmosphereText}`;
 }
+
+const poseEnergyPool=['Balanced','Relaxed','Controlled','Dynamic','Explosive'];
+const poseOrientationPool=['Automatic','Front-facing','Three-quarter left','Three-quarter right','Profile left','Profile right','Back three-quarter'];
+const poseGesturePool=['Automatic','Hands relaxed','One hand raised','Arms crossed','Hands on hips','One hand extended','Both hands casting','Guarding stance','Reaching forward','Looking over shoulder'];
 
 const poseStylePool=[
   'neutral standing pose',
@@ -667,9 +698,12 @@ const poseStylePool=[
 function poseControlText(){
   const styleValue=$('poseStyle')?.value||'Random';
   const style=styleValue==='Random'?pick(poseStylePool):styleValue.toLowerCase();
-  const energy=($('poseEnergy')?.value||'Balanced').toLowerCase();
-  const orientation=($('poseOrientation')?.value||'Automatic').toLowerCase();
-  const gesture=($('poseGesture')?.value||'Automatic').toLowerCase();
+  const energyValue=$('poseEnergy')?.value||'Random';
+  const orientationValue=$('poseOrientation')?.value||'Random';
+  const gestureValue=$('poseGesture')?.value||'Random';
+  const energy=(energyValue==='Random'?pick(poseEnergyPool):energyValue).toLowerCase();
+  const orientation=(orientationValue==='Random'?pick(poseOrientationPool):orientationValue).toLowerCase();
+  const gesture=(gestureValue==='Random'?pick(poseGesturePool):gestureValue).toLowerCase();
 
   const orientationText=orientation==='automatic'?'natural body orientation':orientation;
   const gestureText=gesture==='automatic'?'natural arm and hand placement':gesture;
@@ -697,6 +731,7 @@ const outfitStylePool=[
   'ancient','medieval','elven','dwarven','arcane','gothic','barbarian','regal',
   'primal','celestial','infernal','nature-grown','crystal-forged','bone-crafted'
 ];
+const outfitCoveragePool=['Balanced','Minimal','Light','Moderate','Full coverage','Layered full-body'];
 const outfitMaterialPool=[
   'cloth and leather','fine silk','hardened leather','iron','steel','bronze','silver',
   'gold-trimmed metal','dragon scale','bone and hide','living wood','crystal','obsidian','arcane-infused metal'
@@ -706,7 +741,8 @@ function armorClothingControlText(){
   const typeValue=$('outfitType')?.value||'Random';
   const styleValue=$('outfitStyle')?.value||'Random';
   const materialValue=$('outfitMaterial')?.value||'Random';
-  const coverage=($('outfitCoverage')?.value||'Balanced').toLowerCase();
+  const coverageValue=$('outfitCoverage')?.value||'Random';
+  const coverage=(coverageValue==='Random'?pick(outfitCoveragePool):coverageValue).toLowerCase();
   const type=typeValue==='Random'?pick(outfitTypePool):typeValue.toLowerCase();
   const style=styleValue==='Random'?pick(outfitStylePool):styleValue.toLowerCase();
   const material=materialValue==='Random'?pick(outfitMaterialPool):materialValue.toLowerCase();
@@ -715,6 +751,7 @@ function armorClothingControlText(){
 
 
 
+const weaponHandlingPool=['Automatic','Held at rest','Weapon-ready stance','Raised defensively','Raised overhead','Pointed forward','Two-handed grip','One-handed grip','Dual-wielding','Slung across back','Sheathed at hip','Planted beside character'];
 const weaponTypePool=['longsword','greatsword','dual blades','dagger','spear','halberd','battle axe','warhammer','mace','bow','crossbow','staff','wand','scythe','whip','shield and sword','claws / gauntlets'];
 const weaponStylePool=['ancient','medieval','elven','dwarven','barbarian','gothic','regal','arcane','celestial','infernal','primal','nature-grown','crystal-forged','bone-crafted','runic'];
 const weaponMaterialPool=['steel','blackened iron','bronze','silver','gold-trimmed metal','obsidian','crystal','bone','living wood','dragon-forged metal','arcane alloy','celestial metal','shadow metal'];
@@ -722,12 +759,13 @@ const weaponEffectPool=['no magical effect','flaming edge','frost aura','lightni
 function weaponControlText(){
   const typeValue=$('weaponType')?.value||'Random';
   if(typeValue==='None') return 'Unarmed, with no weapon visible';
-  const styleValue=$('weaponStyle')?.value||'Random', materialValue=$('weaponMaterial')?.value||'Random', effectValue=$('weaponEffect')?.value||'Random', handlingValue=$('weaponHandling')?.value||'Automatic';
+  const styleValue=$('weaponStyle')?.value||'Random', materialValue=$('weaponMaterial')?.value||'Random', effectValue=$('weaponEffect')?.value||'Random', handlingValue=$('weaponHandling')?.value||'Random';
   const type=typeValue==='Random'?pick(weaponTypePool):typeValue.toLowerCase();
   const style=styleValue==='Random'?pick(weaponStylePool):styleValue.toLowerCase();
   const material=materialValue==='Random'?pick(weaponMaterialPool):materialValue.toLowerCase();
   const effect=effectValue==='Random'?pick(weaponEffectPool):effectValue.toLowerCase();
-  const handling=handlingValue==='Automatic'?'naturally handled to match the selected pose':handlingValue.toLowerCase();
+  const resolvedHandling=handlingValue==='Random'?pick(weaponHandlingPool):handlingValue;
+  const handling=resolvedHandling==='Automatic'?'naturally handled to match the selected pose':resolvedHandling.toLowerCase();
   return `Equipped with a ${style} ${type} made primarily from ${material}, ${effect}, ${handling}; weapon scale, grip, placement, and clearance must fit only the anatomy actually established by the race identity, plus the clothing and pose, without clipping or hiding defining racial traits. Do not invent wings, horns, tails, extra limbs, or other anatomy to support the weapon`;
 }
 
@@ -748,12 +786,18 @@ function environmentControlText(){
 }
 
 
+const renderQualityPool=['High quality','Standard','Ultra detailed','Premium concept art','Masterpiece finish'];
+const textureDetailPool=['Detailed','Clean','High detail','Micro-detailed','Hyper-detailed materials'];
+const cameraCompositionPool=['Full-body character focus','Portrait focus','Three-quarter character view','Low-angle heroic view','Eye-level cinematic view','Wide environmental composition','Dynamic action framing'];
+const depthFocusPool=['Balanced cinematic depth','Sharp character, soft background','Deep focus','Shallow depth of field','Dramatic foreground depth'];
+const finalFinishPool=['Polished fantasy concept art','Realistic materials','Cinematic realism','Painterly realism','High-end game character art','Epic illustration finish'];
 function qualityControlText(){
-  const quality=($('renderQuality')?.value||'High quality').toLowerCase();
-  const texture=($('textureDetail')?.value||'Detailed').toLowerCase();
-  const camera=($('cameraComposition')?.value||'Full-body character focus').toLowerCase();
-  const depth=($('depthFocus')?.value||'Balanced cinematic depth').toLowerCase();
-  const finish=($('finalFinish')?.value||'Polished fantasy concept art').toLowerCase();
+  const qv=$('renderQuality')?.value||'Random', tv=$('textureDetail')?.value||'Random', cv=$('cameraComposition')?.value||'Random', dv=$('depthFocus')?.value||'Random', fv=$('finalFinish')?.value||'Random';
+  const quality=(qv==='Random'?pick(renderQualityPool):qv).toLowerCase();
+  const texture=(tv==='Random'?pick(textureDetailPool):tv).toLowerCase();
+  const camera=(cv==='Random'?pick(cameraCompositionPool):cv).toLowerCase();
+  const depth=(dv==='Random'?pick(depthFocusPool):dv).toLowerCase();
+  const finish=(fv==='Random'?pick(finalFinishPool):fv).toLowerCase();
   return `Quality and composition: ${quality}, ${texture} textures, ${camera}, ${depth}, ${finish}; prioritize crisp facial readability, coherent anatomy, clean edges, intentional composition, and accurate materials. Locked Racial Identity and defining racial anatomy always take priority over decorative detail, camera effects, background complexity, or stylization`;
 }
 
@@ -797,6 +841,7 @@ function anatomyAllowlistText(a,b=null){
 }
 
 function buildSingle(r){
+  beginPromptRandomization();
   const sex=selectedSex();
   const t=tone(), adjective=pick(adjectives), wardrobe=armorClothingControlText(), lighting=lightingControlText(), detail=detailText($('detailSelect').value);
   return {
@@ -811,6 +856,7 @@ Wearing ${wardrobe}. ${weaponControlText()}. ${environmentControlText()}. ${ligh
   }
 }
 function buildFusion(a,b,ratioA=50){
+  beginPromptRandomization();
   const sex=selectedSex();
   const t=tone();
   ratioA=Math.max(10,Math.min(90,Number(ratioA)||50));
@@ -930,6 +976,34 @@ function resetMasterPrompt(){
   const box=$('masterPromptBox');
   if(box)box.textContent='Ready. Tap “Build Master Character Prompt” to combine the current identity with your live settings.';
   updateMasterSummary();
+}
+
+function masterResetGenerator(){
+  const randomSelects=['ageStyle','buildStyle','expressionStyle','hairStyle','lightingStyle','lightingIntensity','lightingDirection','lightingAtmosphere','poseStyle','poseEnergy','poseOrientation','poseGesture','outfitType','outfitStyle','outfitMaterial','outfitCoverage','weaponType','weaponStyle','weaponMaterial','weaponEffect','weaponHandling','environmentType','environmentStyle','environmentWeather','environmentTime','environmentEffect','renderQuality','textureDetail','cameraComposition','depthFocus','finalFinish','toneSelect','detailSelect','sexForm'];
+  randomSelects.forEach(id=>{const el=$(id);if(!el)return;const option=[...el.options].find(o=>o.value==='random'||o.textContent==='Random');if(option)el.value=option.value;});
+  if($('categoryFilter'))$('categoryFilter').value='all';
+  if($('nsfwMode'))$('nsfwMode').value='off';
+  if($('fusionNameInput'))$('fusionNameInput').value='';
+  if($('parentAInput'))$('parentAInput').value='';
+  if($('parentBInput'))$('parentBInput').value='';
+  if($('fusionRatio'))$('fusionRatio').value='50';
+  if($('searchInput'))$('searchInput').value='';
+  ['libraryCategoryFilter','libraryThemeFilter','libraryRarityFilter','libraryAffinityFilter','libraryExtremityFilter','libraryFavoritesOnly'].forEach(id=>{if($(id))$(id).value='all';});
+  mode='single';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.mode==='single'));
+  $('manualFusionPanel')?.classList.add('hidden');
+  if($('generateBtn'))$('generateBtn').textContent='Generate';
+  current=null;
+  masterPrompt='';
+  if($('result'))$('result').innerHTML='<div class="result-placeholder">Tap generate to begin.</div>';
+  if($('masterPromptBox'))$('masterPromptBox').textContent='Your completed Master Character Prompt will appear here.';
+  if($('favoriteBtn'))$('favoriteBtn').textContent='☆ Favorite';
+  manualPickNext='A';
+  updateRatioLabels();
+  syncManualPickState();
+  renderLibrary();
+  updateMasterSummary();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function buildMasterPrompt(){
@@ -1387,6 +1461,8 @@ $('exportFusionsBtn').onclick=exportSavedFusions;
 $('importFusionsBtn').onclick=()=>$('importFusionsFile').click();
 $('importFusionsFile').onchange=e=>importSavedFusionsFile(e.target.files?.[0]);
 
+$('masterResetBtn').onclick=()=>{if(confirm('Reset all generator tabs, current race/fusion, and prompts to Random defaults? Saved races, saved fusions, favorites, history, and the race library will be kept.'))masterResetGenerator();};
+
 $('buildMasterBtn').onclick=buildMasterPrompt;
 $('copyMasterBtn').onclick=copyMasterPrompt;
 
@@ -1453,12 +1529,12 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 </script>
 
 <script>
-// Build 11R4: saved/favorite management, race-library search filters, NSFW prompt mode, and simplified manual fusion controls.
+// Build 11R4.1: Random defaults across generator controls plus a non-destructive Master Reset.
 // The worker itself uses network-first navigation with an offline fallback.
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=11r3-anatomy-allowlist-forms', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=11r4-1-random-defaults-master-reset', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and

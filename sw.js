@@ -1,4 +1,4 @@
-const CACHE = 'race-generator-r4-saved-library-filters-v1';
+const CACHE = 'race-generator-r4-1-random-defaults-master-reset-v1';
 const OFFLINE_HTML='./index.html';
 const CORE=[
   './manifest.webmanifest',
