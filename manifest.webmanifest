@@ -1,7 +1,7 @@
 {
   "name": "Race Generator",
   "short_name": "Race Generator",
-  "description": "Offline 2000-race fantasy humanoid Race Generator with Random defaults, Master Reset, RG Fusion, saved favorites, library filters, and Master Character Builder",
+  "description": "Offline 5,000-race fantasy humanoid Race Generator with auto-updating race data, Random defaults, Master Reset, RG Fusion, saved favorites, library filters, and Master Character Builder",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

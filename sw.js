@@ -1,7 +1,8 @@
-const CACHE = 'race-generator-r4-1-random-defaults-master-reset-v1';
+const CACHE = 'race-generator-r4-2-5000-auto-library-v1';
 const OFFLINE_HTML='./index.html';
 const CORE=[
   './manifest.webmanifest',
+  './races.js',
   './Icons/icon-192.png',
   './Icons/icon-512.png'
 ];
@@ -53,9 +54,22 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Manifest and worker-related files should prefer the network so updates are visible.
-  if (url.pathname.endsWith('/manifest.webmanifest') || url.pathname.endsWith('/sw.js')) {
-    event.respondWith(fetch(request, { cache: 'no-store' }).catch(() => caches.match(request)));
+  // Manifest, worker, and race data should prefer the network so updates are visible.
+  if (url.pathname.endsWith('/manifest.webmanifest') || url.pathname.endsWith('/sw.js') || url.pathname.endsWith('/races.js')) {
+    event.respondWith((async () => {
+      try {
+        const response = await fetch(request, { cache: 'no-store' });
+        if (response && response.ok && url.pathname.endsWith('/races.js')) {
+          const cache = await caches.open(CACHE);
+          await cache.put(request, response.clone());
+        }
+        return response;
+      } catch (err) {
+        const cached = await caches.match(request);
+        if (cached) return cached;
+        throw err;
+      }
+    })());
     return;
   }
 
