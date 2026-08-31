@@ -1,8 +1,8 @@
 {
   "name": "Race Generator",
   "short_name": "Race Generator",
-  "description": "Offline 5,000-race fantasy humanoid Race Generator with conditional weapon-specific prompt profiles, identity banners, Realistic/Anime/Blender-ready character reference sheets, randomized fusion ancestry ratios, expanded wardrobe and arsenal, History reload, Random defaults, Master Reset, and update-reliability hotfix.",
-  "start_url": "./?build=12r5-0-1-update-hotfix",
+  "description": "Offline 5,000-race fantasy humanoid Race Generator with conditional weapon-specific prompt profiles, identity banners, standalone Realistic and Anime illustration style modes plus a dual-section Blender-ready modeling and finished-design reference sheet, randomized fusion ancestry ratios, expanded wardrobe and arsenal, History reload, Random defaults, Master Reset, and update-reliability hotfix.",
+  "start_url": "./?build=12r5-0-6-dual-blender-reference",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
