@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.11 • Default Collapsed Tabs</span>
+        <span class="build-version">Build 12R5.0.12 • Cross-Style Character Lock</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -695,7 +695,7 @@ if(storedLibraryVersion!==BUILTIN_RACE_LIBRARY_VERSION)localStorage.setItem(STOR
 try{localStorage.removeItem('race_generator_races');localStorage.removeItem(legacyPrefix+'races')}catch(e){}
 let favorites=JSON.parse(localStorage.getItem(STORAGE_KEYS.favorites)||localStorage.getItem(legacyPrefix+'favorites')||'[]');
 let history=JSON.parse(localStorage.getItem(STORAGE_KEYS.history)||localStorage.getItem(legacyPrefix+'history')||'[]');
-let current=null, mode='single', deferredPrompt=null, masterPrompt='', referenceSheetPrompt='', blenderBlueprintPrompt='', blenderCharacterSnapshot=null, selectedReferenceSheetStyle='';
+let current=null, mode='single', deferredPrompt=null, masterPrompt='', referenceSheetPrompt='', blenderBlueprintPrompt='', styleCharacterSnapshot=null, blenderCharacterSnapshot=null, selectedReferenceSheetStyle='';
 
 const $=id=>document.getElementById(id);
 if(!starterRaces.length){console.error('Race library failed to load from races.js');setTimeout(()=>{const el=$('raceCount');if(el)el.textContent='Library load error';},0)}
@@ -1171,6 +1171,9 @@ function updateMasterSummary(){
 function resetMasterPrompt(){
   masterPrompt='';
   referenceSheetPrompt='';
+  blenderBlueprintPrompt='';
+  styleCharacterSnapshot=null;
+  blenderCharacterSnapshot=null;
   const box=$('masterPromptBox');
   if(box)box.textContent='Ready. Tap “Build Master Character Prompt” to combine the current identity with your live settings.';
   const refBox=$('referenceSheetPromptBox');
@@ -1196,6 +1199,9 @@ function masterResetGenerator(){
   current=null;
   masterPrompt='';
   referenceSheetPrompt='';
+  blenderBlueprintPrompt='';
+  styleCharacterSnapshot=null;
+  blenderCharacterSnapshot=null;
   if($('result'))$('result').innerHTML='<div class="result-placeholder">Tap generate to begin.</div>';
   if($('masterPromptBox'))$('masterPromptBox').textContent='Your completed Master Character Prompt will appear here.';
   if($('referenceSheetPromptBox'))$('referenceSheetPromptBox').textContent='Choose Realistic, Anime Style, or Blender-Ready to build a dedicated prompt for the current character.';
@@ -1376,12 +1382,28 @@ function setReferenceSheetMode(style){
   if(status){
     if(selectedReferenceSheetStyle){
       status.classList.add('active');
-      status.innerHTML=(selectedReferenceSheetStyle==='anime'||selectedReferenceSheetStyle==='realistic') ? `<strong>${referenceStyleLabel(selectedReferenceSheetStyle)} selected.</strong> This produces one normal character illustration using your live pose, lighting, environment, camera, clothing, and equipment. Copy the dedicated prompt below.` : `<strong>Blender-Ready selected.</strong> Two separate synchronized prompts are available: the finished full-color design reference below and the B&amp;W modeling blueprint companion. Generate them separately.`;
+      status.innerHTML=(selectedReferenceSheetStyle==='anime'||selectedReferenceSheetStyle==='realistic') ? `<strong>${referenceStyleLabel(selectedReferenceSheetStyle)} selected.</strong> This produces one normal character illustration while preserving the same locked character design shared by all three style modes. Pose, lighting, environment, and composition remain mode-specific. Copy the dedicated prompt below.` : `<strong>Blender-Ready selected.</strong> This uses the same locked character design as Realistic and Anime. Two separate synchronized Blender prompts are available: the finished full-color design reference below and the B&amp;W modeling blueprint companion. Generate them separately.`;
     }else{
       status.classList.remove('active');
       status.textContent='No alternate output mode selected yet. Select a mode above, then copy the dedicated prompt below.';
     }
   }
+}
+
+function captureStyleCharacterSnapshot(){
+  if(styleCharacterSnapshot)return styleCharacterSnapshot;
+  // Style Character Lock: resolve the character-design controls once for the current
+  // generated race/fusion, then share that frozen identity across Realistic, Anime,
+  // Blender Finished, and Blender B&W. Scene/pose/lighting remain style-prompt specific.
+  beginPromptRandomization();
+  styleCharacterSnapshot={
+    identity:referenceIdentitySource(),
+    character:characterControlText(),
+    wardrobe:armorClothingControlText(),
+    equipment:weaponControlText(),
+    nsfw:nsfwPromptText()
+  };
+  return styleCharacterSnapshot;
 }
 
 function buildReferenceSheetPrompt(style){
@@ -1390,17 +1412,11 @@ function buildReferenceSheetPrompt(style){
     return '';
   }
   setReferenceSheetMode(style);
-  beginPromptRandomization();
-  const identity=referenceIdentitySource();
-  const character=characterControlText();
-  const wardrobe=armorClothingControlText();
-  const equipment=weaponControlText();
-  // Blender Snapshot Lock: resolve all Random/live character controls exactly once, then
-  // feed the identical frozen strings to BOTH companion prompts. This prevents a second
-  // random-control evaluation from silently changing build, expression, hair, wardrobe,
-  // weapon, material, effect, grip, or any other resolved design value.
+  const snapshot=captureStyleCharacterSnapshot();
+  const {identity,character,wardrobe,equipment,nsfw}=snapshot;
+  // Blender's two companion outputs consume the same cross-style character snapshot.
   if(style==='blender'){
-    blenderCharacterSnapshot={identity,character,wardrobe,equipment,nsfw:nsfwPromptText()};
+    blenderCharacterSnapshot=snapshot;
   }
   if(style==='anime' || style==='realistic'){
     referenceSheetPrompt=`${referenceSheetDirective(style)}
@@ -1417,7 +1433,7 @@ ${environmentControlText()}.
 ${lightingControlText()}.
 ${detailText($('detailSelect').value)}.
 ${qualityControlText()}.
-${nsfwPromptText()}.
+${nsfw}.
 
 SELECTED STYLE IDENTITY PRESERVATION RULE:
 Locked Racial Identity and the ANATOMY ALLOWLIST remain authoritative for WHAT the character is. The selected Realistic Style or Anime Style is authoritative for HOW the complete single image is rendered. Preserve defining racial anatomy, coloration, markings, body proportions, clothing construction, and equipment while obeying the selected pose, scene, lighting, and composition. Do not convert this request into a reference sheet or turnaround.`;
@@ -2099,7 +2115,8 @@ function setupCollapsibleCards(){
 }
 setupCollapsibleCards();
 
-// Build 12R5.0.11: keeps Step 1 expanded by default and starts every later home-screen section collapsed, while preserving each user's subsequent expand/collapse choices.
+// Build 12R5.0.12: adds a shared cross-style character snapshot so Realistic, Anime, Blender Finished, and Blender B&W preserve one resolved character design until a new race/fusion is generated or loaded. Pose, scene, lighting, and rendering remain mode-specific.
+// Previous Build 12R5.0.11: keeps Step 1 expanded by default and starts every later home-screen section collapsed, while preserving each user's subsequent expand/collapse choices.
 // Previous Build 12R5.0.10: preserves the Blender snapshot lock, adds collapsible home-screen cards, and resolves incompatible weapon handling selections by weapon type.
 // Previous Build 12R5.0.8: adds Manual Race selection and separates Blender Finished Reference from the B&W Modeling Blueprint so each is generated independently.
 // Previous Build 12R5.0.7: adds a separate synchronized black-and-white Blender modeling blueprint prompt/button while preserving the existing finished dual Blender reference unchanged.
@@ -2110,7 +2127,7 @@ setupCollapsibleCards();
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-11-default-collapsed-tabs', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-12-cross-style-character-lock', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and
