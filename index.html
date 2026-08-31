@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.7 • Blender Blueprint Companion</span>
+        <span class="build-version">Build 12R5.0.8 • Manual Race + Split Blender References</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -82,9 +82,20 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <section class="card generator-card">
         <div class="mode-tabs">
           <button class="tab active" data-mode="single">Random Race</button>
+          <button class="tab" data-mode="manualrace">Manual Race</button>
           <button class="tab" data-mode="fusion">Random Fusion</button>
           <button class="tab" data-mode="manual">Manual Fusion</button>
         </div>
+        <div id="manualRacePanel" class="manual-fusion hidden">
+          <h3>Manual Race</h3>
+          <label>
+            Choose Race
+            <input id="manualRaceInput" class="search" list="raceOptions" placeholder="Search any of the 5,000 races..." autocomplete="off" />
+          </label>
+          <p class="manual-note">Generate the exact selected base race with no fusion and no random race selection. All character, wardrobe, weapon, style, and Blender controls still apply.</p>
+          <div id="manualRaceStatus" class="manual-status">Choose a race by name or number, then tap Generate Manual Race.</div>
+        </div>
+
         <div id="manualFusionPanel" class="manual-fusion hidden">
           <h3>Manual RG Fusion</h3>
           <div class="fusion-name-box">
@@ -564,12 +575,12 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
         </div>
         <div id="referenceModeStatus" class="reference-mode-status">No alternate output mode selected yet. Select a mode above, then copy the dedicated prompt below.</div>
         <div class="actions-grid" style="margin-top:10px">
-          <button id="copyReferenceSheetBtn" type="button">Copy Selected Mode Prompt</button>
+          <button id="copyReferenceSheetBtn" type="button">Copy Finished / Selected Prompt</button>
           <button id="clearReferenceSheetBtn" type="button">Clear Selected Mode</button>
         </div>
         <div id="referenceSheetPromptBox" class="prompt-box master-prompt-box">Choose Realistic, Anime Style, or Blender-Ready to build a dedicated prompt for the current character.</div>
         <div id="blenderBlueprintPanel" style="display:none;margin-top:12px">
-          <p class="tiny"><strong>Blender B&amp;W Modeling Blueprint:</strong> companion prompt using the exact same resolved character identity as the finished Blender reference, but rendered as clean black-and-white orthographic construction line art.</p>
+          <p class="tiny"><strong>Blender B&amp;W Modeling Blueprint:</strong> a separate generation prompt using the exact same resolved character identity as the finished Blender reference. Do not combine the two prompts in one image generation.</p>
           <div class="actions-grid">
             <button id="copyBlenderBlueprintBtn" type="button">Copy B&amp;W Modeling Blueprint</button>
           </div>
@@ -1257,31 +1268,25 @@ Depict one coherent character composition using the currently selected full-body
 STYLE EXCLUSIONS:
 Do not create multiple turnaround views, front/side/back panels, T-pose sheets, model sheets, anatomy charts, or reference-sheet labels. Do not render as photorealistic live action, western realism, painterly oil fantasy, or Blender/3D realism. Avoid chibi proportions unless explicitly requested elsewhere.`;
 
-  return `BLENDER-READY DUAL CHARACTER REFERENCE — SELECTED MODE — HIGHEST VISUAL PRIORITY.
-Create ONE coordinated production reference image containing TWO clearly separated, complementary reference sections for the EXACT SAME character. Do not collapse the request into a single portrait or a single turnaround. Both Sheet A and Sheet B are mandatory. Identity, anatomy, face, body proportions, hairstyle, racial markers, coloration, clothing design, equipment design, materials, and palette must match exactly between both sheets.
+  return `BLENDER-READY FINISHED CHARACTER DESIGN REFERENCE — SELECTED MODE — HIGHEST VISUAL PRIORITY.
+Create ONE polished full-color production character design reference for the EXACT SAME resolved character described below. This is the FINISHED DESIGN companion to the separate B&W Blender Modeling Blueprint. Do not combine the black-and-white construction blueprint into this image.
 
-SHEET A — BLENDER MODELING / BODY CONSTRUCTION REFERENCE — MANDATORY:
-Create a clean modeling blueprint specifically useful for constructing the character in Blender. Use a plain neutral background and orthographic-style presentation. Show at minimum an exact FRONT full-body T-pose and exact SIDE full-body T-pose at identical scale and ground line. When composition permits, also include an exact BACK T-pose. Keep the body silhouette and major anatomical structures unobstructed. Prioritize proportion, volume, limb length, joint placement, racial anatomy, silhouette, and construction clarity over decorative presentation.
+MANDATORY FINISHED VIEWS:
+Show FRONT full-body, THREE-QUARTER full-body, exact SIDE full-body, and BACK full-body neutral standing views at consistent scale and ground line. Preserve the exact same face, anatomy, body proportions, hairstyle, racial markers, coloration, clothing construction, equipment design, materials, and palette in every view.
 
-STRICT T-POSE FOR SHEET A:
-Character upright and symmetrical; feet planted comfortably apart; legs straight; pelvis and torso level; head neutral; BOTH arms extended horizontally from the shoulders at approximately 90 degrees; elbows straight; wrists neutral; hands open and readable. No A-pose, no lowered arms, no action stance, no contrapposto. Large wings, tails, horns, fins, extra limbs, or other anatomy explicitly allowed by the race must be shown clearly without changing their design.
+FACE & DETAIL PANEL:
+Include front, three-quarter, and profile head views plus useful close-ups of identity-critical eyes, skin/surface traits, racial markings, hair, costume construction, and anatomy details actually supported by the ANATOMY ALLOWLIST.
 
-SHEET A — ISOLATED CONSTRUCTION CALLOUTS:
-Where useful, include separate clean references for hands, feet, head profile, horns, wings, tail, ears, or other race-specific structures actually present in the ANATOMY ALLOWLIST. Do not invent extra anatomy merely to fill callout space.
+MATERIAL / COLOR / EQUIPMENT REFERENCE:
+Include a readable color palette and representative material swatches for the actual selected outfit and body materials. Show selected weapons, shields, arcane focuses, or large equipment separately in dedicated equipment insets so they do not obscure the character. Equipment must preserve the selected conditional weapon profile and recognizable construction. Magical effects may appear only as small separate affinity/effect callouts.
 
-SHEET B — FINISHED CHARACTER DESIGN REFERENCE — MANDATORY:
-Show the SAME resolved character as a polished finished design sheet with FRONT full-body, THREE-QUARTER full-body, exact SIDE full-body, and BACK full-body neutral standing views at consistent scale. Add a FACE & DETAIL PANEL with front, three-quarter, and profile head views plus useful close-ups of defining racial markings, skin/surface traits, hair, eyes, costume construction, and other identity-critical details.
+FINISHED REFERENCE STYLE LOCK:
+Polished high-detail fantasy character-design rendering, neutral studio/reference lighting, plain light neutral background, minimal perspective distortion, no depth-of-field, no dramatic environment, no action composition, no cinematic scenery, and no unrelated decorative characters. This image is the finished color/material/design reference, NOT the black-and-white construction blueprint.
 
-SHEET B — MATERIAL / COLOR / EQUIPMENT REFERENCE:
-Include a readable color palette and representative material swatches for the actual selected outfit and body materials. Show selected weapons, shields, or large equipment separately in dedicated equipment insets so they do not obscure the character. Equipment references must preserve the selected weapon's conditional weapon profile and recognizable construction. Magical effects may appear as small separate affinity/effect callouts, but must not hide the base design.
+SYNCHRONIZATION LOCK:
+This finished reference and the separately generated B&W Modeling Blueprint are two presentations of the EXACT SAME character. Do not redesign sex/form, face, proportions, anatomy, markings, hair, clothing, equipment, palette, or materials.
 
-DUAL-SHEET SYNCHRONIZATION LOCK:
-Sheet A is the clean modeling blueprint and Sheet B is the finished design/material reference. They are NOT alternate designs. Do not change sex/form, face, proportions, anatomy, wing shape, tail shape, markings, hair, clothing construction, weapon design, palette, or materials between them. Sheet A may simplify lighting and presentation for modeling clarity, but must not simplify away identity-defining structures.
-
-PRESENTATION RULES:
-Use neutral reference lighting, minimal perspective distortion, no depth-of-field, no dramatic environment, no action composition, no cinematic scenery, no perspective exaggeration, and no unrelated decorative characters. Keep labels concise and legible where labels are rendered. Production readability outranks drama.
-
-This is visual 3D modeling reference only; do not claim to output an actual .blend file, mesh topology, UV layout, armature, rig, or production-ready geometry.`;
+This is visual 3D modeling reference only; do not claim to output an actual .blend file, mesh topology, UV layout, armature, rig, or production-ready geometry.`
 }
 function referenceIdentitySource(){
   if(!current)return '';
@@ -1349,7 +1354,7 @@ function setReferenceSheetMode(style){
   if(status){
     if(selectedReferenceSheetStyle){
       status.classList.add('active');
-      status.innerHTML=(selectedReferenceSheetStyle==='anime'||selectedReferenceSheetStyle==='realistic') ? `<strong>${referenceStyleLabel(selectedReferenceSheetStyle)} selected.</strong> This produces one normal character illustration using your live pose, lighting, environment, camera, clothing, and equipment. Copy the dedicated prompt below.` : `<strong>Blender-Ready selected.</strong> This produces the dedicated multi-view modeling reference prompt. Copy the prompt below.`;
+      status.innerHTML=(selectedReferenceSheetStyle==='anime'||selectedReferenceSheetStyle==='realistic') ? `<strong>${referenceStyleLabel(selectedReferenceSheetStyle)} selected.</strong> This produces one normal character illustration using your live pose, lighting, environment, camera, clothing, and equipment. Copy the dedicated prompt below.` : `<strong>Blender-Ready selected.</strong> Two separate synchronized prompts are available: the finished full-color design reference below and the B&amp;W modeling blueprint companion. Generate them separately.`;
     }else{
       status.classList.remove('active');
       status.textContent='No alternate output mode selected yet. Select a mode above, then copy the dedicated prompt below.';
@@ -1479,7 +1484,7 @@ async function copyReferenceSheetPrompt(){
   const btn=$('copyReferenceSheetBtn');
   try{
     await navigator.clipboard.writeText(referenceSheetPrompt);
-    if(btn){btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy Selected Mode Prompt',1100);}
+    if(btn){btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy Finished / Selected Prompt',1100);}
   }catch(err){
     prompt('Copy this selected-mode prompt:',referenceSheetPrompt);
   }
@@ -1572,6 +1577,7 @@ function setRaceAsParent(id,parent){
     mode='manual';
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.mode==='manual'));
     $('manualFusionPanel').classList.remove('hidden');
+    $('manualRacePanel').classList.add('hidden');
     $('generateBtn').textContent='Generate Manual Fusion';
   }
   renderLibrary();
@@ -1585,6 +1591,7 @@ function selectRaceForManual(id){
     mode='manual';
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.mode==='manual'));
     $('manualFusionPanel').classList.remove('hidden');
+    $('manualRacePanel').classList.add('hidden');
     $('generateBtn').textContent='Generate Manual Fusion';
   }
 
@@ -1639,6 +1646,10 @@ function generate(){
   const pool=eligible(); if(!pool.length)return;
   if(mode==='single'){
     current=buildSingle(pick(pool));
+  }else if(mode==='manualrace'){
+    const r=raceFromInput($('manualRaceInput').value);
+    if(!r){alert('Choose a race from the 5,000-race list first.');return;}
+    current=buildSingle(r);
   }else if(mode==='fusion'){
     let a=pick(pool),b=pick(db.filter(x=>x.id!==a.id));
     current=buildFusion(a,b,randomFusionRatio());
@@ -1870,7 +1881,8 @@ document.querySelectorAll('.tab').forEach(btn=>btn.onclick=()=>{
   btn.classList.add('active');
   mode=btn.dataset.mode;
   $('manualFusionPanel').classList.toggle('hidden',mode!=='manual');
-  $('generateBtn').textContent=mode==='manual'?'Generate Manual Fusion':'Generate';
+  $('manualRacePanel').classList.toggle('hidden',mode!=='manualrace');
+  $('generateBtn').textContent=mode==='manual'?'Generate Manual Fusion':mode==='manualrace'?'Generate Manual Race':'Generate';
 });
 
 $('fusionRatio').oninput=updateRatioLabels;
@@ -2005,7 +2017,8 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 </script>
 
 <script>
-// Build 12R5.0.7: adds a separate synchronized black-and-white Blender modeling blueprint prompt/button while preserving the existing finished dual Blender reference unchanged.
+// Build 12R5.0.8: adds Manual Race selection and separates Blender Finished Reference from the B&W Modeling Blueprint so each is generated independently.
+// Previous Build 12R5.0.7: adds a separate synchronized black-and-white Blender modeling blueprint prompt/button while preserving the existing finished dual Blender reference unchanged.
 // Previous Build 12R5.0.6: Blender-Ready now requires two synchronized sections: a strict T-pose modeling blueprint plus a finished multi-view design/material/equipment reference for the same character.
 // Previous R5.0.5: Realistic is now a single-image realistic fantasy style mode matching Anime Style behavior.
 // Previous R5.0.4: changes Anime from a multi-view reference-sheet mode into a single-image anime illustration style mode that honors the live pose, scene, lighting, camera, wardrobe, equipment, and identity. Realistic and Blender-ready remain reference-sheet modes; Blender retains strict T-pose.
@@ -2013,7 +2026,7 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-4-anime-style-mode', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-8-manual-race-split-blender', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and

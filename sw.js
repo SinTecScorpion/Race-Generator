@@ -1,4 +1,4 @@
-const CACHE = 'race-generator-r5-0-7-blender-blueprint-v1';
+const CACHE = 'race-generator-r5-0-8-manual-race-split-blender-v1';
 const OFFLINE_HTML='./index.html';
 const CORE=[
   './manifest.webmanifest',
