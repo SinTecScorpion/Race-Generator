@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.16 • Fixed Base-Model Blueprint</span>
+        <span class="build-version">Build 12R5.0.17 • ChatGPT Compatibility Toggle</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -625,7 +625,15 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
               <option value="on">On — adult NSFW prompts</option>
             </select>
           </label>
+          <label>
+            ChatGPT Image Compatibility
+            <select id="chatgptCompatibility">
+              <option value="off" selected>Off — original prompt wording</option>
+              <option value="on">On — ChatGPT-safe image wording</option>
+            </select>
+          </label>
         </div>
+        <p class="tiny"><strong>ChatGPT Image Compatibility:</strong> when On, Race Generator keeps the selected race, physical racial anatomy, proportions, pose, style, and sheet layout, but rewrites safety-sensitive image wording into non-explicit ChatGPT-compatible presentation. For Blender B&amp;W, the same bald base-model format is preserved using a neutral anatomical mannequin treatment instead of explicit nudity.</p>
       </section>
 
       <section class="card library-card">
@@ -732,7 +740,18 @@ function selectedSex(){
   return randomSexResolution;
 }
 
+function chatGPTCompatibilityEnabled(){
+  return ($('chatgptCompatibility')?.value||'off')==='on';
+}
+
+function chatGPTCompatibilityText(){
+  if(!chatGPTCompatibilityEnabled())return '';
+  return `CHATGPT IMAGE COMPATIBILITY MODE — MANDATORY:
+Keep the image request non-explicit and suitable for ChatGPT image generation while preserving the requested art style, race identity, body proportions, physical racial anatomy, pose, composition, clothing/equipment design, and reference-sheet format. Do not remove identity-authorized ears, horns, tails, wings, fins, extra limbs, scales, claws, hooves, or other physical racial structures merely for compatibility. Avoid explicit sexual anatomy or sexualized nudity. When an unobstructed modeling/base-body reference is requested, use a neutral non-sexual anatomical mannequin treatment with smooth simplified chest and pelvic surfaces and no visible nipples or genital detail; preserve the complete silhouette, joint landmarks, proportions, and modeling readability. Compatibility wording changes presentation safety only and must not redesign or humanize the character.`;
+}
+
 function nsfwPromptText(){
+  if(chatGPTCompatibilityEnabled())return 'CHATGPT-COMPATIBLE SFW MODE: keep presentation non-explicit; do not request explicit nudity or visible sexual anatomy. Preserve the intended character design, anatomy, racial identity, and art style';
   const enabled=($('nsfwMode')?.value||'off')==='on';
   return enabled
     ? 'NSFW PROMPT MODE: enabled for an explicitly adult 18+ character. Mature, sensual, revealing, or nude presentation may be used when appropriate to the requested design; preserve coherent anatomy, racial identity, and clear adult age presentation'
@@ -1045,7 +1064,7 @@ Visual Identity: ${r.visualIdentity||r.description}
 ${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}.
 
 ${anatomyAllowlistText(r)}
-
+${chatGPTCompatibilityText()?`\n${chatGPTCompatibilityText()}\n`:''}
 Wearing ${wardrobe}. ${weaponControlText()}. ${environmentControlText()}. ${lighting}, ${detail}, ${qualityControlText()}, ${nsfwPromptText()}, ${characterControlText()}, ${poseControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art. Identity and anatomy from the race source remain authoritative.`
   }
 }
@@ -1136,7 +1155,7 @@ Combined cultural themes: ${themeText||'blended ancestral culture'}.
 Key preserved traits: ${allTraits.slice(0,8).join(', ')}.
 
 ${anatomyAllowlistText(a,b)}
-
+${chatGPTCompatibilityText()?`\n${chatGPTCompatibilityText()}\n`:''}
 WARDROBE, WEAPON & SCENE:
 Wearing ${armorClothingControlText()}.
 ${weaponControlText()}.
@@ -1158,7 +1177,8 @@ ${environmentControlText()}.
 ${lightingControlText()}.
 ${detailText($('detailSelect').value)}.
 ${qualityControlText()}.
-${nsfwPromptText()}.`;
+${nsfwPromptText()}.
+${chatGPTCompatibilityText()}`;
 }
 
 function updateMasterSummary(){
@@ -1252,7 +1272,7 @@ function buildMasterPrompt(){
 
   masterPrompt=`${base}
 
-MASTER CHARACTER BUILDER — FINAL SYNTHESIS:
+${chatGPTCompatibilityText()?`${chatGPTCompatibilityText()}\n\n`:''}MASTER CHARACTER BUILDER — FINAL SYNTHESIS:
 Create one unified, production-ready character image from every instruction above. Resolve any conflict using this priority order: (1) Locked Racial Identity and parent identity preservation, (2) the ANATOMY ALLOWLIST and coherent silhouette, (3) character appearance and pose, (4) armor/clothing and weapon integration, (5) lighting and environment, (6) render quality and decorative finish. The ANATOMY ALLOWLIST is authoritative: positively depict and elaborate structures supported by the race source data, and do not introduce any major anatomical structure that is absent from all applicable race sources. Repeated mentions in wardrobe, weapon, pose, environment, or quality instructions never expand the allowlist. Do not omit defining racial markers to satisfy equipment, camera framing, effects, or scenery. If two lower-priority controls conflict, resolve them into one physically coherent instruction rather than depicting both literally. Keep the complete character readable and biologically coherent, with no duplicated anatomy, no random extra limbs, no hidden identity-defining features, and no genericization of the race or fusion.`;
 
   const box=$('masterPromptBox');
@@ -1440,7 +1460,7 @@ ${lightingControlText()}.
 ${detailText($('detailSelect').value)}.
 ${qualityControlText()}.
 ${nsfw}.
-
+${chatGPTCompatibilityText()?`\n${chatGPTCompatibilityText()}\n`:''}
 SELECTED STYLE IDENTITY PRESERVATION RULE:
 Locked Racial Identity and the ANATOMY ALLOWLIST remain authoritative for WHAT the character is. The selected Realistic Style or Anime Style is authoritative for HOW the complete single image is rendered. Preserve defining racial anatomy, coloration, markings, body proportions, clothing construction, and equipment while obeying the selected pose, scene, lighting, and composition. Do not convert this request into a reference sheet or turnaround.`;
   }else{
@@ -1454,7 +1474,7 @@ ${character}.
 Wardrobe: ${wardrobe}.
 Equipment: ${equipment}.
 ${blenderCharacterSnapshot.nsfw}.
-
+${chatGPTCompatibilityText()?`\n${chatGPTCompatibilityText()}\n`:''}
 REFERENCE-SHEET CONSISTENCY RULE:
 Identity and anatomy are authoritative for WHAT the character is; the selected reference-sheet STYLE LOCK is authoritative for HOW it is rendered and composed. Keep the same face, anatomy, proportions, racial markers, outfit construction, materials, colors, and equipment design in every panel. Do not import the normal generator's environment, cinematic lighting, dynamic pose, action framing, or atmospheric scene into this sheet. The selected Blender-ready mode must visibly control the final rendering language and sheet layout rather than merely appearing as descriptive words.`;
   }
@@ -1482,10 +1502,10 @@ function buildBlenderBlueprintPrompt(snapshot=blenderCharacterSnapshot){
   }
   const {identity,character,wardrobe,equipment,nsfw}=snapshot;
   blenderBlueprintPrompt=`BLENDER B&W BASE-MODEL CONSTRUCTION BLUEPRINT — COMPANION REFERENCE — HIGHEST VISUAL PRIORITY.
-Create ONE clean black-and-white BASE-MODEL construction sheet for the EXACT SAME resolved character identity described below. Follow the fixed construction-sheet format: unclothed base body, bald head, strict front and side T-pose views, isolated anatomy-part callouts, plain white background, and simple technical contour linework. This blueprint is for unobstructed 3D body/anatomy modeling reference, not costume or equipment modeling.
+Create ONE clean black-and-white BASE-MODEL construction sheet for the EXACT SAME resolved character identity described below. Follow the fixed construction-sheet format: ${chatGPTCompatibilityEnabled()?'neutral non-sexual anatomical mannequin base body':'unclothed base body'}, bald head, strict front and side T-pose views, isolated anatomy-part callouts, plain white background, and simple technical contour linework. This blueprint is for unobstructed 3D body/anatomy modeling reference, not costume or equipment modeling.
 
 FIXED BLUEPRINT FORMAT — MANDATORY:
-Use the supplied base-model reference format as the permanent layout target for this mode. Show the character as a clean bald anatomical base model with no hairstyle mass and no worn clothing, armor, jewelry, accessories, weapons, shields, equipment, or costume pieces. Do not replace race-specific anatomy with a generic human body. Preserve the resolved sex/form, age style, build, face construction, body proportions, racial anatomy, ears, horns, tails, wings, fins, extra limbs, unusual hands/feet, surface structures, and other PHYSICAL racial features only when explicitly supported by the identity source and ANATOMY ALLOWLIST.
+Use the supplied base-model reference format as the permanent layout target for this mode. Show the character as a clean bald anatomical base model with no hairstyle mass and no worn clothing, armor, jewelry, accessories, weapons, shields, equipment, or costume pieces. ${chatGPTCompatibilityEnabled()?'For ChatGPT compatibility, represent exposed body regions as a smooth neutral anatomical mannequin/base-model surface: non-sexual, no visible nipples, no genital detail, no erotic emphasis, while keeping the exact body silhouette, chest/pelvic volume, joints, proportions, and race-specific anatomy readable for modeling.':''} Do not replace race-specific anatomy with a generic human body. Preserve the resolved sex/form, age style, build, face construction, body proportions, racial anatomy, ears, horns, tails, wings, fins, extra limbs, unusual hands/feet, surface structures, and other PHYSICAL racial features only when explicitly supported by the identity source and ANATOMY ALLOWLIST.
 
 MANDATORY MODELING VIEWS:
 Show an exact FRONT full-body T-pose and an exact SIDE full-body T-pose at identical character height, identical body proportions, identical scale, and one aligned ground line. A clean BACK T-pose may be included only if space permits without shrinking or compromising the mandatory front and side views. Use orthographic-style presentation with minimal perspective distortion.
@@ -1504,7 +1524,7 @@ Plain white background. Crisp black or dark-gray contour linework with only mini
 
 ISOLATED CONSTRUCTION CALLOUTS:
 Arrange simple isolated line-art callouts around the main views in the same practical spirit as the fixed base-model reference. Include useful front/profile head construction, eye/face detail when identity-critical, hands/forearms, legs/feet, and race-specific structures such as ears, horns, tails, wings, fins, extra limbs, claws, hooves, or other physical anatomy ONLY when explicitly permitted by the ANATOMY ALLOWLIST. Do not invent anatomy merely to fill empty space. All callouts must match the same base model exactly.
-
+${chatGPTCompatibilityText()?`\n${chatGPTCompatibilityText()}\n`:''}
 IDENTITY SOURCE — AUTHORITATIVE:
 ${identity}
 
@@ -2379,7 +2399,8 @@ function setupCollapsibleCards(){
 }
 setupCollapsibleCards();
 
-// Build 12R5.0.16: replaces the Blender B&W companion with the fixed bald, unclothed base-model construction format: strict front T-pose, true orthographic side T-pose with depth-axis/end-on arms, isolated anatomy callouts, and preservation of all identity-authorized physical racial features. ZIP backup/restore and prior locks remain preserved.
+// Build 12R5.0.17: adds a toggleable ChatGPT Image Compatibility mode. When enabled, all generated prompts add policy-safe non-explicit wording while preserving race identity, anatomy, style, layout, and composition; Blender B&W switches exposed body wording to a neutral anatomical mannequin treatment with no visible nipples/genital detail while retaining the fixed bald front/side T-pose format and all identity-authorized physical racial features. Prior locks and ZIP backup/restore remain preserved.
+// Previous Build 12R5.0.16: fixed bald base-model construction format with strict front T-pose, true orthographic side T-pose with depth-axis/end-on arms, isolated anatomy callouts, and preservation of identity-authorized physical racial features.
 // Previous Build 12R5.0.14: preserves the weapon orientation and cross-style character locks, and attaches a complete exact-copy prompt archive (Base, Master, Realistic, Anime, Blender Finished, Blender B&W) to newly saved favorites and fusions for future reuse.
 // Previous Build 12R5.0.13: preserves the shared cross-style character snapshot and adds weapon-only top/bottom orientation locks for polearms, axes, headed blunt weapons, staffs, scepters, and wands so functional heads are not generated upside down.
 // Previous Build 12R5.0.11: keeps Step 1 expanded by default and starts every later home-screen section collapsed, while preserving each user's subsequent expand/collapse choices.
@@ -2393,7 +2414,7 @@ setupCollapsibleCards();
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-16-fixed-base-model-blueprint', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-17-chatgpt-compatibility-toggle', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and
