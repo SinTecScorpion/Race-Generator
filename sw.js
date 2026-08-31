@@ -1,4 +1,4 @@
-const CACHE = 'race-generator-r5-0-15-zip-backup-restore-v1';
+const CACHE = 'race-generator-r5-0-16-fixed-base-model-blueprint-v1';
 const OFFLINE_HTML='./index.html';
 const CORE=[
   './manifest.webmanifest',
@@ -33,7 +33,7 @@ self.addEventListener('fetch', event => {
       try {
         // Fetch the canonical index URL, not the query-string navigation URL.
         // The build query intentionally bypasses stale browser/CDN HTML while the response is still cached under the canonical offline key.
-        const canonical = new Request(new URL('./index.html?build=12r5-0-15-zip-backup-restore', self.registration.scope).href, {
+        const canonical = new Request(new URL('./index.html?build=12r5-0-16-fixed-base-model-blueprint', self.registration.scope).href, {
           method: 'GET',
           headers: { 'Cache-Control': 'no-cache' },
           cache: 'reload',

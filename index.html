@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.15 • ZIP Backup & Restore</span>
+        <span class="build-version">Build 12R5.0.16 • Fixed Base-Model Blueprint</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -1481,35 +1481,41 @@ function buildBlenderBlueprintPrompt(snapshot=blenderCharacterSnapshot){
     return '';
   }
   const {identity,character,wardrobe,equipment,nsfw}=snapshot;
-  blenderBlueprintPrompt=`BLENDER B&W MODELING BLUEPRINT — COMPANION REFERENCE — HIGHEST VISUAL PRIORITY.
-Create ONE clean black-and-white character construction sheet for the EXACT SAME resolved character described below. This is the companion modeling blueprint to the finished Blender reference. Preserve identity and proportions exactly; change only the presentation into clean technical line art.
+  blenderBlueprintPrompt=`BLENDER B&W BASE-MODEL CONSTRUCTION BLUEPRINT — COMPANION REFERENCE — HIGHEST VISUAL PRIORITY.
+Create ONE clean black-and-white BASE-MODEL construction sheet for the EXACT SAME resolved character identity described below. Follow the fixed construction-sheet format: unclothed base body, bald head, strict front and side T-pose views, isolated anatomy-part callouts, plain white background, and simple technical contour linework. This blueprint is for unobstructed 3D body/anatomy modeling reference, not costume or equipment modeling.
+
+FIXED BLUEPRINT FORMAT — MANDATORY:
+Use the supplied base-model reference format as the permanent layout target for this mode. Show the character as a clean bald anatomical base model with no hairstyle mass and no worn clothing, armor, jewelry, accessories, weapons, shields, equipment, or costume pieces. Do not replace race-specific anatomy with a generic human body. Preserve the resolved sex/form, age style, build, face construction, body proportions, racial anatomy, ears, horns, tails, wings, fins, extra limbs, unusual hands/feet, surface structures, and other PHYSICAL racial features only when explicitly supported by the identity source and ANATOMY ALLOWLIST.
 
 MANDATORY MODELING VIEWS:
-Show an exact FRONT full-body T-pose and exact SIDE full-body T-pose at identical scale and aligned ground line. Include an exact BACK full-body T-pose when space permits. Use orthographic-style presentation with minimal perspective distortion.
+Show an exact FRONT full-body T-pose and an exact SIDE full-body T-pose at identical character height, identical body proportions, identical scale, and one aligned ground line. A clean BACK T-pose may be included only if space permits without shrinking or compromising the mandatory front and side views. Use orthographic-style presentation with minimal perspective distortion.
 
-STRICT T-POSE:
-Upright symmetrical body; feet comfortably apart; legs straight; pelvis and torso level; head neutral; BOTH arms extended horizontally from the shoulders at approximately 90 degrees; elbows straight; wrists neutral; hands open and readable. No A-pose, lowered arms, action pose, contrapposto, foreshortening, or cinematic camera angle.
+STRICT FRONT T-POSE:
+Upright symmetrical body; feet comfortably apart; legs straight; pelvis and torso level; head neutral and facing directly forward; BOTH arms extend perfectly horizontally from the shoulders at approximately 90 degrees; elbows straight; wrists neutral; hands open and readable. No A-pose, lowered arms, bent elbows, action pose, contrapposto, or cinematic perspective.
+
+STRICT SIDE T-POSE — DEPTH-AXIS ARM LOCK:
+The SIDE view is an exact orthographic profile of the SAME T-pose, not a different pose. The shoulder line and both arms remain at the same 90-degree T-pose elevation as the front view, but the arms project directly along the character's front-to-back DEPTH AXIS, perpendicular to the side-view image plane. Therefore the arms must appear end-on / strongly foreshortened at shoulder height, like the fixed base-model reference format. DO NOT rotate the arms downward alongside the torso. DO NOT show a long horizontal arm extending across the side-view panel. DO NOT convert the side view into an A-pose or relaxed standing pose.
+
+BALD / UNOBSTRUCTED BASE MODEL LOCK:
+The scalp must be completely visible: no hair, braids, ponytails, beard, fur hairstyle, headdress, helmet, hood, crown, or decorative headwear. Remove wardrobe and equipment from the blueprint body even though they remain part of the Finished Blender character design. Show the underlying body and joints clearly. Physical racial structures are NOT removable costume: preserve allowed pointed ears, horns, antlers, tails, wings, fins, digitigrade legs, extra limbs, claws, hooves, shells, scales, or other anatomy when and only when the authoritative race source supports them.
 
 BLACK-AND-WHITE CONSTRUCTION STYLE LOCK:
-Plain white background. Crisp black or dark-gray contour linework only, with very light neutral construction shading only when necessary to clarify volume. No painted fantasy illustration, no cinematic lighting, no environment, no atmospheric effects, no decorative background, no color palette, and no dramatic rendering. Prioritize silhouette, proportion, joint placement, body volume, racial anatomy, and modeling readability.
+Plain white background. Crisp black or dark-gray contour linework with only minimal light-neutral construction shading where necessary to clarify volume. No painted fantasy illustration, cinematic lighting, environment, atmospheric effects, decorative background, color palette, costume rendering, or dramatic composition. Prioritize silhouette, body volume, joint placement, proportion, racial anatomy, and modeling readability.
 
 ISOLATED CONSTRUCTION CALLOUTS:
-Include separate clean line-art references where useful for front/profile head, hands, feet, ears, horns, wings, tail, fins, extra limbs, or other race-specific structures ONLY when explicitly permitted by the ANATOMY ALLOWLIST. Do not invent anatomy to fill space. Keep callouts synchronized with the full-body views.
-
-CLOTHING / EQUIPMENT CLARITY:
-Preserve the selected clothing and equipment design, but keep the base body silhouette and joints readable. Where clothing, wings, weapons, shields, or large accessories obstruct construction, place them in separate adjacent line-art callouts rather than hiding important anatomy. Weapon callouts must preserve the selected conditional weapon profile and recognizable construction.
+Arrange simple isolated line-art callouts around the main views in the same practical spirit as the fixed base-model reference. Include useful front/profile head construction, eye/face detail when identity-critical, hands/forearms, legs/feet, and race-specific structures such as ears, horns, tails, wings, fins, extra limbs, claws, hooves, or other physical anatomy ONLY when explicitly permitted by the ANATOMY ALLOWLIST. Do not invent anatomy merely to fill empty space. All callouts must match the same base model exactly.
 
 IDENTITY SOURCE — AUTHORITATIVE:
 ${identity}
 
-CHARACTER DESIGN — EXACTLY MATCH THE FINISHED BLENDER REFERENCE:
+RESOLVED CHARACTER BODY — PRESERVE, BUT STRIP PRESENTATION LAYERS:
 ${character}.
-Wardrobe: ${wardrobe}.
-Equipment: ${equipment}.
+The Finished Blender reference wardrobe remains: ${wardrobe}. DO NOT draw this wardrobe on the B&W base-model body.
+The Finished Blender reference equipment remains: ${equipment}. DO NOT draw this equipment on the B&W base-model body.
 ${nsfw}.
 
-SYNCHRONIZATION LOCK:
-This blueprint is NOT a redesign, alternate costume, simplified species, or alternate character. Preserve the exact same sex/form, face construction, body proportions, racial anatomy, horns, wings, tails, markings, hair, clothing construction, equipment design, and silhouette established by the identity source and character design. Simplify only rendering, color, lighting, and surface presentation into black-and-white modeling line art.
+BASE-MODEL SYNCHRONIZATION LOCK:
+This blueprint is the anatomical/base-model companion to the Finished Blender reference, not an alternate character. Preserve the same resolved sex/form, age style, face construction, build, body proportions, racial anatomy, ears, horns, wings, tails, markings/surface traits, hands, feet, and silhouette. Deliberately strip ONLY hair, clothing, armor, jewelry, accessories, weapons, equipment, color, lighting, and finished surface rendering so the underlying model is unobstructed. Do not humanize away legitimate racial anatomy and do not invent unsupported fantasy anatomy.
 
 This is visual 3D modeling reference only; do not claim to output an actual .blend file, mesh topology, UV layout, armature, rig, or production-ready geometry.`;
   generatedStylePrompts.blenderBlueprint=blenderBlueprintPrompt;
@@ -1971,7 +1977,7 @@ function promptEntriesForRecord(record,folder,base){
 }
 function generationZipEntries(record,targetCollection,folderPrefix=''){
   const base=generationBackupBase(record),folder=`${folderPrefix}${base}/`;
-  const meta={app:'Race Generator',format:'race-generator-generation-zip',version:ZIP_BACKUP_VERSION,build:'12R5.0.15',exportedAt:new Date().toISOString(),displayName:record?.title||'',backupBase:base,targetCollection,kind:record?.kind||'',raceId:record?.raceId||null,parentAId:record?.parentAId||null,parentBId:record?.parentBId||null,ratioA:record?.ratioA??null,ratioB:record?.ratioA!=null?100-Number(record.ratioA):null};
+  const meta={app:'Race Generator',format:'race-generator-generation-zip',version:ZIP_BACKUP_VERSION,build:'12R5.0.16',exportedAt:new Date().toISOString(),displayName:record?.title||'',backupBase:base,targetCollection,kind:record?.kind||'',raceId:record?.raceId||null,parentAId:record?.parentAId||null,parentBId:record?.parentBId||null,ratioA:record?.ratioA??null,ratioB:record?.ratioA!=null?100-Number(record.ratioA):null};
   const entries=[
     {name:`${folder}${base}__metadata.json`,data:JSON.stringify(meta,null,2)},
     {name:`${folder}${base}__record.json`,data:JSON.stringify({format:'race-generator-exact-record',version:ZIP_BACKUP_VERSION,targetCollection,record},null,2)}
@@ -1989,7 +1995,7 @@ function exportAllGenerationZips(){
   const entries=[];let n=0;
   favorites.forEach(r=>{entries.push(...generationZipEntries(r,'favorites',`Saved_Races/`).entries);n++;});
   savedFusions.forEach(r=>{entries.push(...generationZipEntries(r,'savedFusions',`Saved_Fusions/`).entries);n++;});
-  const manifest={app:'Race Generator',format:'race-generator-all-saved-generations',version:ZIP_BACKUP_VERSION,build:'12R5.0.15',exportedAt:new Date().toISOString(),count:n};
+  const manifest={app:'Race Generator',format:'race-generator-all-saved-generations',version:ZIP_BACKUP_VERSION,build:'12R5.0.16',exportedAt:new Date().toISOString(),count:n};
   entries.unshift({name:'Race_Generator_Backup_Manifest.json',data:JSON.stringify(manifest,null,2)});
   const stamp=new Date().toISOString().slice(0,10);downloadBlob(makeStoredZip(entries),`Race_Generator_All_Saved_Generations_${stamp}.zip`);setZipImportStatus(`Downloaded ${n} saved generation${n===1?'':'s'} in one ZIP.`,'ok');
 }
@@ -2373,7 +2379,7 @@ function setupCollapsibleCards(){
 }
 setupCollapsibleCards();
 
-// Build 12R5.0.15: adds offline exact-generation ZIP export/import for individual saves and the full saved library. ZIP folders preserve the exact record, locked snapshot, and archived prompts; filenames use the character/race name plus race number, and fusions include both parent race numbers and exact percentages. Existing saves are never silently overwritten on ZIP restore.
+// Build 12R5.0.16: replaces the Blender B&W companion with the fixed bald, unclothed base-model construction format: strict front T-pose, true orthographic side T-pose with depth-axis/end-on arms, isolated anatomy callouts, and preservation of all identity-authorized physical racial features. ZIP backup/restore and prior locks remain preserved.
 // Previous Build 12R5.0.14: preserves the weapon orientation and cross-style character locks, and attaches a complete exact-copy prompt archive (Base, Master, Realistic, Anime, Blender Finished, Blender B&W) to newly saved favorites and fusions for future reuse.
 // Previous Build 12R5.0.13: preserves the shared cross-style character snapshot and adds weapon-only top/bottom orientation locks for polearms, axes, headed blunt weapons, staffs, scepters, and wands so functional heads are not generated upside down.
 // Previous Build 12R5.0.11: keeps Step 1 expanded by default and starts every later home-screen section collapsed, while preserving each user's subsequent expand/collapse choices.
@@ -2387,7 +2393,7 @@ setupCollapsibleCards();
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-15-zip-backup-restore', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-16-fixed-base-model-blueprint', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and
