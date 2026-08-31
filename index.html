@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.6 • Dual Blender Reference</span>
+        <span class="build-version">Build 12R5.0.7 • Blender Blueprint Companion</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -568,6 +568,13 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <button id="clearReferenceSheetBtn" type="button">Clear Selected Mode</button>
         </div>
         <div id="referenceSheetPromptBox" class="prompt-box master-prompt-box">Choose Realistic, Anime Style, or Blender-Ready to build a dedicated prompt for the current character.</div>
+        <div id="blenderBlueprintPanel" style="display:none;margin-top:12px">
+          <p class="tiny"><strong>Blender B&amp;W Modeling Blueprint:</strong> companion prompt using the exact same resolved character identity as the finished Blender reference, but rendered as clean black-and-white orthographic construction line art.</p>
+          <div class="actions-grid">
+            <button id="copyBlenderBlueprintBtn" type="button">Copy B&amp;W Modeling Blueprint</button>
+          </div>
+          <div id="blenderBlueprintPromptBox" class="prompt-box master-prompt-box">Select Blender-Ready to build the synchronized B&amp;W modeling blueprint prompt.</div>
+        </div>
       </section>
 
       <section class="card controls-card">
@@ -1397,7 +1404,71 @@ Identity and anatomy are authoritative for WHAT the character is; the selected r
   }
   const box=$('referenceSheetPromptBox');
   if(box)box.textContent=referenceSheetPrompt;
+  const blueprintPanel=$('blenderBlueprintPanel');
+  if(style==='blender'){
+    buildBlenderBlueprintPrompt();
+    if(blueprintPanel)blueprintPanel.style.display='block';
+  }else{
+    blenderBlueprintPrompt='';
+    if(blueprintPanel)blueprintPanel.style.display='none';
+  }
   return referenceSheetPrompt;
+}
+
+function buildBlenderBlueprintPrompt(){
+  if(!current)return '';
+  const identity=referenceIdentitySource();
+  const character=characterControlText();
+  const wardrobe=armorClothingControlText();
+  const equipment=weaponControlText();
+  blenderBlueprintPrompt=`BLENDER B&W MODELING BLUEPRINT — COMPANION REFERENCE — HIGHEST VISUAL PRIORITY.
+Create ONE clean black-and-white character construction sheet for the EXACT SAME resolved character described below. This is the companion modeling blueprint to the finished Blender reference. Preserve identity and proportions exactly; change only the presentation into clean technical line art.
+
+MANDATORY MODELING VIEWS:
+Show an exact FRONT full-body T-pose and exact SIDE full-body T-pose at identical scale and aligned ground line. Include an exact BACK full-body T-pose when space permits. Use orthographic-style presentation with minimal perspective distortion.
+
+STRICT T-POSE:
+Upright symmetrical body; feet comfortably apart; legs straight; pelvis and torso level; head neutral; BOTH arms extended horizontally from the shoulders at approximately 90 degrees; elbows straight; wrists neutral; hands open and readable. No A-pose, lowered arms, action pose, contrapposto, foreshortening, or cinematic camera angle.
+
+BLACK-AND-WHITE CONSTRUCTION STYLE LOCK:
+Plain white background. Crisp black or dark-gray contour linework only, with very light neutral construction shading only when necessary to clarify volume. No painted fantasy illustration, no cinematic lighting, no environment, no atmospheric effects, no decorative background, no color palette, and no dramatic rendering. Prioritize silhouette, proportion, joint placement, body volume, racial anatomy, and modeling readability.
+
+ISOLATED CONSTRUCTION CALLOUTS:
+Include separate clean line-art references where useful for front/profile head, hands, feet, ears, horns, wings, tail, fins, extra limbs, or other race-specific structures ONLY when explicitly permitted by the ANATOMY ALLOWLIST. Do not invent anatomy to fill space. Keep callouts synchronized with the full-body views.
+
+CLOTHING / EQUIPMENT CLARITY:
+Preserve the selected clothing and equipment design, but keep the base body silhouette and joints readable. Where clothing, wings, weapons, shields, or large accessories obstruct construction, place them in separate adjacent line-art callouts rather than hiding important anatomy. Weapon callouts must preserve the selected conditional weapon profile and recognizable construction.
+
+IDENTITY SOURCE — AUTHORITATIVE:
+${identity}
+
+CHARACTER DESIGN — EXACTLY MATCH THE FINISHED BLENDER REFERENCE:
+${character}.
+Wardrobe: ${wardrobe}.
+Equipment: ${equipment}.
+${nsfwPromptText()}.
+
+SYNCHRONIZATION LOCK:
+This blueprint is NOT a redesign, alternate costume, simplified species, or alternate character. Preserve the exact same sex/form, face construction, body proportions, racial anatomy, horns, wings, tails, markings, hair, clothing construction, equipment design, and silhouette established by the identity source and character design. Simplify only rendering, color, lighting, and surface presentation into black-and-white modeling line art.
+
+This is visual 3D modeling reference only; do not claim to output an actual .blend file, mesh topology, UV layout, armature, rig, or production-ready geometry.`;
+  const box=$('blenderBlueprintPromptBox');
+  if(box)box.textContent=blenderBlueprintPrompt;
+  return blenderBlueprintPrompt;
+}
+
+async function copyBlenderBlueprintPrompt(){
+  if(selectedReferenceSheetStyle!=='blender' || !blenderBlueprintPrompt){
+    alert('Select Blender-Ready first to build the synchronized B&W modeling blueprint.');
+    return;
+  }
+  const btn=$('copyBlenderBlueprintBtn');
+  try{
+    await navigator.clipboard.writeText(blenderBlueprintPrompt);
+    if(btn){btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy B&W Modeling Blueprint',1100);}
+  }catch(err){
+    prompt('Copy this B&W modeling blueprint prompt:',blenderBlueprintPrompt);
+  }
 }
 
 async function copyReferenceSheetPrompt(){
@@ -1416,10 +1487,14 @@ async function copyReferenceSheetPrompt(){
 
 function clearReferenceSheetPrompt(){
   referenceSheetPrompt='';
+  blenderBlueprintPrompt='';
   setReferenceSheetMode('');
   const box=$('referenceSheetPromptBox');
   if(box)box.textContent='Choose Realistic, Anime Style, or Blender-Ready to build a dedicated prompt for the current character.';
+  const bp=$('blenderBlueprintPanel'); if(bp)bp.style.display='none';
+  const bpb=$('blenderBlueprintPromptBox'); if(bpb)bpb.textContent='Select Blender-Ready to build the synchronized B&W modeling blueprint prompt.';
 }
+
 
 function currentIdentityBanner(){
   if(!current)return '';
@@ -1845,6 +1920,7 @@ $('realisticSheetBtn').onclick=()=>buildReferenceSheetPrompt('realistic');
 $('animeSheetBtn').onclick=()=>buildReferenceSheetPrompt('anime');
 $('blenderSheetBtn').onclick=()=>buildReferenceSheetPrompt('blender');
 $('copyReferenceSheetBtn').onclick=copyReferenceSheetPrompt;
+$('copyBlenderBlueprintBtn').onclick=copyBlenderBlueprintPrompt;
 $('clearReferenceSheetBtn').onclick=clearReferenceSheetPrompt;
 
 $('generateBtn').onclick=generate;
@@ -1929,7 +2005,8 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 </script>
 
 <script>
-// Build 12R5.0.6: Blender-Ready now requires two synchronized sections: a strict T-pose modeling blueprint plus a finished multi-view design/material/equipment reference for the same character.
+// Build 12R5.0.7: adds a separate synchronized black-and-white Blender modeling blueprint prompt/button while preserving the existing finished dual Blender reference unchanged.
+// Previous Build 12R5.0.6: Blender-Ready now requires two synchronized sections: a strict T-pose modeling blueprint plus a finished multi-view design/material/equipment reference for the same character.
 // Previous R5.0.5: Realistic is now a single-image realistic fantasy style mode matching Anime Style behavior.
 // Previous R5.0.4: changes Anime from a multi-view reference-sheet mode into a single-image anime illustration style mode that honors the live pose, scene, lighting, camera, wardrobe, equipment, and identity. Realistic and Blender-ready remain reference-sheet modes; Blender retains strict T-pose.
 // The worker itself uses network-first navigation with an offline fallback.
