@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.8 • Manual Race + Split Blender References</span>
+        <span class="build-version">Build 12R5.0.9 • Blender Snapshot Lock</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -695,7 +695,7 @@ if(storedLibraryVersion!==BUILTIN_RACE_LIBRARY_VERSION)localStorage.setItem(STOR
 try{localStorage.removeItem('race_generator_races');localStorage.removeItem(legacyPrefix+'races')}catch(e){}
 let favorites=JSON.parse(localStorage.getItem(STORAGE_KEYS.favorites)||localStorage.getItem(legacyPrefix+'favorites')||'[]');
 let history=JSON.parse(localStorage.getItem(STORAGE_KEYS.history)||localStorage.getItem(legacyPrefix+'history')||'[]');
-let current=null, mode='single', deferredPrompt=null, masterPrompt='', referenceSheetPrompt='', selectedReferenceSheetStyle='';
+let current=null, mode='single', deferredPrompt=null, masterPrompt='', referenceSheetPrompt='', blenderBlueprintPrompt='', blenderCharacterSnapshot=null, selectedReferenceSheetStyle='';
 
 const $=id=>document.getElementById(id);
 if(!starterRaces.length){console.error('Race library failed to load from races.js');setTimeout(()=>{const el=$('raceCount');if(el)el.textContent='Library load error';},0)}
@@ -1373,6 +1373,13 @@ function buildReferenceSheetPrompt(style){
   const character=characterControlText();
   const wardrobe=armorClothingControlText();
   const equipment=weaponControlText();
+  // Blender Snapshot Lock: resolve all Random/live character controls exactly once, then
+  // feed the identical frozen strings to BOTH companion prompts. This prevents a second
+  // random-control evaluation from silently changing build, expression, hair, wardrobe,
+  // weapon, material, effect, grip, or any other resolved design value.
+  if(style==='blender'){
+    blenderCharacterSnapshot={identity,character,wardrobe,equipment,nsfw:nsfwPromptText()};
+  }
   if(style==='anime' || style==='realistic'){
     referenceSheetPrompt=`${referenceSheetDirective(style)}
 
@@ -1402,16 +1409,16 @@ CHARACTER DESIGN TO REPEAT ACROSS ALL VIEWS:
 ${character}.
 Wardrobe: ${wardrobe}.
 Equipment: ${equipment}.
-${nsfwPromptText()}.
+${blenderCharacterSnapshot.nsfw}.
 
 REFERENCE-SHEET CONSISTENCY RULE:
-Identity and anatomy are authoritative for WHAT the character is; the selected reference-sheet STYLE LOCK is authoritative for HOW it is rendered and composed. Keep the same face, anatomy, proportions, racial markers, outfit construction, materials, colors, and equipment design in every panel. Do not import the normal generator's environment, cinematic lighting, dynamic pose, action framing, or atmospheric scene into this sheet. The selected Realistic or Blender-ready mode must visibly control the final rendering language and sheet layout rather than merely appearing as descriptive words.`;
+Identity and anatomy are authoritative for WHAT the character is; the selected reference-sheet STYLE LOCK is authoritative for HOW it is rendered and composed. Keep the same face, anatomy, proportions, racial markers, outfit construction, materials, colors, and equipment design in every panel. Do not import the normal generator's environment, cinematic lighting, dynamic pose, action framing, or atmospheric scene into this sheet. The selected Blender-ready mode must visibly control the final rendering language and sheet layout rather than merely appearing as descriptive words.`;
   }
   const box=$('referenceSheetPromptBox');
   if(box)box.textContent=referenceSheetPrompt;
   const blueprintPanel=$('blenderBlueprintPanel');
   if(style==='blender'){
-    buildBlenderBlueprintPrompt();
+    buildBlenderBlueprintPrompt(blenderCharacterSnapshot);
     if(blueprintPanel)blueprintPanel.style.display='block';
   }else{
     blenderBlueprintPrompt='';
@@ -1420,12 +1427,15 @@ Identity and anatomy are authoritative for WHAT the character is; the selected r
   return referenceSheetPrompt;
 }
 
-function buildBlenderBlueprintPrompt(){
+function buildBlenderBlueprintPrompt(snapshot=blenderCharacterSnapshot){
   if(!current)return '';
-  const identity=referenceIdentitySource();
-  const character=characterControlText();
-  const wardrobe=armorClothingControlText();
-  const equipment=weaponControlText();
+  // Never re-roll controls here. The blueprint must consume the exact snapshot captured
+  // when the Finished Blender Reference was built.
+  if(!snapshot){
+    alert('Build the Blender-Ready finished reference first so both companion prompts can share one locked character snapshot.');
+    return '';
+  }
+  const {identity,character,wardrobe,equipment,nsfw}=snapshot;
   blenderBlueprintPrompt=`BLENDER B&W MODELING BLUEPRINT — COMPANION REFERENCE — HIGHEST VISUAL PRIORITY.
 Create ONE clean black-and-white character construction sheet for the EXACT SAME resolved character described below. This is the companion modeling blueprint to the finished Blender reference. Preserve identity and proportions exactly; change only the presentation into clean technical line art.
 
@@ -1451,7 +1461,7 @@ CHARACTER DESIGN — EXACTLY MATCH THE FINISHED BLENDER REFERENCE:
 ${character}.
 Wardrobe: ${wardrobe}.
 Equipment: ${equipment}.
-${nsfwPromptText()}.
+${nsfw}.
 
 SYNCHRONIZATION LOCK:
 This blueprint is NOT a redesign, alternate costume, simplified species, or alternate character. Preserve the exact same sex/form, face construction, body proportions, racial anatomy, horns, wings, tails, markings, hair, clothing construction, equipment design, and silhouette established by the identity source and character design. Simplify only rendering, color, lighting, and surface presentation into black-and-white modeling line art.
@@ -1493,6 +1503,7 @@ async function copyReferenceSheetPrompt(){
 function clearReferenceSheetPrompt(){
   referenceSheetPrompt='';
   blenderBlueprintPrompt='';
+  blenderCharacterSnapshot=null;
   setReferenceSheetMode('');
   const box=$('referenceSheetPromptBox');
   if(box)box.textContent='Choose Realistic, Anime Style, or Blender-Ready to build a dedicated prompt for the current character.';
@@ -2017,7 +2028,8 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 </script>
 
 <script>
-// Build 12R5.0.8: adds Manual Race selection and separates Blender Finished Reference from the B&W Modeling Blueprint so each is generated independently.
+// Build 12R5.0.9: Blender Snapshot Lock freezes one resolved character state and feeds it unchanged to both Finished and B&W Blender companion prompts.
+// Previous Build 12R5.0.8: adds Manual Race selection and separates Blender Finished Reference from the B&W Modeling Blueprint so each is generated independently.
 // Previous Build 12R5.0.7: adds a separate synchronized black-and-white Blender modeling blueprint prompt/button while preserving the existing finished dual Blender reference unchanged.
 // Previous Build 12R5.0.6: Blender-Ready now requires two synchronized sections: a strict T-pose modeling blueprint plus a finished multi-view design/material/equipment reference for the same character.
 // Previous R5.0.5: Realistic is now a single-image realistic fantasy style mode matching Anime Style behavior.
@@ -2026,7 +2038,7 @@ renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManu
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-8-manual-race-split-blender', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-9-blender-snapshot-lock', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and

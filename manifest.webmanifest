@@ -1,8 +1,8 @@
 {
   "name": "Race Generator",
   "short_name": "Race Generator",
-  "description": "Offline 5,000-race fantasy humanoid Race Generator with Manual Race selection, Realistic and Anime illustration modes, conditional weapon profiles, and separate synchronized Blender finished-reference and B&W modeling-blueprint prompts.",
-  "start_url": "./?build=12r5-0-8-manual-race-split-blender",
+  "description": "Offline 5,000-race fantasy humanoid Race Generator with Manual Race selection, Realistic and Anime illustration modes, conditional weapon profiles, and separate synchronized Blender finished-reference and B&W modeling-blueprint prompts locked to one frozen resolved character snapshot.",
+  "start_url": "./?build=12r5-0-9-blender-snapshot-lock",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
