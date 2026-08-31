@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.20 • Racial Feature & Variation Pass</span>
+        <span class="build-version">Build 12R5.0.21 • Fresh Generation State Fix</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -1419,9 +1419,13 @@ function setReferenceSheetMode(style){
 
 function captureStyleCharacterSnapshot(){
   if(styleCharacterSnapshot)return styleCharacterSnapshot;
-  // Style Character Lock: resolve the character-design controls once for the current
-  // generated race/fusion, then share that frozen identity across Realistic, Anime,
-  // Blender Finished, and Blender B&W. Scene/pose/lighting remain style-prompt specific.
+  // Fresh-generation character state is captured immediately when a race/fusion is
+  // generated. Reuse that exact design here so newly generated characters behave the
+  // same way as loaded saved characters across Realistic, Anime and both Blender modes.
+  if(current?.characterSnapshot){
+    styleCharacterSnapshot=JSON.parse(JSON.stringify(current.characterSnapshot));
+    return styleCharacterSnapshot;
+  }
   beginPromptRandomization();
   styleCharacterSnapshot={
     identity:referenceIdentitySource(),
@@ -1430,7 +1434,26 @@ function captureStyleCharacterSnapshot(){
     equipment:weaponControlText(),
     nsfw:nsfwPromptText()
   };
+  if(current)current.characterSnapshot=JSON.parse(JSON.stringify(styleCharacterSnapshot));
   return styleCharacterSnapshot;
+}
+
+function initializeFreshGenerationState(){
+  if(!current)return null;
+  // Saved records already carry a frozen character snapshot. Fresh generations now do
+  // too, eliminating the previous saved-load-only initialization path.
+  beginPromptRandomization();
+  const snapshot={
+    identity:referenceIdentitySource(),
+    character:characterControlText(),
+    wardrobe:armorClothingControlText(),
+    equipment:weaponControlText(),
+    nsfw:nsfwPromptText()
+  };
+  current.characterSnapshot=JSON.parse(JSON.stringify(snapshot));
+  styleCharacterSnapshot=JSON.parse(JSON.stringify(snapshot));
+  blenderCharacterSnapshot=JSON.parse(JSON.stringify(snapshot));
+  return snapshot;
 }
 
 function buildReferenceSheetPrompt(style){
@@ -1761,7 +1784,8 @@ function generate(){
     current=buildFusion(a,b,Number($('fusionRatio').value));
   }
   resetMasterPrompt();
-  history.unshift({...current,ts:Date.now()});history=history.slice(0,50);save();renderResult();renderLists();
+  initializeFreshGenerationState();
+  history.unshift({...current,characterSnapshot:current.characterSnapshot?JSON.parse(JSON.stringify(current.characterSnapshot)):null,ts:Date.now()});history=history.slice(0,50);save();renderResult();renderLists();
 }
 function syncFilterSelect(id,values,allLabel){
   const el=$(id); if(!el)return;
@@ -1854,7 +1878,7 @@ function capturePromptArchive(){
     anime:generatedStylePrompts.anime||'',
     blenderFinished:generatedStylePrompts.blender||'',
     blenderBlueprint:generatedStylePrompts.blenderBlueprint||'',
-    characterSnapshot:styleCharacterSnapshot?JSON.parse(JSON.stringify(styleCharacterSnapshot)):null
+    characterSnapshot:(styleCharacterSnapshot||current?.characterSnapshot)?JSON.parse(JSON.stringify(styleCharacterSnapshot||current.characterSnapshot)):null
   };
 
   // Saving must not visually switch the user's selected prompt mode.
@@ -2416,7 +2440,8 @@ function setupCollapsibleCards(){
 }
 setupCollapsibleCards();
 
-// Build 12R5.0.20: updates the 5,000-race library with explicit pointed-elven-ear anatomy for all 50 Ancient/Greater Elven races, adds theme-specific stable signature visual motifs across all races to reduce template sameness, and teaches the anatomy scanner to allowlist pointed elven ears only when source-supported.
+// Build 12R5.0.21: fixes fresh-generation state initialization so newly generated races/fusions immediately receive the same frozen cross-style character snapshot that saved generations restore. Realistic, Anime, Blender Finished Color, and Blender B&W prompt designs remain unchanged.
+// Previous Build 12R5.0.20: updates the 5,000-race library with explicit pointed-elven-ear anatomy for all 50 Ancient/Greater Elven races, adds theme-specific stable signature visual motifs across all races to reduce template sameness, and teaches the anatomy scanner to allowlist pointed elven ears only when source-supported.
 // Previous Build 12R5.0.19: locks Blender B&W base-model blueprints to the supplied fixed panel template and adds permanent Blender registration markers: two circles above the front head, one above the side head, plus shared horizontal landmark guides across front/side views. Existing bald base-model, depth-axis side T-pose, mandatory arm/hand and leg/foot panels, allowlisted racial anatomy, ChatGPT compatibility, ZIP backup/restore, and prior locks remain preserved.
 // Previous Build 12R5.0.16: fixed bald base-model construction format with strict front T-pose, true orthographic side T-pose with depth-axis/end-on arms, isolated anatomy callouts, and preservation of identity-authorized physical racial features.
 // Previous Build 12R5.0.14: preserves the weapon orientation and cross-style character locks, and attaches a complete exact-copy prompt archive (Base, Master, Realistic, Anime, Blender Finished, Blender B&W) to newly saved favorites and fusions for future reuse.
@@ -2432,7 +2457,7 @@ setupCollapsibleCards();
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-20-racial-feature-variation-pass', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-21-fresh-generation-state-fix', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and
