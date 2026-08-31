@@ -49,7 +49,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 #savedFusionsCard .mini-item{padding:12px;margin:9px 0;border:1px solid var(--border);border-radius:13px;background:#130f1c}
 .backup-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 8px}.backup-actions button{min-height:48px}.backup-status{margin-top:8px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#100d17}.backup-status.ok{border-color:#6bdc9a}.backup-status.warn{border-color:#d9a45d}@media(max-width:520px){.backup-actions{grid-template-columns:1fr}}
 .saved-fusion-actions{display:flex;gap:7px;margin-top:9px}
-.saved-fusion-actions button{flex:1;padding:8px}
+.saved-fusion-actions button{flex:1;padding:8px}.prompt-archive{margin-top:9px;border-top:1px solid var(--line);padding-top:8px}.prompt-archive summary{cursor:pointer;color:var(--accent2);font-weight:800;font-size:.82rem}.prompt-archive-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.prompt-archive-actions button{flex:0 1 auto!important;padding:7px 9px!important;font-size:.74rem}.prompt-archive-note{display:block;margin-top:6px;color:var(--muted);font-size:.72rem}.zip-backup-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.zip-backup-actions button{padding:8px 10px;font-size:.78rem}.zip-import-status{margin-top:10px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#100d17}.zip-import-status.ok{border-color:#6bdc9a}.zip-import-status.warn{border-color:#d9a45d}
 
 #characterControlsCard{border:1px solid var(--accent)}
 #characterControlsCard .control-grid{margin-top:12px}
@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.12 • Cross-Style Character Lock</span>
+        <span class="build-version">Build 12R5.0.15 • ZIP Backup & Restore</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -651,7 +651,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <h2>Saved Races / Favorites</h2>
           <span id="favoriteCount" class="badge">0 saved</span>
         </div>
-        <p class="tiny">Favorite a generated race or fusion to keep it here. Reload, copy, use base races as Manual Fusion parents, or remove them anytime.</p>
+        <p class="tiny">Favorite a generated race or fusion to keep it here. New saves also capture exact copies of the Base, Master, Realistic, Anime, Blender Finished, and Blender B&W prompts for future reuse. Reload, copy, use base races as Manual Fusion parents, or remove them anytime.</p>
         <div id="favoritesList" class="mini-list empty">No saved races or favorites yet.</div>
       </section>
 
@@ -663,12 +663,15 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 
       <section class="card data-card">
         <h2>Data & Backup</h2>
-        <p>The built-in race library ships with the app; favorites and history live on this device. Export a backup anytime.</p>
+        <p>The built-in race library ships with the app; favorites and saved fusions live on this device. Download exact generation ZIP folders to your phone, restore them later, or export your whole saved library in one ZIP.</p>
         <div class="actions-grid small">
-          <button id="exportBtn">Export JSON</button>
-          <label class="file-button">Import JSON<input id="importInput" type="file" accept="application/json,.json" /></label>
+          <button id="exportAllGenerationsZipBtn">⬇️ Export All Saved ZIP</button>
+          <label class="file-button">⬆️ Import Generation ZIP<input id="importGenerationZipInput" type="file" accept="application/zip,.zip" /></label>
+          <button id="exportBtn">Export Legacy JSON</button>
+          <label class="file-button">Import Legacy JSON<input id="importInput" type="file" accept="application/json,.json" /></label>
           <button id="resetBtn" class="danger">Reset App Data</button>
         </div>
+        <div id="zipImportStatus" class="tiny zip-import-status">ZIP backups preserve the exact saved record, locked character snapshot, and all archived prompt text. Imported copies are merged without silently overwriting existing saves.</div>
         <p class="tiny">Full 5,000-race encyclopedia loaded from the updateable race library file.</p>
       </section>
     </main>
@@ -696,6 +699,7 @@ try{localStorage.removeItem('race_generator_races');localStorage.removeItem(lega
 let favorites=JSON.parse(localStorage.getItem(STORAGE_KEYS.favorites)||localStorage.getItem(legacyPrefix+'favorites')||'[]');
 let history=JSON.parse(localStorage.getItem(STORAGE_KEYS.history)||localStorage.getItem(legacyPrefix+'history')||'[]');
 let current=null, mode='single', deferredPrompt=null, masterPrompt='', referenceSheetPrompt='', blenderBlueprintPrompt='', styleCharacterSnapshot=null, blenderCharacterSnapshot=null, selectedReferenceSheetStyle='';
+let generatedStylePrompts={realistic:'',anime:'',blender:'',blenderBlueprint:''};
 
 const $=id=>document.getElementById(id);
 if(!starterRaces.length){console.error('Race library failed to load from races.js');setTimeout(()=>{const el=$('raceCount');if(el)el.textContent='Library load error';},0)}
@@ -917,14 +921,14 @@ function weaponProfileText(type){
   const profiles=[
     {match:['longsword','shortsword','broadsword','greatsword','rapier','curved saber','falchion','katana-style blade','spellblade','dagger','kukri','katar / punch dagger','war sickle','scythe'], text:'BLADE PROFILE: preserve one deliberate blade path from hilt to tip, a coherent hilt/guard/grip connection, and the intended straight or curved blade geometry for this weapon. Rigid blade sections must not sag, melt, kink, fork, or become ribbon-like. Keep the cutting edge, spine, point, and handle visually readable; magical effects may surround the blade but should not accidentally replace or deform its physical structure.'},
     {match:['dual blades','twin daggers','throwing knives'], text:'MULTI-BLADE PROFILE: show the intended number of separate, recognizable blades with coherent hilts and blade geometry. Do not fuse the weapons together, multiply them beyond the requested set, merge them into the hands, or turn rigid blades into bent or melted forms. Keep each weapon independently readable.'},
-    {match:['spear','javelin','harpoon','pike','lance','trident','glaive','halberd','poleaxe','bardiche','naginata-style polearm'], text:'POLEARM PROFILE: preserve a continuous, structurally straight or intentionally shaped haft with the weapon head securely aligned and attached at the proper end. Keep spear points, axe blades, hooks, prongs, or glaive blades distinct and recognizable. Avoid bowed or melted rigid shafts, detached heads, accidental extra heads, and impossible joins.'},
-    {match:['battle axe','greataxe','hand axes','throwing axe'], text:'AXE PROFILE: preserve a coherent haft and clearly attached axe head with a readable cutting edge and believable head-to-handle alignment. Keep rigid handles structurally stable. Avoid melted or drooping heads, floating blades, accidental duplicate heads, warped hafts, or axe geometry turning into an unrelated shield or club.'},
-    {match:['warhammer','maul','mace','morningstar','club','greatclub','war pick'], text:'BLUNT-WEAPON PROFILE: preserve a clear handle/haft and a securely connected striking head or striking end appropriate to the selected weapon. Maintain believable mass and readable silhouette without accidental extreme swelling. Avoid detached, melted, drooping, duplicated, shield-like, or amorphous weapon heads and warped rigid handles.'},
+    {match:['spear','javelin','harpoon','pike','lance','trident','glaive','halberd','poleaxe','bardiche','naginata-style polearm'], text:'POLEARM PROFILE: preserve a continuous, structurally straight or intentionally shaped haft with the weapon head securely aligned and attached at the proper end. ORIENTATION LOCK: the functional spear point, harpoon head, blade, hook, prongs, or other primary weapon head is the TOP/forward end; the plain butt-cap or grip terminus is the BOTTOM/rear end. Never vertically invert the weapon, place the primary head at the ground end, or swap the head and butt ends. When planted beside the character, the butt end contacts the ground and the functional head remains above it. Keep spear points, axe blades, hooks, prongs, or glaive blades distinct and recognizable. Avoid bowed or melted rigid shafts, detached heads, accidental extra heads, and impossible joins.'},
+    {match:['battle axe','greataxe','hand axes','throwing axe'], text:'AXE PROFILE: preserve a coherent haft and clearly attached axe head with a readable cutting edge and believable head-to-handle alignment. ORIENTATION LOCK: the axe head and cutting edge belong at the TOP/functional end of the haft; the grip/butt belongs at the BOTTOM/handle end. Never invert the axe so the head becomes the ground-facing butt end. If planted or resting vertically, the butt of the handle contacts the ground while the axe head remains above the grip. Keep rigid handles structurally stable. Avoid melted or drooping heads, floating blades, accidental duplicate heads, warped hafts, or axe geometry turning into an unrelated shield or club.'},
+    {match:['warhammer','maul','mace','morningstar','club','greatclub','war pick'], text:'BLUNT-WEAPON PROFILE: preserve a clear handle/haft and a securely connected striking head or striking end appropriate to the selected weapon. ORIENTATION LOCK: for headed blunt weapons such as warhammers, mauls, maces, greatclubs, and war picks, the primary striking head/heavy striking end is the TOP/functional end and the grip or butt-cap is the BOTTOM/handle end. Never vertically invert the weapon, place the main striking head at the ground end, or mistake a decorative butt-cap for the weapon head. If the weapon is planted beside the character, the handle butt contacts the ground and the striking head remains above the hands. Maintain believable mass and readable silhouette without accidental extreme swelling. Avoid detached, melted, drooping, duplicated, shield-like, or amorphous weapon heads and warped rigid handles.'},
     {match:['flail','chain weapon','whip'], text:'FLEXIBLE-WEAPON PROFILE: preserve the intended flexible or articulated construction. Chains, cords, lashes, and linked sections may bend naturally, while rigid handles, weights, blades, and attachment points remain coherent. Avoid fused links, disconnected segments, accidental extra chains, melted rigid parts, or flexible sections attaching to anatomically impossible locations.'},
     {match:['bow','longbow'], text:'BOW PROFILE — STRUCTURE LOCK: render one recognizable functional bow built around ONE continuous bow body: a central rigid grip/riser, one upper limb, and one lower limb. The upper and lower limbs must clearly belong to the same bow, extend in opposite directions from the central grip, and terminate in exactly two readable limb tips/nocks. Maintain an intentional balanced bow silhouette; ornate fantasy shaping is allowed, but the limbs must not become separate blades, horns, ribbons, shields, branches, or disconnected arcs. STRING GEOMETRY: use exactly ONE continuous bowstring running tip-to-tip in a single plane, visibly attached at both nocks and passing behind/near the central grip. The string should be taut when resting and form a clean controlled draw only when the pose is actively drawing the bow. Do not create floating string segments, extra strings, loops, or strings attached to decorative projections. ARROW LOGIC: show an arrow only when appropriate to the selected handling or pose; if present, use one distinct straight arrow aligned with the bow centerline/string and keep it separate from magical decoration. MATERIAL/EFFECT SEPARATION: magical energy, flames, crystals, vines, runes, or ornament may decorate or surround the bow but must not replace the physical limbs, grip, nocks, or string. Avoid asymmetrical accidental warping, melted or drooping limbs, oversized shield-like curves, duplicated limb sets, extra weapon arcs, broken limb-to-grip connections, or transformation into a sword-like weapon.'},
     {match:['crossbow','hand crossbow'], text:'CROSSBOW PROFILE: preserve a recognizable stock/grip, bow limbs, taut string, firing channel, and coherent mechanical alignment. Keep rigid components stable and connected. Avoid duplicated limbs or strings, bent stocks, floating bolts, melted mechanisms, or transformation into a conventional bow or firearm.'},
     {match:['sling'], text:'SLING PROFILE: preserve a simple flexible sling with a readable pouch and two cords. Flexible cords may curve naturally; avoid extra cords, fused hands, rigid rod-like transformation, or turning the sling into an unrelated weapon.'},
-    {match:['staff','quarterstaff','wand','scepter'], text:'FOCUS/STAFF PROFILE: preserve a single coherent shaft or handle with intentional length and a clearly designed tip, head, or focus where appropriate. Rigid shafts should remain structurally stable; ornament and magic may surround them without melting, branching, duplicating, or obscuring the underlying object.'},
+    {match:['staff','quarterstaff','wand','scepter'], text:'FOCUS/STAFF PROFILE: preserve a single coherent shaft or handle with intentional length and a clearly designed tip, head, or focus where appropriate. ORIENTATION LOCK: when the design has a distinct ornamental, magical, crystal, orb, blade-like, or ceremonial focus head, that feature is the TOP of the staff/scepter/wand and the plain grip/butt end is the BOTTOM. Never flip the designed focus head downward or use it as the ground-contact end. If planted vertically, only the butt end contacts the ground and the focus/head remains above the grip. Quarterstaffs with no distinct head may remain functionally symmetrical. Rigid shafts should remain structurally stable; ornament and magic may surround them without melting, branching, duplicating, or obscuring the underlying object.'},
     {match:['magic tome'], text:'TOME PROFILE: preserve a recognizable book with coherent covers, spine, pages, and intentional open or closed state. Magical effects may emanate from it without turning the book into a weapon blade, shield, or amorphous object. Avoid duplicated covers, impossible page geometry, and fused hand/book forms.'},
     {match:['arcane focus / orb'], text:'ARCANE-FOCUS PROFILE: preserve a clearly readable orb or compact magical focus with intentional symmetry or designed asymmetry. It may float if appropriate to the magical presentation, but should remain a distinct focus rather than accidentally becoming a shield, weapon blade, or malformed hand-held mass.'},
     {match:['chakram','boomerang blade'], text:'THROWN-BLADE PROFILE: preserve the selected circular or returning-blade silhouette with a continuous, intentional rigid geometry and readable safe handling area where applicable. Avoid melted loops, broken rings, accidental extra blades, warped symmetry, or transformation into a shield.'},
@@ -1174,6 +1178,7 @@ function resetMasterPrompt(){
   blenderBlueprintPrompt='';
   styleCharacterSnapshot=null;
   blenderCharacterSnapshot=null;
+  generatedStylePrompts={realistic:'',anime:'',blender:'',blenderBlueprint:''};
   const box=$('masterPromptBox');
   if(box)box.textContent='Ready. Tap “Build Master Character Prompt” to combine the current identity with your live settings.';
   const refBox=$('referenceSheetPromptBox');
@@ -1202,6 +1207,7 @@ function masterResetGenerator(){
   blenderBlueprintPrompt='';
   styleCharacterSnapshot=null;
   blenderCharacterSnapshot=null;
+  generatedStylePrompts={realistic:'',anime:'',blender:'',blenderBlueprint:''};
   if($('result'))$('result').innerHTML='<div class="result-placeholder">Tap generate to begin.</div>';
   if($('masterPromptBox'))$('masterPromptBox').textContent='Your completed Master Character Prompt will appear here.';
   if($('referenceSheetPromptBox'))$('referenceSheetPromptBox').textContent='Choose Realistic, Anime Style, or Blender-Ready to build a dedicated prompt for the current character.';
@@ -1452,6 +1458,7 @@ ${blenderCharacterSnapshot.nsfw}.
 REFERENCE-SHEET CONSISTENCY RULE:
 Identity and anatomy are authoritative for WHAT the character is; the selected reference-sheet STYLE LOCK is authoritative for HOW it is rendered and composed. Keep the same face, anatomy, proportions, racial markers, outfit construction, materials, colors, and equipment design in every panel. Do not import the normal generator's environment, cinematic lighting, dynamic pose, action framing, or atmospheric scene into this sheet. The selected Blender-ready mode must visibly control the final rendering language and sheet layout rather than merely appearing as descriptive words.`;
   }
+  generatedStylePrompts[style]=referenceSheetPrompt;
   const box=$('referenceSheetPromptBox');
   if(box)box.textContent=referenceSheetPrompt;
   const blueprintPanel=$('blenderBlueprintPanel');
@@ -1505,6 +1512,7 @@ SYNCHRONIZATION LOCK:
 This blueprint is NOT a redesign, alternate costume, simplified species, or alternate character. Preserve the exact same sex/form, face construction, body proportions, racial anatomy, horns, wings, tails, markings, hair, clothing construction, equipment design, and silhouette established by the identity source and character design. Simplify only rendering, color, lighting, and surface presentation into black-and-white modeling line art.
 
 This is visual 3D modeling reference only; do not claim to output an actual .blend file, mesh topology, UV layout, armature, rig, or production-ready geometry.`;
+  generatedStylePrompts.blenderBlueprint=blenderBlueprintPrompt;
   const box=$('blenderBlueprintPromptBox');
   if(box)box.textContent=blenderBlueprintPrompt;
   return blenderBlueprintPrompt;
@@ -1772,6 +1780,243 @@ function renderLibrary(){
 }
 
 
+
+function capturePromptArchive(){
+  if(!current)return null;
+  const ui={
+    masterPrompt,
+    referenceSheetPrompt,
+    blenderBlueprintPrompt,
+    selectedReferenceSheetStyle,
+    masterText:$('masterPromptBox')?.textContent||'',
+    refText:$('referenceSheetPromptBox')?.textContent||'',
+    bpText:$('blenderBlueprintPromptBox')?.textContent||'',
+    bpDisplay:$('blenderBlueprintPanel')?.style.display||'none'
+  };
+
+  // Keep any prompt the user already generated exactly as-is. Build only missing
+  // prompt modes so a saved generation receives a complete reusable prompt archive.
+  const exactMaster=masterPrompt||buildMasterPrompt();
+  ['realistic','anime','blender'].forEach(style=>{
+    if(!generatedStylePrompts[style])buildReferenceSheetPrompt(style);
+  });
+  if(!generatedStylePrompts.blenderBlueprint && blenderCharacterSnapshot)buildBlenderBlueprintPrompt(blenderCharacterSnapshot);
+
+  const archive={
+    version:1,
+    capturedAt:Date.now(),
+    base:current.prompt||'',
+    master:exactMaster||'',
+    realistic:generatedStylePrompts.realistic||'',
+    anime:generatedStylePrompts.anime||'',
+    blenderFinished:generatedStylePrompts.blender||'',
+    blenderBlueprint:generatedStylePrompts.blenderBlueprint||'',
+    characterSnapshot:styleCharacterSnapshot?JSON.parse(JSON.stringify(styleCharacterSnapshot)):null
+  };
+
+  // Saving must not visually switch the user's selected prompt mode.
+  masterPrompt=ui.masterPrompt;
+  referenceSheetPrompt=ui.referenceSheetPrompt;
+  blenderBlueprintPrompt=ui.blenderBlueprintPrompt;
+  selectedReferenceSheetStyle=ui.selectedReferenceSheetStyle;
+  if($('masterPromptBox'))$('masterPromptBox').textContent=ui.masterText;
+  if($('referenceSheetPromptBox'))$('referenceSheetPromptBox').textContent=ui.refText;
+  if($('blenderBlueprintPromptBox'))$('blenderBlueprintPromptBox').textContent=ui.bpText;
+  if($('blenderBlueprintPanel'))$('blenderBlueprintPanel').style.display=ui.bpDisplay;
+  setReferenceSheetMode(ui.selectedReferenceSheetStyle);
+  return archive;
+}
+
+function restoreSavedPromptState(record){
+  const a=record?.promptArchive;
+  if(!a)return;
+  generatedStylePrompts={
+    realistic:a.realistic||'',
+    anime:a.anime||'',
+    blender:a.blenderFinished||'',
+    blenderBlueprint:a.blenderBlueprint||''
+  };
+  if(a.characterSnapshot){
+    styleCharacterSnapshot=JSON.parse(JSON.stringify(a.characterSnapshot));
+    blenderCharacterSnapshot=JSON.parse(JSON.stringify(a.characterSnapshot));
+  }
+}
+
+function promptArchiveMarkup(record,scope,index){
+  const a=record?.promptArchive;
+  if(!a)return '<span class="prompt-archive-note">Legacy save — no prompt archive attached.</span>';
+  const items=[
+    ['base','Base'],['master','Master'],['realistic','Realistic'],['anime','Anime'],
+    ['blenderFinished','Blender Color'],['blenderBlueprint','Blender B&W']
+  ].filter(([key])=>a[key]);
+  if(!items.length)return '<span class="prompt-archive-note">No archived prompts available.</span>';
+  return `<details class="prompt-archive"><summary>Prompt Archive • ${items.length} exact copies</summary><div class="prompt-archive-actions">${items.map(([key,label])=>`<button type="button" data-archive-scope="${scope}" data-archive-index="${index}" data-archive-key="${key}">Copy ${label}</button>`).join('')}<button type="button" data-archive-all-scope="${scope}" data-archive-all-index="${index}">Copy All</button></div><span class="prompt-archive-note">These are the exact prompt strings captured when this generation was saved.</span></details>`;
+}
+
+function recordForArchive(scope,index){
+  if(scope==='fusion')return savedFusions[index];
+  if(scope==='favorite')return favorites[index];
+  return null;
+}
+
+async function handlePromptArchiveClick(e){
+  const one=e.target.closest('[data-archive-key]');
+  const all=e.target.closest('[data-archive-all-scope]');
+  if(!one&&!all)return false;
+  const scope=one?one.dataset.archiveScope:all.dataset.archiveAllScope;
+  const index=Number(one?one.dataset.archiveIndex:all.dataset.archiveAllIndex);
+  const record=recordForArchive(scope,index);
+  const archive=record?.promptArchive;
+  if(!archive)return true;
+  let text='';
+  if(one){
+    text=archive[one.dataset.archiveKey]||'';
+  }else{
+    const ordered=[['base','BASE PROMPT'],['master','MASTER PROMPT'],['realistic','REALISTIC PROMPT'],['anime','ANIME PROMPT'],['blenderFinished','BLENDER FINISHED PROMPT'],['blenderBlueprint','BLENDER B&W PROMPT']];
+    text=ordered.filter(([k])=>archive[k]).map(([k,label])=>`===== ${label} =====\n${archive[k]}`).join('\n\n');
+  }
+  if(!text)return true;
+  try{
+    await navigator.clipboard.writeText(text);
+    const btn=one||all, old=btn.textContent;btn.textContent='Copied!';setTimeout(()=>btn.textContent=old,900);
+  }catch(err){prompt('Copy archived prompt:',text);}
+  return true;
+}
+
+
+// R5.0.15 — exact saved-generation ZIP backup/restore. ZIP files are intentionally
+// STORE-only so the app can create and restore them offline without third-party libraries.
+const ZIP_BACKUP_VERSION=1;
+const zipEncoder=new TextEncoder();
+const zipDecoder=new TextDecoder();
+let crcTable=null;
+function getCrcTable(){
+  if(crcTable)return crcTable;
+  crcTable=new Uint32Array(256);
+  for(let n=0;n<256;n++){
+    let c=n;
+    for(let k=0;k<8;k++)c=(c&1)?(0xedb88320^(c>>>1)):(c>>>1);
+    crcTable[n]=c>>>0;
+  }
+  return crcTable;
+}
+function crc32(bytes){
+  const table=getCrcTable();let c=0xffffffff;
+  for(const b of bytes)c=table[(c^b)&0xff]^(c>>>8);
+  return (c^0xffffffff)>>>0;
+}
+function zipDosDateTime(d=new Date()){
+  const year=Math.max(1980,d.getFullYear());
+  const time=(d.getHours()<<11)|(d.getMinutes()<<5)|Math.floor(d.getSeconds()/2);
+  const date=((year-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate();
+  return {date,time};
+}
+function concatBytes(parts){
+  const total=parts.reduce((n,p)=>n+p.length,0),out=new Uint8Array(total);let off=0;
+  for(const part of parts){out.set(part,off);off+=part.length;}return out;
+}
+function makeStoredZip(entries){
+  const localParts=[],centralParts=[];let offset=0;
+  const dt=zipDosDateTime();
+  for(const entry of entries){
+    const nameBytes=zipEncoder.encode(entry.name.replace(/^\/+/,''));
+    const data=entry.data instanceof Uint8Array?entry.data:zipEncoder.encode(String(entry.data??''));
+    const crc=crc32(data);
+    const local=new Uint8Array(30+nameBytes.length),lv=new DataView(local.buffer);
+    lv.setUint32(0,0x04034b50,true);lv.setUint16(4,20,true);lv.setUint16(6,0,true);lv.setUint16(8,0,true);
+    lv.setUint16(10,dt.time,true);lv.setUint16(12,dt.date,true);lv.setUint32(14,crc,true);lv.setUint32(18,data.length,true);lv.setUint32(22,data.length,true);lv.setUint16(26,nameBytes.length,true);lv.setUint16(28,0,true);local.set(nameBytes,30);
+    localParts.push(local,data);
+    const central=new Uint8Array(46+nameBytes.length),cv=new DataView(central.buffer);
+    cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0,true);cv.setUint16(10,0,true);cv.setUint16(12,dt.time,true);cv.setUint16(14,dt.date,true);cv.setUint32(16,crc,true);cv.setUint32(20,data.length,true);cv.setUint32(24,data.length,true);cv.setUint16(28,nameBytes.length,true);cv.setUint16(30,0,true);cv.setUint16(32,0,true);cv.setUint16(34,0,true);cv.setUint16(36,0,true);cv.setUint32(38,0,true);cv.setUint32(42,offset,true);central.set(nameBytes,46);
+    centralParts.push(central);offset+=local.length+data.length;
+  }
+  const central=concatBytes(centralParts),eocd=new Uint8Array(22),ev=new DataView(eocd.buffer);
+  ev.setUint32(0,0x06054b50,true);ev.setUint16(4,0,true);ev.setUint16(6,0,true);ev.setUint16(8,entries.length,true);ev.setUint16(10,entries.length,true);ev.setUint32(12,central.length,true);ev.setUint32(16,offset,true);ev.setUint16(20,0,true);
+  return new Blob([...localParts,central,eocd],{type:'application/zip'});
+}
+async function readStoredZip(file){
+  const bytes=new Uint8Array(await file.arrayBuffer()),view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+  let eocd=-1;for(let i=bytes.length-22;i>=Math.max(0,bytes.length-65557);i--){if(view.getUint32(i,true)===0x06054b50){eocd=i;break;}}
+  if(eocd<0)throw new Error('Not a valid ZIP backup.');
+  const count=view.getUint16(eocd+10,true),centralOffset=view.getUint32(eocd+16,true);let p=centralOffset;const files=new Map();
+  for(let i=0;i<count;i++){
+    if(view.getUint32(p,true)!==0x02014b50)throw new Error('ZIP directory is damaged.');
+    const method=view.getUint16(p+10,true),compSize=view.getUint32(p+20,true),nameLen=view.getUint16(p+28,true),extraLen=view.getUint16(p+30,true),commentLen=view.getUint16(p+32,true),localOffset=view.getUint32(p+42,true);
+    const name=zipDecoder.decode(bytes.slice(p+46,p+46+nameLen));
+    if(method!==0)throw new Error('This importer accepts Race Generator STORE-format ZIP backups only.');
+    if(view.getUint32(localOffset,true)!==0x04034b50)throw new Error('ZIP entry is damaged.');
+    const localNameLen=view.getUint16(localOffset+26,true),localExtraLen=view.getUint16(localOffset+28,true),start=localOffset+30+localNameLen+localExtraLen;
+    files.set(name,bytes.slice(start,start+compSize));p+=46+nameLen+extraLen+commentLen;
+  }
+  return files;
+}
+function safeFilePart(value){
+  return String(value??'').normalize('NFKD').replace(/[\\/:*?"<>|%]+/g,' ').replace(/\s+/g,' ').trim().replace(/ /g,'_').replace(/[^A-Za-z0-9._-]/g,'').replace(/_+/g,'_').replace(/^[_\-.]+|[_\-.]+$/g,'').slice(0,96)||'Saved_Character';
+}
+function raceForId(id){return db.find(r=>r.id===id)||starterRaces.find(r=>r.id===id)||null;}
+function paddedRaceNumber(r){const n=Number(r?.number)||Number(String(r?.id||'').match(/\d+/)?.[0])||0;return n?String(n).padStart(4,'0'):'0000';}
+function generationBackupBase(record){
+  if(record?.kind==='fusion'||String(record?.meta||'').includes('FUSION')){
+    const a=raceForId(record.parentAId),b=raceForId(record.parentBId),ra=Number(record.ratioA)||Number(String(record.meta||'').match(/(\d+)\s*\//)?.[1])||50,rb=100-ra;
+    const defaultish=String(record.title||'').includes(a?.name||'__NO_A__')&&String(record.title||'').includes(b?.name||'__NO_B__');
+    const prefix=!defaultish&&record.title?`${safeFilePart(record.title)}__`:'';
+    return `${prefix}${safeFilePart(a?.name||'Parent_A')}_${paddedRaceNumber(a)}_${ra}pct__${safeFilePart(b?.name||'Parent_B')}_${paddedRaceNumber(b)}_${rb}pct`;
+  }
+  const race=raceForId(record?.raceId),name=record?.title||race?.name||'Saved_Character';
+  return `${safeFilePart(name)}_${paddedRaceNumber(race)}`;
+}
+function promptEntriesForRecord(record,folder,base){
+  const a=record?.promptArchive||{},items=[['base','01_Base_Prompt'],['master','02_Master_Prompt'],['realistic','03_Realistic_Prompt'],['anime','04_Anime_Prompt'],['blenderFinished','05_Blender_Finished_Prompt'],['blenderBlueprint','06_Blender_BW_Prompt']];
+  return items.filter(([key])=>typeof a[key]==='string'&&a[key].length).map(([key,label])=>({name:`${folder}Prompts/${base}__${label}.txt`,data:a[key]}));
+}
+function generationZipEntries(record,targetCollection,folderPrefix=''){
+  const base=generationBackupBase(record),folder=`${folderPrefix}${base}/`;
+  const meta={app:'Race Generator',format:'race-generator-generation-zip',version:ZIP_BACKUP_VERSION,build:'12R5.0.15',exportedAt:new Date().toISOString(),displayName:record?.title||'',backupBase:base,targetCollection,kind:record?.kind||'',raceId:record?.raceId||null,parentAId:record?.parentAId||null,parentBId:record?.parentBId||null,ratioA:record?.ratioA??null,ratioB:record?.ratioA!=null?100-Number(record.ratioA):null};
+  const entries=[
+    {name:`${folder}${base}__metadata.json`,data:JSON.stringify(meta,null,2)},
+    {name:`${folder}${base}__record.json`,data:JSON.stringify({format:'race-generator-exact-record',version:ZIP_BACKUP_VERSION,targetCollection,record},null,2)}
+  ];
+  if(record?.promptArchive?.characterSnapshot)entries.push({name:`${folder}${base}__character_snapshot.json`,data:JSON.stringify(record.promptArchive.characterSnapshot,null,2)});
+  entries.push(...promptEntriesForRecord(record,folder,base));
+  return {base,entries};
+}
+function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);}
+function exportGenerationZip(record,targetCollection){
+  if(!record)return;const {base,entries}=generationZipEntries(record,targetCollection);downloadBlob(makeStoredZip(entries),`${base}.zip`);
+}
+function exportAllGenerationZips(){
+  if(!favorites.length&&!savedFusions.length){setZipImportStatus('No saved generations to export yet.','warn');return;}
+  const entries=[];let n=0;
+  favorites.forEach(r=>{entries.push(...generationZipEntries(r,'favorites',`Saved_Races/`).entries);n++;});
+  savedFusions.forEach(r=>{entries.push(...generationZipEntries(r,'savedFusions',`Saved_Fusions/`).entries);n++;});
+  const manifest={app:'Race Generator',format:'race-generator-all-saved-generations',version:ZIP_BACKUP_VERSION,build:'12R5.0.15',exportedAt:new Date().toISOString(),count:n};
+  entries.unshift({name:'Race_Generator_Backup_Manifest.json',data:JSON.stringify(manifest,null,2)});
+  const stamp=new Date().toISOString().slice(0,10);downloadBlob(makeStoredZip(entries),`Race_Generator_All_Saved_Generations_${stamp}.zip`);setZipImportStatus(`Downloaded ${n} saved generation${n===1?'':'s'} in one ZIP.`,'ok');
+}
+function setZipImportStatus(message,kind=''){const el=$('zipImportStatus');if(!el)return;el.textContent=message;el.className='tiny zip-import-status'+(kind?` ${kind}`:'');}
+function restoredCopyRecord(record){
+  const copy=JSON.parse(JSON.stringify(record));copy.restoredAt=Date.now();copy.restoredFromZip=true;
+  const exists=[...favorites,...savedFusions].some(x=>x.title===copy.title&&x.prompt===copy.prompt);
+  if(exists)copy.title=`${copy.title} (Restored Copy)`;
+  return copy;
+}
+async function importGenerationZip(file){
+  if(!file)return;
+  try{
+    const files=await readStoredZip(file),recordNames=[...files.keys()].filter(n=>n.endsWith('__record.json'));
+    if(!recordNames.length)throw new Error('No Race Generator saved-generation records were found in this ZIP.');
+    let favAdded=0,fusionAdded=0;
+    for(const name of recordNames){
+      const wrapper=JSON.parse(zipDecoder.decode(files.get(name)));if(!wrapper?.record)continue;
+      const record=restoredCopyRecord(wrapper.record),target=wrapper.targetCollection||((record.kind==='fusion'||String(record.meta||'').includes('FUSION'))?'savedFusions':'favorites');
+      if(target==='savedFusions'){savedFusions.unshift(record);fusionAdded++;}else{favorites.unshift(record);favAdded++;}
+    }
+    favorites=favorites.slice(0,500);savedFusions=savedFusions.slice(0,500);save();persistSavedFusions();renderLists();renderSavedFusions();renderLibrary();
+    setZipImportStatus(`ZIP restore complete: ${favAdded} saved race/favorite${favAdded===1?'':'s'} and ${fusionAdded} saved fusion${fusionAdded===1?'':'s'} added. Existing saves were not overwritten.`,'ok');
+  }catch(err){setZipImportStatus(`ZIP restore failed: ${err.message}`,'warn');}
+  finally{const input=$('importGenerationZipInput');if(input)input.value='';}
+}
+
 let savedFusions=JSON.parse(localStorage.getItem('race_generator_saved_fusions')||'[]');
 
 function persistSavedFusions(){
@@ -1862,8 +2107,10 @@ function renderSavedFusions(){
       <div class="saved-fusion-actions">
         <button type="button" data-load-saved="${i}">Load</button>
         <button type="button" data-copy-saved="${i}">Copy</button>
+        <button type="button" data-export-saved-zip="${i}">Export ZIP</button>
         <button type="button" data-delete-saved="${i}">Delete</button>
       </div>
+      ${promptArchiveMarkup(f,'fusion',i)}
     </div>`).join('');
 }
 
@@ -1873,7 +2120,7 @@ function saveCurrentFusion(){
     return;
   }
 
-  const record={...current,savedAt:Date.now()};
+  const record={...current,savedAt:Date.now(),promptArchive:capturePromptArchive()};
   const duplicate=savedFusions.findIndex(f=>f.title===record.title && f.prompt===record.prompt);
   if(duplicate>=0)savedFusions.splice(duplicate,1);
 
@@ -1892,6 +2139,7 @@ function loadSavedFusion(index){
   if(!f)return;
   current={...f};
   resetMasterPrompt();
+  restoreSavedPromptState(f);
   renderResult();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1909,9 +2157,11 @@ function renderLists(){
       <div class="favorite-actions">
         <button type="button" data-favorite-load="${i}">Load</button>
         <button type="button" data-favorite-copy="${i}">Copy</button>
+        <button type="button" data-favorite-export-zip="${i}">Export ZIP</button>
         ${canParent?`<button type="button" data-favorite-parent="A" data-favorite-index="${i}">Set A</button><button type="button" data-favorite-parent="B" data-favorite-index="${i}">Set B</button>`:''}
         <button type="button" class="danger" data-favorite-remove="${i}">Remove</button>
       </div>
+      ${promptArchiveMarkup(f,'favorite',i)}
     </div>`;
   }).join(''):'No saved races or favorites yet.';
   $('historyList').className='mini-list'+(history.length?'':' empty');
@@ -1942,9 +2192,11 @@ $('randomParentsBtn').onclick=randomizeManualParents;
 $('saveFusionBtn').onclick=saveCurrentFusion;
 
 $('savedFusionList').onclick=async e=>{
+  if(await handlePromptArchiveClick(e))return;
   const load=e.target.closest('[data-load-saved]');
   const copy=e.target.closest('[data-copy-saved]');
   const del=e.target.closest('[data-delete-saved]');
+  const exportZip=e.target.closest('[data-export-saved-zip]');
 
   if(load){
     loadSavedFusion(Number(load.dataset.loadSaved));
@@ -1962,6 +2214,7 @@ $('savedFusionList').onclick=async e=>{
     }
     return;
   }
+  if(exportZip){exportGenerationZip(savedFusions[Number(exportZip.dataset.exportSavedZip)],'savedFusions');return;}
   if(del){
     savedFusions.splice(Number(del.dataset.deleteSaved),1);
     persistSavedFusions();
@@ -1989,7 +2242,7 @@ $('copyBtn').onclick=async()=>{if(!current)generate();try{await navigator.clipbo
 $('favoriteBtn').onclick=()=>{
   if(!current)return;
   const i=favorites.findIndex(f=>f.title===current.title);
-  if(i>=0)favorites.splice(i,1);else favorites.unshift({...current,savedAt:Date.now()});
+  if(i>=0)favorites.splice(i,1);else favorites.unshift({...current,savedAt:Date.now(),promptArchive:capturePromptArchive()});
   save();renderResult();renderLists();renderLibrary();
 };
 $('rerollDetailsBtn').onclick=()=>{if(current)generate()};
@@ -2004,19 +2257,22 @@ $('clearLibraryFiltersBtn').onclick=()=>{
 };
 
 $('favoritesList').onclick=async e=>{
+  if(await handlePromptArchiveClick(e))return;
   const load=e.target.closest('[data-favorite-load]');
   const copy=e.target.closest('[data-favorite-copy]');
   const remove=e.target.closest('[data-favorite-remove]');
+  const exportZip=e.target.closest('[data-favorite-export-zip]');
   const parent=e.target.closest('[data-favorite-parent]');
   if(load){
     const f=favorites[Number(load.dataset.favoriteLoad)]; if(!f)return;
-    current={...f}; resetMasterPrompt(); renderResult(); window.scrollTo({top:0,behavior:'smooth'}); return;
+    current={...f}; resetMasterPrompt(); restoreSavedPromptState(f); renderResult(); window.scrollTo({top:0,behavior:'smooth'}); return;
   }
   if(copy){
     const f=favorites[Number(copy.dataset.favoriteCopy)]; if(!f)return;
     try{await navigator.clipboard.writeText(f.prompt||'');copy.textContent='Copied!';setTimeout(()=>copy.textContent='Copy',900);}catch(err){prompt('Copy this prompt:',f.prompt||'');}
     return;
   }
+  if(exportZip){exportGenerationZip(favorites[Number(exportZip.dataset.favoriteExportZip)],'favorites');return;}
   if(parent){
     const f=favorites[Number(parent.dataset.favoriteIndex)]; if(!f?.raceId)return;
     setRaceAsParent(f.raceId,parent.dataset.favoriteParent); return;
@@ -2056,6 +2312,8 @@ $('libraryList').onclick=e=>{
   if(card)selectRaceForManual(card.dataset.raceId);
 };
 
+$('exportAllGenerationsZipBtn').onclick=exportAllGenerationZips;
+$('importGenerationZipInput').onchange=e=>importGenerationZip(e.target.files?.[0]);
 $('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,races:db,favorites,history},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='race-generator-backup.json';a.click();URL.revokeObjectURL(a.href)};
 $('importInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(Array.isArray(data))db=data;else {if(data.races)db=data.races;if(data.favorites)favorites=data.favorites;if(data.history)history=data.history}save();renderLibrary();renderLists();renderSavedFusions();populateRaceOptions();updateRatioLabels();syncManualPickState();alert(`Imported ${db.length} races.`)}catch(err){alert('That JSON file could not be imported.')}};
 $('resetBtn').onclick=()=>{if(confirm(`Reset the race library, favorites, and history to the built-in ${starterRaces.length.toLocaleString()}-race library?`)){db=starterRaces;favorites=[];history=[];save();renderLibrary();renderLists();$('result').innerHTML='<div class="result-placeholder">Tap generate to begin.</div>';current=null;resetMasterPrompt()}};
@@ -2115,7 +2373,9 @@ function setupCollapsibleCards(){
 }
 setupCollapsibleCards();
 
-// Build 12R5.0.12: adds a shared cross-style character snapshot so Realistic, Anime, Blender Finished, and Blender B&W preserve one resolved character design until a new race/fusion is generated or loaded. Pose, scene, lighting, and rendering remain mode-specific.
+// Build 12R5.0.15: adds offline exact-generation ZIP export/import for individual saves and the full saved library. ZIP folders preserve the exact record, locked snapshot, and archived prompts; filenames use the character/race name plus race number, and fusions include both parent race numbers and exact percentages. Existing saves are never silently overwritten on ZIP restore.
+// Previous Build 12R5.0.14: preserves the weapon orientation and cross-style character locks, and attaches a complete exact-copy prompt archive (Base, Master, Realistic, Anime, Blender Finished, Blender B&W) to newly saved favorites and fusions for future reuse.
+// Previous Build 12R5.0.13: preserves the shared cross-style character snapshot and adds weapon-only top/bottom orientation locks for polearms, axes, headed blunt weapons, staffs, scepters, and wands so functional heads are not generated upside down.
 // Previous Build 12R5.0.11: keeps Step 1 expanded by default and starts every later home-screen section collapsed, while preserving each user's subsequent expand/collapse choices.
 // Previous Build 12R5.0.10: preserves the Blender snapshot lock, adds collapsible home-screen cards, and resolves incompatible weapon handling selections by weapon type.
 // Previous Build 12R5.0.8: adds Manual Race selection and separates Blender Finished Reference from the B&W Modeling Blueprint so each is generated independently.
@@ -2127,7 +2387,7 @@ setupCollapsibleCards();
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-12-cross-style-character-lock', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-15-zip-backup-restore', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and
