@@ -1785,6 +1785,9 @@ function generate(){
   }
   resetMasterPrompt();
   initializeFreshGenerationState();
+  // Fresh generations must immediately create the same usable prompt state as loaded records.
+  // Capture the resolved snapshot before any style-specific prompt is requested.
+  buildMasterPrompt();
   history.unshift({...current,characterSnapshot:current.characterSnapshot?JSON.parse(JSON.stringify(current.characterSnapshot)):null,ts:Date.now()});history=history.slice(0,50);save();renderResult();renderLists();
 }
 function syncFilterSelect(id,values,allLabel){
