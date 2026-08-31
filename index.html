@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.17 • ChatGPT Compatibility Toggle</span>
+        <span class="build-version">Build 12R5.0.18 • Mandatory Arm & Hand Views</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -1522,8 +1522,14 @@ The scalp must be completely visible: no hair, braids, ponytails, beard, fur hai
 BLACK-AND-WHITE CONSTRUCTION STYLE LOCK:
 Plain white background. Crisp black or dark-gray contour linework with only minimal light-neutral construction shading where necessary to clarify volume. No painted fantasy illustration, cinematic lighting, environment, atmospheric effects, decorative background, color palette, costume rendering, or dramatic composition. Prioritize silhouette, body volume, joint placement, proportion, racial anatomy, and modeling readability.
 
-ISOLATED CONSTRUCTION CALLOUTS:
-Arrange simple isolated line-art callouts around the main views in the same practical spirit as the fixed base-model reference. Include useful front/profile head construction, eye/face detail when identity-critical, hands/forearms, legs/feet, and race-specific structures such as ears, horns, tails, wings, fins, extra limbs, claws, hooves, or other physical anatomy ONLY when explicitly permitted by the ANATOMY ALLOWLIST. Do not invent anatomy merely to fill empty space. All callouts must match the same base model exactly.
+ISOLATED CONSTRUCTION CALLOUTS — FOUR CORE GROUPS REQUIRED:
+Arrange clean isolated line-art construction callouts around the main views in the same practical layout spirit as the supplied fixed base-model reference. EVERY blueprint must include these four construction groups: (1) front/profile head and identity-critical face/eye detail; (2) COMPLETE ARMS + HANDS; (3) COMPLETE LEGS + FEET; and (4) any race-specific physical anatomy explicitly permitted by the ANATOMY ALLOWLIST. Do not invent anatomy merely to fill empty space. All callouts must match the exact same base model, scale relationships, joint locations, proportions, and racial anatomy.
+
+MANDATORY HAND & ARM CONSTRUCTION PANEL:
+Include a dedicated isolated upper-limb reference panel matching the supplied base-model reference format. Show separate clean line-art construction views of the SAME character's complete arm and hand: at minimum one FULL ARM from shoulder joint to fingertips in FRONT view and one FULL ARM from shoulder joint to fingertips in exact SIDE/PROFILE view, plus isolated open-hand PALM view and SIDE/EDGE hand view. The full-arm studies must visibly include the shoulder connection, upper arm, elbow, forearm, wrist, hand, and fingers so their complete length and joint relationships are readable for 3D modeling. Keep shoulder shape, upper-arm length, elbow position, forearm length, wrist thickness, hand size, finger proportions, claws, membranes, scales, or other permitted racial upper-limb anatomy synchronized exactly with the main T-pose body. DO NOT crop the required full-arm views at the elbow, forearm, wrist, or hand. DO NOT substitute hand-only or forearm-only studies for the required complete shoulder-to-fingertip arm views. DO NOT add clothing, armor, gloves, bracers, jewelry, weapons, equipment, or decorative coverings. Arrange the isolated full-arm and hand views vertically or horizontally beside the main body views, following the practical construction-sheet organization of the supplied reference image.
+
+MANDATORY LEG & FOOT CONSTRUCTION PANEL:
+Include isolated complete leg/foot construction views sufficient to read hip-to-foot proportion, knee placement, lower-leg form, ankle, foot profile, and any explicitly allowlisted racial lower-limb anatomy. Keep these synchronized with the main front and side T-pose views.
 ${chatGPTCompatibilityText()?`\n${chatGPTCompatibilityText()}\n`:''}
 IDENTITY SOURCE — AUTHORITATIVE:
 ${identity}
@@ -2399,7 +2405,7 @@ function setupCollapsibleCards(){
 }
 setupCollapsibleCards();
 
-// Build 12R5.0.17: adds a toggleable ChatGPT Image Compatibility mode. When enabled, all generated prompts add policy-safe non-explicit wording while preserving race identity, anatomy, style, layout, and composition; Blender B&W switches exposed body wording to a neutral anatomical mannequin treatment with no visible nipples/genital detail while retaining the fixed bald front/side T-pose format and all identity-authorized physical racial features. Prior locks and ZIP backup/restore remain preserved.
+// Build 12R5.0.18: makes complete arm-and-hand construction references mandatory in Blender B&W base-model blueprints. Requires full shoulder-to-fingertip front and side/profile arm views plus open-hand palm and side/edge views, synchronized to the main T-pose and any allowlisted racial anatomy. ChatGPT compatibility, fixed bald base-model layout, ZIP backup/restore, and prior locks remain preserved.
 // Previous Build 12R5.0.16: fixed bald base-model construction format with strict front T-pose, true orthographic side T-pose with depth-axis/end-on arms, isolated anatomy callouts, and preservation of identity-authorized physical racial features.
 // Previous Build 12R5.0.14: preserves the weapon orientation and cross-style character locks, and attaches a complete exact-copy prompt archive (Base, Master, Realistic, Anime, Blender Finished, Blender B&W) to newly saved favorites and fusions for future reuse.
 // Previous Build 12R5.0.13: preserves the shared cross-style character snapshot and adds weapon-only top/bottom orientation locks for polearms, axes, headed blunt weapons, staffs, scepters, and wands so functional heads are not generated upside down.
@@ -2414,7 +2420,7 @@ setupCollapsibleCards();
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-17-chatgpt-compatibility-toggle', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-18-mandatory-arm-hand-views', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and

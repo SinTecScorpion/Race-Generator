@@ -2,7 +2,7 @@
   "name": "Race Generator",
   "short_name": "Race Generator",
   "description": "Offline 5,000-race fantasy humanoid Race Generator with Manual Race selection, Realistic and Anime illustration modes, conditional weapon profiles, and separate synchronized Blender finished-reference and B&W modeling-blueprint prompts, compatible weapon handling, weapon top/bottom orientation locks, collapsible home-screen control sections, exact-copy prompt archives attached to newly saved generations, offline per-generation/full-library ZIP backup and restore, plus a toggleable ChatGPT-safe image compatibility mode that preserves character style and racial anatomy.",
-  "start_url": "./?build=12r5-0-17-chatgpt-compatibility-toggle",
+  "start_url": "./?build=12r5-0-18-mandatory-arm-hand-views",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
