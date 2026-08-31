@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.10 • Collapsible Tabs + Weapon Handling</span>
+        <span class="build-version">Build 12R5.0.11 • Default Collapsed Tabs</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -2077,9 +2077,12 @@ function setupCollapsibleCards(){
     btn.textContent='▾';
     const existingBadge=head.querySelector('.badge');
     if(existingBadge) head.insertBefore(btn,existingBadge.nextSibling); else head.appendChild(btn);
-    const key=`rgCollapse:${card.id||card.className.split(' ').filter(Boolean).join('-')||index}`;
-    let collapsed=false;
-    try{collapsed=localStorage.getItem(key)==='1';}catch(e){}
+    const key=`rgCollapseV2:${card.id||card.className.split(' ').filter(Boolean).join('-')||index}`;
+    let collapsed=index>0;
+    try{
+      const stored=localStorage.getItem(key);
+      if(stored!==null) collapsed=stored==='1';
+    }catch(e){}
     const apply=()=>{
       card.classList.toggle('card-collapsed',collapsed);
       btn.textContent=collapsed?'▸':'▾';
@@ -2096,7 +2099,8 @@ function setupCollapsibleCards(){
 }
 setupCollapsibleCards();
 
-// Build 12R5.0.10: preserves the Blender snapshot lock, adds collapsible home-screen cards, and resolves incompatible weapon handling selections by weapon type.
+// Build 12R5.0.11: keeps Step 1 expanded by default and starts every later home-screen section collapsed, while preserving each user's subsequent expand/collapse choices.
+// Previous Build 12R5.0.10: preserves the Blender snapshot lock, adds collapsible home-screen cards, and resolves incompatible weapon handling selections by weapon type.
 // Previous Build 12R5.0.8: adds Manual Race selection and separates Blender Finished Reference from the B&W Modeling Blueprint so each is generated independently.
 // Previous Build 12R5.0.7: adds a separate synchronized black-and-white Blender modeling blueprint prompt/button while preserving the existing finished dual Blender reference unchanged.
 // Previous Build 12R5.0.6: Blender-Ready now requires two synchronized sections: a strict T-pose modeling blueprint plus a finished multi-view design/material/equipment reference for the same character.
@@ -2106,7 +2110,7 @@ setupCollapsibleCards();
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-10-collapsible-tabs-weapon-handling', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-11-default-collapsed-tabs', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and
