@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.18 • Mandatory Arm & Hand Views</span>
+        <span class="build-version">Build 12R5.0.19 • Fixed Blender Alignment Template</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -1510,6 +1510,16 @@ Use the supplied base-model reference format as the permanent layout target for 
 MANDATORY MODELING VIEWS:
 Show an exact FRONT full-body T-pose and an exact SIDE full-body T-pose at identical character height, identical body proportions, identical scale, and one aligned ground line. A clean BACK T-pose may be included only if space permits without shrinking or compromising the mandatory front and side views. Use orthographic-style presentation with minimal perspective distortion.
 
+FIXED PANEL LAYOUT + BLENDER ALIGNMENT REGISTRATION — MANDATORY:
+Treat the supplied base-model reference sheet as a fixed template, not a loose inspiration. Preserve the same overall panel organization on every generation: large FRONT T-pose on the upper left, large SIDE T-pose immediately to its right at the same scale and ground line; compact head/detail panels in the upper-right; COMPLETE ARMS + HANDS and COMPLETE LEGS + FEET panels along the lower portion; race-specific anatomy panel to the lower-right when the ANATOMY ALLOWLIST supports extra structures; compact notes/proportion/silhouette blocks along the bottom. Do not swap these panel locations, omit a mandatory panel, or replace the layout with a conventional character turnaround.
+
+Add permanent circular REGISTRATION / ALIGNMENT MARKERS matching the supplied reference format so the FRONT and SIDE images can be lined up precisely in Blender. Place TWO small unfilled alignment circles centered directly above the FRONT-view head and ONE small unfilled alignment circle centered directly above the SIDE-view head. These circles are technical registration marks, not character anatomy or decoration. Keep their size, stroke weight, spacing, and vertical placement visually consistent from generation to generation.
+
+Also include a left-side ALIGNMENT GUIDE column of small unfilled circles connected to faint straight horizontal guide lines that pass across BOTH the FRONT and SIDE body views. At minimum align: TOP OF HEAD, CHIN, SHOULDERS, CHEST LINE, NAVEL, PELVIS / HIP POINTS, MID THIGH, KNEES, MID CALF, ANKLES, and FEET / GROUND. All horizontal guides must be perfectly level and shared by both views so identical landmarks intersect the same guide line. The FEET / GROUND guide is the common ground line. Keep the guide labels technical and non-sexual. Do not let wings, tails, horns, or other permitted racial anatomy shift the body registration landmarks or the shared character scale.
+
+BLENDER REGISTRATION CONSISTENCY LOCK:
+The FRONT and SIDE base bodies must occupy matching vertical coordinates: top of skull, chin, shoulder joints, chest volume, navel, pelvis, knees, ankles, and soles must line up exactly across the shared guides. The circles and guide lines are mandatory modeling registration aids and must never be stylized into magical symbols, ornaments, eyes, halos, interface buttons, or racial markings.
+
 STRICT FRONT T-POSE:
 Upright symmetrical body; feet comfortably apart; legs straight; pelvis and torso level; head neutral and facing directly forward; BOTH arms extend perfectly horizontally from the shoulders at approximately 90 degrees; elbows straight; wrists neutral; hands open and readable. No A-pose, lowered arms, bent elbows, action pose, contrapposto, or cinematic perspective.
 
@@ -2405,7 +2415,7 @@ function setupCollapsibleCards(){
 }
 setupCollapsibleCards();
 
-// Build 12R5.0.18: makes complete arm-and-hand construction references mandatory in Blender B&W base-model blueprints. Requires full shoulder-to-fingertip front and side/profile arm views plus open-hand palm and side/edge views, synchronized to the main T-pose and any allowlisted racial anatomy. ChatGPT compatibility, fixed bald base-model layout, ZIP backup/restore, and prior locks remain preserved.
+// Build 12R5.0.19: locks Blender B&W base-model blueprints to the supplied fixed panel template and adds permanent Blender registration markers: two circles above the front head, one above the side head, plus shared horizontal landmark guides across front/side views. Existing bald base-model, depth-axis side T-pose, mandatory arm/hand and leg/foot panels, allowlisted racial anatomy, ChatGPT compatibility, ZIP backup/restore, and prior locks remain preserved.
 // Previous Build 12R5.0.16: fixed bald base-model construction format with strict front T-pose, true orthographic side T-pose with depth-axis/end-on arms, isolated anatomy callouts, and preservation of identity-authorized physical racial features.
 // Previous Build 12R5.0.14: preserves the weapon orientation and cross-style character locks, and attaches a complete exact-copy prompt archive (Base, Master, Realistic, Anime, Blender Finished, Blender B&W) to newly saved favorites and fusions for future reuse.
 // Previous Build 12R5.0.13: preserves the shared cross-style character snapshot and adds weapon-only top/bottom orientation locks for polearms, axes, headed blunt weapons, staffs, scepters, and wands so functional heads are not generated upside down.
@@ -2420,7 +2430,7 @@ setupCollapsibleCards();
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-18-mandatory-arm-hand-views', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-19-fixed-blender-alignment-template', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and
