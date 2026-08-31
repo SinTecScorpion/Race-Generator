@@ -73,7 +73,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.19 • Fixed Blender Alignment Template</span>
+        <span class="build-version">Build 12R5.0.20 • Racial Feature & Variation Pass</span>
       </div>
       <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
@@ -1012,6 +1012,7 @@ const anatomyMarkerRules=[
   {label:'tentacles / cephalopod appendages',re:/\b(tentacle|tentacles|cephalopod|squid|octopus)\b/i},
   {label:'chromatophore skin',re:/\b(chromatophore|chromatophores)\b/i},
   {label:'wings',re:/\b(wing|wings|winged)\b/i},
+  {label:'pointed elven ears',re:/\b(pointed elven ears?|elongated pointed elven ears?|pointed ears?)\b/i},
   {label:'horns / antlers',re:/\b(horn|horns|horned|antler|antlers)\b/i},
   {label:'tail',re:/\b(tail|tails|tailed)\b/i},
   {label:'fins / finned anatomy',re:/\b(fin|fins|finned)\b/i},
@@ -1044,7 +1045,7 @@ function anatomyAllowlistText(a,b=null){
     return `${label}: ${found.length?found.join(', '):'no additional major nonhuman structures detected by the anatomy scanner'}. Identity source remains authoritative: ${locked}`;
   });
   const combined=[...new Set([...(detectedAnatomy(a)),...(b?detectedAnatomy(b):[])])];
-  return `ANATOMY ALLOWLIST:\n${rows.join('\n')}\nPermitted anatomy is limited to structures explicitly supported by the race source text above${combined.length?`, including detected markers: ${combined.join(', ')}`:''}. The source identity may be elaborated faithfully, but do not infer new major structures from fantasy genre conventions, wardrobe, weapons, pose, environment, or decorative styling.`;
+  return `ANATOMY ALLOWLIST:\n${rows.join('\n')}\nPermitted anatomy is limited to structures explicitly supported by the race source text above${combined.length?`, including detected markers: ${combined.join(', ')}`:''}. The source identity may be elaborated faithfully, but do not infer new major structures from fantasy genre conventions, wardrobe, weapons, pose, environment, or decorative styling. Pointed elven ears are physical racial anatomy and may appear only when explicitly supported by the race source and detected above; otherwise do not default a humanoid race to elven ear anatomy.`;
 }
 
 function buildSingle(r){
@@ -2415,7 +2416,8 @@ function setupCollapsibleCards(){
 }
 setupCollapsibleCards();
 
-// Build 12R5.0.19: locks Blender B&W base-model blueprints to the supplied fixed panel template and adds permanent Blender registration markers: two circles above the front head, one above the side head, plus shared horizontal landmark guides across front/side views. Existing bald base-model, depth-axis side T-pose, mandatory arm/hand and leg/foot panels, allowlisted racial anatomy, ChatGPT compatibility, ZIP backup/restore, and prior locks remain preserved.
+// Build 12R5.0.20: updates the 5,000-race library with explicit pointed-elven-ear anatomy for all 50 Ancient/Greater Elven races, adds theme-specific stable signature visual motifs across all races to reduce template sameness, and teaches the anatomy scanner to allowlist pointed elven ears only when source-supported.
+// Previous Build 12R5.0.19: locks Blender B&W base-model blueprints to the supplied fixed panel template and adds permanent Blender registration markers: two circles above the front head, one above the side head, plus shared horizontal landmark guides across front/side views. Existing bald base-model, depth-axis side T-pose, mandatory arm/hand and leg/foot panels, allowlisted racial anatomy, ChatGPT compatibility, ZIP backup/restore, and prior locks remain preserved.
 // Previous Build 12R5.0.16: fixed bald base-model construction format with strict front T-pose, true orthographic side T-pose with depth-axis/end-on arms, isolated anatomy callouts, and preservation of identity-authorized physical racial features.
 // Previous Build 12R5.0.14: preserves the weapon orientation and cross-style character locks, and attaches a complete exact-copy prompt archive (Base, Master, Realistic, Anime, Blender Finished, Blender B&W) to newly saved favorites and fusions for future reuse.
 // Previous Build 12R5.0.13: preserves the shared cross-style character snapshot and adds weapon-only top/bottom orientation locks for polearms, axes, headed blunt weapons, staffs, scepters, and wands so functional heads are not generated upside down.
@@ -2430,7 +2432,7 @@ setupCollapsibleCards();
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-19-fixed-blender-alignment-template', { updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./sw.js?build=12r5-0-20-racial-feature-variation-pass', { updateViaCache: 'none' });
       await registration.update();
 
       // When a newer worker takes control, reload once so the visible HTML and
