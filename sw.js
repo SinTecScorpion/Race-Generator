@@ -1,4 +1,4 @@
-const CACHE = 'race-generator-r5-0-9-blender-snapshot-lock-v1';
+const CACHE = 'race-generator-r5-0-10-collapsible-tabs-weapon-handling-v1';
 const OFFLINE_HTML='./index.html';
 const CORE=[
   './manifest.webmanifest',
@@ -33,7 +33,7 @@ self.addEventListener('fetch', event => {
       try {
         // Fetch the canonical index URL, not the query-string navigation URL.
         // The build query intentionally bypasses stale browser/CDN HTML while the response is still cached under the canonical offline key.
-        const canonical = new Request(new URL('./index.html?build=12r5-0-9-blender-snapshot-lock', self.registration.scope).href, {
+        const canonical = new Request(new URL('./index.html?build=12r5-0-10-collapsible-tabs-weapon-handling', self.registration.scope).href, {
           method: 'GET',
           headers: { 'Cache-Control': 'no-cache' },
           cache: 'reload',
