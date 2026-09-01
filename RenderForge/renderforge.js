@@ -1,88 +1,48 @@
-// RenderForge Core Engine
-// Connects prompts, image generation, character saves, and image library
-
+// RenderForge Phase 1
+// Main Controller Connection Layer
 
 const RenderForge = {
 
 
-    currentCharacter: null,
+    version: "Phase 1",
 
 
-    currentPrompt: "",
+    createCharacterFromPrompt(promptData) {
 
+        if (!window.RenderForgeSave) {
 
+            console.error(
+                "RenderForgeSave not loaded"
+            );
 
-    initialize() {
-
-        console.log(
-            "RenderForge initialized"
-        );
-
-    },
-
-
-
-    loadPrompt(prompt) {
-
-        this.currentPrompt =
-            prompt || "";
-
-        console.log(
-            "Prompt loaded into RenderForge"
-        );
-
-        return this.currentPrompt;
-
-    },
-
-
-
-    createCharacter(data) {
-
-
-        if(window.RenderForgeCharacterSave) {
-
-
-            const character =
-                window.RenderForgeCharacterSave.create(
-                    {
-
-                        ...data,
-
-                        prompt:
-                            this.currentPrompt
-
-                    }
-                );
-
-
-            this.currentCharacter =
-                character;
-
-
-            return character;
-
+            return null;
         }
 
 
-        console.error(
-            "Character save system missing"
+        const character =
+            RenderForgeSave.createCharacter(
+                promptData
+            );
+
+
+        console.log(
+            "RenderForge Character Saved:",
+            character
         );
 
 
-        return null;
+        return character;
 
     },
 
 
+    attachImage(characterId, imageData, promptData = {}) {
 
-    registerImage(imageData) {
 
-
-        if(!this.currentCharacter) {
+        if (!window.RenderForgeImageLibrary) {
 
             console.error(
-                "No active character"
+                "Image Library not loaded"
             );
 
             return null;
@@ -90,89 +50,87 @@ const RenderForge = {
         }
 
 
+        const image =
+            RenderForgeImageLibrary.createImageEntry({
 
-        if(window.RenderForgeImageLibrary) {
+                characterId: characterId,
 
+                imageData: imageData,
 
-            const image =
-                window.RenderForgeImageLibrary.add(
+                promptUsed:
+                    promptData.fullPrompt || "",
 
-                    {
+                styleMode:
+                    promptData.styleMode || ""
 
-                        ...imageData,
-
-                        characterID:
-                            this.currentCharacter.id,
-
-                        prompt:
-                            this.currentPrompt
-
-                    }
-
-                );
+            });
 
 
-            return image;
-
-        }
-
-
-
-        console.error(
-            "Image library missing"
+        console.log(
+            "RenderForge Image Added:",
+            image
         );
 
 
-        return null;
+        return image;
 
     },
 
 
+    getCharacters() {
 
-    prepareGenerationRequest(settings) {
+        return RenderForgeSave.getArchive();
 
-
-        return {
-
-            prompt:
-                this.currentPrompt,
+    },
 
 
-            style:
-                settings.style ||
-                "Anime",
+    getImages() {
+
+        return RenderForgeImageLibrary.getLibrary();
+
+    },
 
 
-            mode:
-                settings.mode ||
-                "Single Image",
+    exportCharacter(characterId) {
 
 
-            resolution:
-                settings.resolution ||
-                "1024x1024",
+        const character =
+            RenderForgeSave.getCharacter(
+                characterId
+            );
 
 
-            characterID:
-                this.currentCharacter
-                ?
-                this.currentCharacter.id
-                :
-                null
+        if (!character) {
 
-        };
+            console.error(
+                "Character not found"
+            );
+
+            return null;
+
+        }
+
+
+        const file =
+            JSON.stringify(
+                character,
+                null,
+                2
+            );
+
+
+        return file;
 
     }
-
-
 
 };
 
 
+// Global access
 
-window.RenderForge =
-    RenderForge;
+window.RenderForge = RenderForge;
 
 
-
-RenderForge.initialize();
+console.log(
+    "RenderForge Phase 1 Loaded"
+);
