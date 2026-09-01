@@ -1,1 +1,69 @@
+{
+  "characterID": "",
+  "name": "",
+  "createdDate": "",
 
+  "identity": {
+    "race": "",
+    "category": "",
+    "theme": "",
+    "primaryAffinity": "",
+    "identityBanner": "",
+    "definingTraits": [],
+    "anatomyAllowlist": []
+  },
+
+  "characterDesign": {
+    "sex": "",
+    "ageStyle": "",
+    "build": "",
+    "expression": "",
+    "hair": "",
+    "skin": "",
+    "eyes": "",
+    "markings": []
+  },
+
+  "presentation": {
+    "generationMode": "",
+    "styleMode": "",
+    "camera": "",
+    "pose": "",
+    "lighting": "",
+    "environment": ""
+  },
+
+  "wardrobe": {
+    "outfitName": "",
+    "materials": [],
+    "colors": [],
+    "coverage": "",
+    "silhouette": ""
+  },
+
+  "equipment": {
+    "hasWeapon": false,
+    "weaponType": "",
+    "weaponMaterial": "",
+    "weaponEffects": "",
+    "orientationRules": ""
+  },
+
+  "generation": {
+    "prompt": "",
+    "negativePrompt": "",
+    "modelUsed": "",
+    "settings": {}
+  },
+
+  "images": [
+    {
+      "imageID": "",
+      "url": "",
+      "thumbnail": "",
+      "dateCreated": ""
+    }
+  ],
+
+  "notes": ""
+}
