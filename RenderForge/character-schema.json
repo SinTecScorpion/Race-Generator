@@ -1,69 +1,49 @@
 {
-  "characterID": "",
-  "name": "",
-  "createdDate": "",
+  "version": "RenderForge Phase 1",
+  "character": {
+    "id": "",
+    "name": "",
+    "created": "",
+    "updated": "",
 
-  "identity": {
-    "race": "",
-    "category": "",
-    "theme": "",
-    "primaryAffinity": "",
-    "identityBanner": "",
-    "definingTraits": [],
-    "anatomyAllowlist": []
-  },
+    "identity": {
+      "race": "",
+      "category": "",
+      "theme": "",
+      "primaryAffinity": "",
+      "lockedIdentity": "",
+      "anatomyAllowlist": ""
+    },
 
-  "characterDesign": {
-    "sex": "",
-    "ageStyle": "",
-    "build": "",
-    "expression": "",
-    "hair": "",
-    "skin": "",
-    "eyes": "",
-    "markings": []
-  },
+    "generation": {
+      "fullPrompt": "",
+      "styleMode": "",
+      "pose": "",
+      "camera": "",
+      "lighting": "",
+      "environment": ""
+    },
 
-  "presentation": {
-    "generationMode": "",
-    "styleMode": "",
-    "camera": "",
-    "pose": "",
-    "lighting": "",
-    "environment": ""
-  },
+    "design": {
+      "appearance": "",
+      "bodyDescription": "",
+      "hair": "",
+      "markings": "",
+      "clothing": "",
+      "materials": "",
+      "equipment": ""
+    },
 
-  "wardrobe": {
-    "outfitName": "",
-    "materials": [],
-    "colors": [],
-    "coverage": "",
-    "silhouette": ""
-  },
+    "images": {
+      "primaryImage": "",
+      "referenceImages": [],
+      "generatedImages": []
+    },
 
-  "equipment": {
-    "hasWeapon": false,
-    "weaponType": "",
-    "weaponMaterial": "",
-    "weaponEffects": "",
-    "orientationRules": ""
-  },
-
-  "generation": {
-    "prompt": "",
-    "negativePrompt": "",
-    "modelUsed": "",
-    "settings": {}
-  },
-
-  "images": [
-    {
-      "imageID": "",
-      "url": "",
-      "thumbnail": "",
-      "dateCreated": ""
+    "archive": {
+      "favorite": false,
+      "notes": "",
+      "tags": []
     }
-  ],
-
-  "notes": ""
+  }
 }
