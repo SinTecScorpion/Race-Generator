@@ -1,215 +1,145 @@
-// RenderForge Character Save System
-// Stores generated characters, prompts, images, and identity data
+// RenderForge Phase 1
+// Character Save + Archive System
 
-const CHARACTER_STORAGE_KEY = "renderforge_character_archive";
+const RenderForgeSave = {
 
-function getCharacterArchive() {
-  try {
-    const saved = localStorage.getItem(CHARACTER_STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  } catch (error) {
-    console.error("Character archive load error:", error);
-    return [];
-  }
-}
+    storageKey: "renderforge_character_archive",
 
-function saveCharacterArchive(characters) {
-  try {
-    localStorage.setItem(
-      CHARACTER_STORAGE_KEY,
-      JSON.stringify(characters)
-    );
-    return true;
-  } catch (error) {
-    console.error("Character archive save error:", error);
-    return false;
-  }
-}
+    createCharacter(data = {}) {
 
-function createCharacterSave(characterData) {
+        const now = new Date().toISOString();
 
-  const archive = getCharacterArchive();
+        const character = {
+            id: "RF-" + Date.now(),
 
-  const character = {
-    id: "RF-" + Date.now(),
+            name: data.name || "Unnamed Character",
 
-    created: new Date().toISOString(),
+            created: now,
+            updated: now,
 
-    name:
-      characterData.name ||
-      "Unnamed RenderForge Character",
+            identity: {
+                race: data.race || "",
+                category: data.category || "",
+                theme: data.theme || "",
+                primaryAffinity: data.primaryAffinity || "",
+                lockedIdentity: data.lockedIdentity || "",
+                anatomyAllowlist: data.anatomyAllowlist || ""
+            },
 
-    race:
-      characterData.race ||
-      "Unknown Race",
+            generation: {
+                fullPrompt: data.fullPrompt || "",
+                styleMode: data.styleMode || "",
+                pose: data.pose || "",
+                camera: data.camera || "",
+                lighting: data.lighting || "",
+                environment: data.environment || ""
+            },
 
-    category:
-      characterData.category ||
-      "",
+            design: {
+                appearance: data.appearance || "",
+                bodyDescription: data.bodyDescription || "",
+                hair: data.hair || "",
+                markings: data.markings || "",
+                clothing: data.clothing || "",
+                materials: data.materials || "",
+                equipment: data.equipment || ""
+            },
 
-    affinity:
-      characterData.affinity ||
-      "",
+            images: {
+                primaryImage: "",
+                referenceImages: [],
+                generatedImages: []
+            },
 
-    identityBanner:
-      characterData.identityBanner ||
-      "",
+            archive: {
+                favorite: false,
+                notes: "",
+                tags: []
+            }
+        };
 
-    anatomyAllowlist:
-      characterData.anatomyAllowlist ||
-      [],
+        this.saveCharacter(character);
 
-    appearance:
-      characterData.appearance ||
-      {},
-
-    clothing:
-      characterData.clothing ||
-      {},
-
-    equipment:
-      characterData.equipment ||
-      {},
-
-    style:
-      characterData.style ||
-      "Anime",
-
-    generationMode:
-      characterData.generationMode ||
-      "Single Image",
-
-    prompt:
-      characterData.prompt ||
-      "",
-
-    images:
-      characterData.images ||
-      [],
-
-    notes:
-      characterData.notes ||
-      ""
-  };
+        return character;
+    },
 
 
-  archive.push(character);
+    saveCharacter(character) {
 
-  saveCharacterArchive(archive);
+        let archive = this.getArchive();
 
-  return character;
-}
+        const existing = archive.findIndex(
+            item => item.id === character.id
+        );
 
+        if (existing >= 0) {
+            archive[existing] = character;
+        } else {
+            archive.push(character);
+        }
 
-function loadCharacterSave(id) {
+        localStorage.setItem(
+            this.storageKey,
+            JSON.stringify(archive)
+        );
 
-  const archive = getCharacterArchive();
-
-  return archive.find(
-    character => character.id === id
-  );
-}
-
-
-function deleteCharacterSave(id) {
-
-  let archive = getCharacterArchive();
-
-  archive = archive.filter(
-    character => character.id !== id
-  );
-
-  saveCharacterArchive(archive);
-
-}
+        return true;
+    },
 
 
-function updateCharacterSave(id, updates) {
+    getArchive() {
 
-  const archive = getCharacterArchive();
+        const saved = localStorage.getItem(
+            this.storageKey
+        );
 
-  const index = archive.findIndex(
-    character => character.id === id
-  );
+        if (!saved) {
+            return [];
+        }
 
+        try {
+            return JSON.parse(saved);
+        } catch {
 
-  if(index === -1) {
-    return false;
-  }
-
-
-  archive[index] = {
-    ...archive[index],
-    ...updates
-  };
-
-
-  saveCharacterArchive(archive);
-
-  return archive[index];
-}
+            return [];
+        }
+    },
 
 
-function exportCharacterSave(id) {
+    getCharacter(id) {
 
-  const character = loadCharacterSave(id);
+        const archive = this.getArchive();
 
-  if(!character) {
-    return null;
-  }
+        return archive.find(
+            character => character.id === id
+        );
+    },
 
 
-  const file = new Blob(
-    [
-      JSON.stringify(
-        character,
-        null,
-        2
-      )
-    ],
-    {
-      type:"application/json"
+    deleteCharacter(id) {
+
+        let archive = this.getArchive();
+
+        archive = archive.filter(
+            character => character.id !== id
+        );
+
+        localStorage.setItem(
+            this.storageKey,
+            JSON.stringify(archive)
+        );
+    },
+
+
+    clearArchive() {
+
+        localStorage.removeItem(
+            this.storageKey
+        );
     }
-  );
-
-
-  const url = URL.createObjectURL(file);
-
-  const link = document.createElement("a");
-
-  link.href = url;
-
-  link.download =
-    character.name.replace(/\s+/g,"_")
-    +
-    "_RenderForge_Save.json";
-
-
-  link.click();
-
-  URL.revokeObjectURL(url);
-
-}
-
-
-window.RenderForgeCharacterSave = {
-
-  create:
-    createCharacterSave,
-
-  load:
-    loadCharacterSave,
-
-  delete:
-    deleteCharacterSave,
-
-  update:
-    updateCharacterSave,
-
-  export:
-    exportCharacterSave,
-
-  getAll:
-    getCharacterArchive
 
 };
+
+
+// Make available to RenderForge
+window.RenderForgeSave = RenderForgeSave;
