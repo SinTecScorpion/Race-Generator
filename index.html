@@ -2206,6 +2206,84 @@ function saveCurrentFusion(){
   btn.textContent='✓ Fusion Saved';
   setTimeout(()=>btn.textContent='💾 Save Current Fusion',1200);
 }
+    function saveCharacterToRenderForge(){
+
+    if(!window.RenderForge){
+
+        alert("RenderForge system not loaded");
+        return;
+
+    }
+
+
+    if(!current){
+
+        alert("Generate a character first");
+        return;
+
+    }
+
+
+    const archive =
+        capturePromptArchive();
+
+
+    const character =
+        RenderForge.createCharacterFromPrompt({
+
+            name:
+                current.title ||
+                "Generated Character",
+
+
+            race:
+                current.race ||
+                "",
+
+
+            fullPrompt:
+                archive.prompt ||
+                current.prompt ||
+                "",
+
+
+            styleMode:
+                current.style ||
+                "",
+
+
+            pose:
+                current.pose ||
+                "",
+
+
+            lighting:
+                current.lighting ||
+                "",
+
+
+            environment:
+                current.environment ||
+                "",
+
+
+            equipment:
+                current.equipment ||
+                ""
+
+        });
+
+
+    if(character){
+
+        alert(
+            "🔥 Character saved to RenderForge Archive\n\n" +
+            character.name
+        );
+
+    }
+
+    }
 
 function loadSavedFusion(index){
   const f=savedFusions[index];
@@ -2482,6 +2560,15 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
 <script src="./RenderForge/character-save.js"></script>
 <script src="./RenderForge/image-library.js"></script>
 <script src="./RenderForge/renderforge.js"></script>
+<script>
+window.addEventListener("load", () => {
+    const btn = document.getElementById("saveRenderForgeCharacter");
+
+    if(btn){
+        btn.addEventListener("click", saveCharacterToRenderForge);
+    }
+});
+</script>
 
 </body>
 </html>
