@@ -61,10 +61,22 @@
       };
     },
 
-    requestImageGeneration(settings){
-      // Phase 3 intentionally prepares a backend-neutral request.
-      // No fake image is produced and no external API key is embedded client-side.
-      return this.buildRequest(settings);
+    async requestImageGeneration(settings){
+      const request = this.buildRequest(settings);
+      if(!window.RenderForgeConnector){
+        throw new Error("RenderForge connector module is missing.");
+      }
+      const response = await window.RenderForgeConnector.generate(request);
+      const result = this.saveResult({
+        requestId: request.requestId,
+        characterId: request.characterId,
+        promptMode: request.promptMode,
+        prompt: request.prompt,
+        settings: request.settings,
+        images: Array.isArray(response.images) ? response.images : [],
+        model: response.model || "gpt-image-2"
+      });
+      return {request, response, result};
     },
 
     saveResult(result){
