@@ -24,7 +24,7 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
   <header class="hero">
     <h1>RenderForge</h1>
     <p>Character workbench connected to Race Generator.</p>
-    <span class="badge">Phase 2 • Character Package Loader</span>
+    <span class="badge">Phase 3 • Generation Studio</span>
   </header>
 
   <section class="card">
@@ -50,7 +50,60 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
         <button id="prepareImageBtn" class="primary">Prepare Image Generation</button>
         <button id="deleteCurrentBtn" class="danger">Delete From RenderForge</button>
       </div>
-      <div id="imageStatus" class="status" style="margin-top:10px">Image-generation backend is not connected yet. Phase 2 verifies the character/prompt handoff before we connect an image engine.</div>
+      <div id="imageStatus" class="status" style="margin-top:10px">Select a prompt mode, then prepare it for the Generation Studio below.</div>
+    </div>
+  </section>
+
+  <section class="card" id="generationStudio">
+    <h2>Generation Studio</h2>
+    <div id="studioStatus" class="status">No prompt prepared yet. Load a character above and tap “Prepare Image Generation.”</div>
+
+    <div id="studioPanel" style="display:none;margin-top:12px">
+      <label>Prepared Prompt
+        <div id="studioPrompt" class="prompt" style="max-height:260px"></div>
+      </label>
+
+      <div class="actions" style="margin-top:12px">
+        <label>Aspect Ratio
+          <select id="rfAspect">
+            <option>1:1</option>
+            <option>3:4</option>
+            <option>4:3</option>
+            <option>9:16</option>
+            <option>16:9</option>
+          </select>
+        </label>
+        <label>Images
+          <select id="rfCount">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+          </select>
+        </label>
+        <label>Quality
+          <select id="rfQuality">
+            <option>Standard</option>
+            <option selected>High</option>
+            <option>Maximum</option>
+          </select>
+        </label>
+        <label>Seed (optional)
+          <input id="rfSeed" inputmode="numeric" placeholder="Random" style="font:inherit;border:1px solid var(--border);border-radius:12px;background:#21172e;color:var(--ink);padding:11px 12px">
+        </label>
+      </div>
+
+      <label style="margin-top:12px">Negative Prompt (optional)
+        <textarea id="rfNegative" rows="4" placeholder="Things the renderer should avoid…" style="font:inherit;border:1px solid var(--border);border-radius:12px;background:#0b0910;color:var(--ink);padding:11px 12px;resize:vertical"></textarea>
+      </label>
+
+      <div class="actions" style="margin-top:12px">
+        <button id="generateImageBtn" class="primary">Generate Image</button>
+        <button id="copyRequestBtn">Copy Generation Request</button>
+      </div>
+
+      <div id="generationResult" class="status" style="margin-top:10px">
+        Phase 3 is engine-ready. The Generate button now creates a complete RenderForge request package. A rendering backend is the next connection.
+      </div>
     </div>
   </section>
 
@@ -100,6 +153,49 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
     showPrompt();
   }
 
+  function studioSettings(){
+    return {
+      aspectRatio:$('rfAspect').value,
+      imageCount:Number($('rfCount').value)||1,
+      quality:$('rfQuality').value,
+      seed:$('rfSeed').value.trim(),
+      negativePrompt:$('rfNegative').value.trim()
+    };
+  }
+
+  function renderStudio(){
+    const prepared=window.RenderForgeImage?.getPrompt();
+    if(!prepared || !prepared.prompt){
+      $('studioPanel').style.display='none';
+      $('studioStatus').className='status';
+      $('studioStatus').textContent='No prompt prepared yet. Load a character above and tap “Prepare Image Generation.”';
+      return;
+    }
+    const s=RenderForgeImage.getSettings();
+    $('rfAspect').value=s.aspectRatio||'1:1';
+    $('rfCount').value=String(s.imageCount||1);
+    $('rfQuality').value=s.quality||'High';
+    $('rfSeed').value=s.seed||'';
+    $('rfNegative').value=s.negativePrompt||'';
+    $('studioPrompt').textContent=prepared.prompt;
+    $('studioPanel').style.display='block';
+    $('studioStatus').className='status ok';
+    $('studioStatus').textContent='Ready: '+(prepared.mode||'master')+' prompt • '+(prepared.entry?.id||'current character');
+  }
+
+  function makeRequest(){
+    try{
+      const req=RenderForgeImage.requestImageGeneration(studioSettings());
+      $('generationResult').className='status ok';
+      $('generationResult').textContent='Generation request '+req.requestId+' created successfully. RenderForge is ready for the image-engine connector.';
+      return req;
+    }catch(e){
+      $('generationResult').className='status warn';
+      $('generationResult').textContent=e.message||'Unable to create generation request.';
+      return null;
+    }
+  }
+
   function renderArchive(){
     const rows=RenderForgeWorkbench.getArchive();
     const el=$('archiveList');
@@ -124,7 +220,9 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
     if(!text){$('imageStatus').className='status warn';$('imageStatus').textContent='The selected prompt mode is empty.';return;}
     if(window.RenderForgeImage)window.RenderForgeImage.loadPrompt({entry:selected,mode:$('promptMode').value,prompt:text});
     $('imageStatus').className='status ok';
-    $('imageStatus').textContent='Prompt package prepared successfully. Phase 2 handoff is working. The next phase will connect this prepared request to the image-generation engine.';
+    $('imageStatus').textContent='Prompt prepared successfully for the Generation Studio.';
+    renderStudio();
+    document.getElementById('generationStudio').scrollIntoView({behavior:'smooth',block:'start'});
   });
   $('deleteCurrentBtn').addEventListener('click',()=>{
     if(!selected)return;
@@ -139,8 +237,20 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
     window.scrollTo({top:0,behavior:'smooth'});
   });
 
+  $('generateImageBtn').addEventListener('click',()=>makeRequest());
+  $('copyRequestBtn').addEventListener('click',async()=>{
+    const req=makeRequest(); if(!req)return;
+    const text=JSON.stringify(req,null,2);
+    try{
+      await navigator.clipboard.writeText(text);
+      $('copyRequestBtn').textContent='Copied!';
+      setTimeout(()=>$('copyRequestBtn').textContent='Copy Generation Request',900);
+    }catch(e){ prompt('Copy generation request:',text); }
+  });
+
   renderArchive();
   renderCurrent(RenderForgeWorkbench.getLatest());
+  renderStudio();
 })();
 </script>
 </body>
