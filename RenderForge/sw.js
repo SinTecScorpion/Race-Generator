@@ -1,4 +1,4 @@
-const RF_CACHE = "renderforge-pwa-v1";
+const RF_CACHE = "renderforge-pwa-v2";
 const RF_SHELL = [
   "./RenderForge_index.html",
   "./character-save.js",
@@ -9,8 +9,8 @@ const RF_SHELL = [
   "./renderforge-phase2.js",
   "./renderforge-ui.js",
   "./manifest.webmanifest",
-  "./icons/renderforge-192.png",
-  "./icons/renderforge-512.png"
+  "./renderforge-192.png",
+  "./renderforge-512.png"
 ];
 
 self.addEventListener("install", event => {
