@@ -1,8 +1,7 @@
-const CACHE = 'race-generator-r5-0-21-fresh-generation-state-fix-v1';
+const CACHE = 'race-generator-r4-saved-library-filters-v1';
 const OFFLINE_HTML='./index.html';
 const CORE=[
   './manifest.webmanifest',
-  './races.js',
   './Icons/icon-192.png',
   './Icons/icon-512.png'
 ];
@@ -26,14 +25,28 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
+  // RenderForge lives under the same GitHub Pages service-worker scope.
+  // Let RenderForge requests fetch their own files instead of replacing
+  // RenderForge navigation with the Race Generator offline index.
+  const scopePath = new URL(self.registration.scope).pathname;
+  const renderForgePath = `${scopePath}RenderForge/`;
+  const isRenderForge = url.pathname.startsWith(renderForgePath);
+
+  if (isRenderForge) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' }).catch(() => caches.match(request))
+    );
+    return;
+  }
+
   const isNavigation = request.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html');
 
   if (isNavigation) {
     event.respondWith((async () => {
       try {
         // Fetch the canonical index URL, not the query-string navigation URL.
-        // The build query intentionally bypasses stale browser/CDN HTML while the response is still cached under the canonical offline key.
-        const canonical = new Request(new URL('./index.html?build=12r5-0-21-fresh-generation-state-fix', self.registration.scope).href, {
+        // This prevents ?stepX cache-busters from creating separate stale HTML entries.
+        const canonical = new Request(new URL('./index.html', self.registration.scope).href, {
           method: 'GET',
           headers: { 'Cache-Control': 'no-cache' },
           cache: 'reload',
@@ -54,22 +67,9 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Manifest, worker, and race data should prefer the network so updates are visible.
-  if (url.pathname.endsWith('/manifest.webmanifest') || url.pathname.endsWith('/sw.js') || url.pathname.endsWith('/races.js')) {
-    event.respondWith((async () => {
-      try {
-        const response = await fetch(request, { cache: 'no-store' });
-        if (response && response.ok && url.pathname.endsWith('/races.js')) {
-          const cache = await caches.open(CACHE);
-          await cache.put(request, response.clone());
-        }
-        return response;
-      } catch (err) {
-        const cached = await caches.match(request);
-        if (cached) return cached;
-        throw err;
-      }
-    })());
+  // Manifest and worker-related files should prefer the network so updates are visible.
+  if (url.pathname.endsWith('/manifest.webmanifest') || url.pathname.endsWith('/sw.js')) {
+    event.respondWith(fetch(request, { cache: 'no-store' }).catch(() => caches.match(request)));
     return;
   }
 
