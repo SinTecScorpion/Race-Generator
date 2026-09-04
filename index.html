@@ -760,6 +760,55 @@ function nsfwPromptText(){
     : 'SFW PROMPT MODE: keep presentation non-explicit and suitable for general fantasy character art';
 }
 
+
+// R5.0.23 — Individual Character Variation Engine
+const individualFaceShapePool=[
+  'long oval facial structure','soft oval facial structure','angular diamond facial structure',
+  'broad tapered facial structure','narrow heart-shaped facial structure','strong rectangular facial structure',
+  'high-cheekboned sculpted facial structure','compact rounded facial structure','lean wedge-shaped facial structure',
+  'balanced triangular facial structure','long narrow aristocratic facial structure','broad high-cheekboned facial structure'
+];
+const individualEyePool=[
+  'wide almond-shaped eyes','narrow almond-shaped eyes','deep-set focused eyes','large round expressive eyes',
+  'hooded intense eyes','upturned sharp eyes','downturned gentle eyes','close-set piercing eyes',
+  'wide-set observant eyes','heavy-lidded mysterious eyes','prominent angular eyes','soft deep-set eyes'
+];
+const individualBrowPool=[
+  'straight low-set brows','high arched brows','thick expressive brows','fine angular brows',
+  'soft curved brows','strong flat brows','asymmetrically expressive brows','high-set narrow brows'
+];
+const individualNosePool=[
+  'straight narrow nose','short refined nose','long elegant nose','broad strong nose',
+  'slightly aquiline nose','small upturned nose','low-bridge sculpted nose','prominent straight bridge'
+];
+const individualMouthPool=[
+  'full defined lips','thin precise lips','wide expressive mouth','small reserved mouth',
+  'strong cupid-bow lips','soft asymmetrical lips','broad firm mouth','delicate narrow mouth'
+];
+const individualProportionPool=[
+  'long-limbed proportions','compact athletic proportions','balanced classical proportions',
+  'slightly long-torso proportions','slightly short-torso proportions','broad-shouldered proportions',
+  'narrow-shouldered elegant proportions','long-legged proportions','compact sturdy proportions',
+  'willowy proportions','powerful tapered proportions','gracefully elongated proportions'
+];
+const individualPresencePool=[
+  'quiet watchful presence','bold commanding presence','restless energetic presence','reserved enigmatic presence',
+  'warm self-assured presence','cold disciplined presence','curious alert presence','regal composed presence',
+  'fierce predatory presence','gentle distant presence','weathered determined presence','playful dangerous presence'
+];
+function createIndividualVariation(){
+  return {
+    id:'IV-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),
+    faceShape:pick(individualFaceShapePool), eyes:pick(individualEyePool), brows:pick(individualBrowPool),
+    nose:pick(individualNosePool), mouth:pick(individualMouthPool), proportions:pick(individualProportionPool),
+    presence:pick(individualPresencePool)
+  };
+}
+function individualVariationText(v=current?.individualVariation){
+  if(!v)return '';
+  return `INDIVIDUAL CHARACTER VARIATION — ${v.id}: ${v.faceShape}; ${v.eyes}; ${v.brows}; ${v.nose}; ${v.mouth}; ${v.proportions}; ${v.presence}. These details define THIS individual only. Preserve the race's locked anatomy, coloration, markings, affinities, and other identity-critical traits. Do not reuse a generic default fantasy face or copy the facial design of a previous generation.`;
+}
+
 function characterControlText(){
   const ageValue=$('ageStyle')?.value||'Random';
   const age=ageValue==='Random'?pick(agePool):ageValue;
@@ -1053,9 +1102,10 @@ function anatomyAllowlistText(a,b=null){
 function buildSingle(r){
   beginPromptRandomization();
   const sex=selectedSex();
+  const individualVariation=createIndividualVariation();
   const t=tone(), adjective=pick(adjectives), wardrobe=armorClothingControlText(), lighting=lightingControlText(), detail=detailText($('detailSelect').value);
   return {
-    kind:'single', raceId:r.id,
+    kind:'single', raceId:r.id, individualVariation,
     title:r.name, meta:`${r.category} • ${r.origin} • ${t}`,
     banner:`RACE IDENTITY • ${r.name}`,
     description:r.description, traits:r.traits,
@@ -1067,6 +1117,8 @@ Visual Identity: ${r.visualIdentity||r.description}
 ${t} fantasy character portrait of an ${adjective} ${sex} ${r.name}, ${r.description.toLowerCase()} Defining traits: ${r.traits.join(', ')}.
 
 ${anatomyAllowlistText(r)}
+
+${individualVariationText(individualVariation)}
 ${chatGPTCompatibilityText()?`\n${chatGPTCompatibilityText()}\n`:''}
 Wearing ${wardrobe}. ${weaponControlText()}. ${environmentControlText()}. ${lighting}, ${detail}, ${qualityControlText()}, ${nsfwPromptText()}, ${characterControlText()}, ${poseControlText()}, full-body character design, cohesive anatomy, realistic materials, polished high-end fantasy game concept art. Identity and anatomy from the race source remain authoritative.`
   }
@@ -1074,6 +1126,7 @@ Wearing ${wardrobe}. ${weaponControlText()}. ${environmentControlText()}. ${ligh
 function buildFusion(a,b,ratioA=50){
   beginPromptRandomization();
   const sex=selectedSex();
+  const individualVariation=createIndividualVariation();
   const t=tone();
   ratioA=Math.max(10,Math.min(90,Number(ratioA)||50));
   const ratioB=100-ratioA;
@@ -1114,7 +1167,7 @@ function buildFusion(a,b,ratioA=50){
   const themeText=[a.theme,b.theme].filter(Boolean).join(' + ');
 
   return {
-    kind:'fusion', parentAId:a.id, parentBId:b.id, ratioA,
+    kind:'fusion', parentAId:a.id, parentBId:b.id, ratioA, individualVariation,
     title:fusionName,
     meta:`RG FUSION • ${ratioA}/${ratioB} • ${t}`,
     banner:`RG FUSION • ${a.name} ${ratioA}% × ${b.name} ${ratioB}%`,
@@ -1156,6 +1209,8 @@ Apply the ${ratioA}/${ratioB} ratio only to ancestry-specific features actually 
 Combined affinities: ${affinityText||'mixed ancestral magic'}.
 Combined cultural themes: ${themeText||'blended ancestral culture'}.
 Key preserved traits: ${allTraits.slice(0,8).join(', ')}.
+
+${individualVariationText(individualVariation)}
 
 ${anatomyAllowlistText(a,b)}
 ${chatGPTCompatibilityText()?`\n${chatGPTCompatibilityText()}\n`:''}
@@ -1275,7 +1330,10 @@ function buildMasterPrompt(){
 
   masterPrompt=`${base}
 
-${chatGPTCompatibilityText()?`${chatGPTCompatibilityText()}\n\n`:''}MASTER CHARACTER BUILDER — FINAL SYNTHESIS:
+${chatGPTCompatibilityText()?`${chatGPTCompatibilityText()}\n\n`:''}INDIVIDUAL CHARACTER VARIATION LOCK:
+${individualVariationText(current?.individualVariation)}
+
+MASTER CHARACTER BUILDER — FINAL SYNTHESIS:
 Create one unified, production-ready character image from every instruction above. Resolve any conflict using this priority order: (1) Locked Racial Identity and parent identity preservation, (2) the ANATOMY ALLOWLIST and coherent silhouette, (3) character appearance and pose, (4) armor/clothing and weapon integration, (5) lighting and environment, (6) render quality and decorative finish. The ANATOMY ALLOWLIST is authoritative: positively depict and elaborate structures supported by the race source data, and do not introduce any major anatomical structure that is absent from all applicable race sources. Repeated mentions in wardrobe, weapon, pose, environment, or quality instructions never expand the allowlist. Do not omit defining racial markers to satisfy equipment, camera framing, effects, or scenery. If two lower-priority controls conflict, resolve them into one physically coherent instruction rather than depicting both literally. Keep the complete character readable and biologically coherent, with no duplicated anatomy, no random extra limbs, no hidden identity-defining features, and no genericization of the race or fusion.`;
 
   const box=$('masterPromptBox');
@@ -1431,6 +1489,7 @@ function captureStyleCharacterSnapshot(){
   beginPromptRandomization();
   styleCharacterSnapshot={
     identity:referenceIdentitySource(),
+    individual:individualVariationText(),
     character:characterControlText(),
     wardrobe:armorClothingControlText(),
     equipment:weaponControlText(),
@@ -1447,6 +1506,7 @@ function initializeFreshGenerationState(){
   beginPromptRandomization();
   const snapshot={
     identity:referenceIdentitySource(),
+    individual:individualVariationText(),
     character:characterControlText(),
     wardrobe:armorClothingControlText(),
     equipment:weaponControlText(),
@@ -1465,7 +1525,7 @@ function buildReferenceSheetPrompt(style){
   }
   setReferenceSheetMode(style);
   const snapshot=captureStyleCharacterSnapshot();
-  const {identity,character,wardrobe,equipment,nsfw}=snapshot;
+  const {identity,individual,character,wardrobe,equipment,nsfw}=snapshot;
   // Blender's two companion outputs consume the same cross-style character snapshot.
   if(style==='blender'){
     blenderCharacterSnapshot=snapshot;
@@ -1475,6 +1535,9 @@ function buildReferenceSheetPrompt(style){
 
 IDENTITY SOURCE — AUTHORITATIVE:
 ${identity}
+
+INDIVIDUAL CHARACTER IDENTITY — PRESERVE ACROSS THIS CHARACTER'S STYLE MODES:
+${individual||individualVariationText()}
 
 CURRENT CHARACTER AND SCENE:
 ${character}.
@@ -1526,7 +1589,7 @@ function buildBlenderBlueprintPrompt(snapshot=blenderCharacterSnapshot){
     alert('Build the Blender-Ready finished reference first so both companion prompts can share one locked character snapshot.');
     return '';
   }
-  const {identity,character,wardrobe,equipment,nsfw}=snapshot;
+  const {identity,individual,character,wardrobe,equipment,nsfw}=snapshot;
   blenderBlueprintPrompt=`BLENDER B&W BASE-MODEL CONSTRUCTION BLUEPRINT — COMPANION REFERENCE — HIGHEST VISUAL PRIORITY.
 Create ONE clean black-and-white BASE-MODEL construction sheet for the EXACT SAME resolved character identity described below. Follow the fixed construction-sheet format: ${chatGPTCompatibilityEnabled()?'neutral non-sexual anatomical mannequin base body':'unclothed base body'}, bald head, strict front and side T-pose views, isolated anatomy-part callouts, plain white background, and simple technical contour linework. This blueprint is for unobstructed 3D body/anatomy modeling reference, not costume or equipment modeling.
 
