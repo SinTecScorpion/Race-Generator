@@ -190,7 +190,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           </label>
           <label>Hair Style
             <select id="hairStyle">
-              <option>Random</option><option>Long flowing</option><option>Braided</option><option>Short</option><option>Wild</option><option>Ornate</option><option>Shaved</option>
+              <option>Random</option><option>Long flowing</option><option>Braided</option><option>Short</option><option>Wild</option><option>Ornate</option><option>Loose waves</option><option>High ponytail</option><option>Low ponytail</option><option>Side braid</option><option>Crown braid</option><option>Layered bob</option><option>Pixie cut</option><option>Long straight</option><option>Curly</option><option>Coiled</option><option>Half-up braided</option><option>Warrior braids</option><option>Decorated locs</option><option>Asymmetrical cut</option>
             </select>
           </label>
         </div>
@@ -727,7 +727,11 @@ function detailText(level){
 
 const characterBuildPool=['slender','athletic','lean','powerful','curvy','massive'];
 const expressionPool=['calm','fierce','regal','mysterious','joyful','battle-ready'];
-const hairPool=['long flowing','braided','short','wild','ornate','shaved'];
+const hairPool=[
+  'long flowing','braided','short','wild','ornate','loose waves','high ponytail',
+  'low ponytail','side braid','crown braid','layered bob','pixie cut','long straight',
+  'curly','coiled','half-up braided','warrior braids','decorated locs','asymmetrical cut'
+];
 const agePool=['Adult','Young Adult','Mature','Ancient'];
 let randomSexResolution=null;
 function beginPromptRandomization(){randomSexResolution=null;}
@@ -761,7 +765,7 @@ function nsfwPromptText(){
 }
 
 
-// R5.0.23 — Individual Character Variation Engine
+// R5.0.24 — Individual Character Variation Engine
 const individualFaceShapePool=[
   'long oval facial structure','soft oval facial structure','angular diamond facial structure',
   'broad tapered facial structure','narrow heart-shaped facial structure','strong rectangular facial structure',
@@ -1590,6 +1594,9 @@ function buildBlenderBlueprintPrompt(snapshot=blenderCharacterSnapshot){
     return '';
   }
   const {identity,individual,character,wardrobe,equipment,nsfw}=snapshot;
+  const hairMatch=character.match(/,\s*([^,]+?)\s+hair\s*$/i);
+  const resolvedHairstyle=hairMatch?hairMatch[1].trim():'the resolved generated hairstyle';
+  const blueprintCharacter=character.replace(/,\s*[^,]+?\s+hair\s*$/i,'');
   blenderBlueprintPrompt=`BLENDER B&W BASE-MODEL CONSTRUCTION BLUEPRINT — COMPANION REFERENCE — HIGHEST VISUAL PRIORITY.
 Create ONE clean black-and-white BASE-MODEL construction sheet for the EXACT SAME resolved character identity described below. Follow the fixed construction-sheet format: ${chatGPTCompatibilityEnabled()?'neutral non-sexual anatomical mannequin base body':'unclothed base body'}, bald head, strict front and side T-pose views, isolated anatomy-part callouts, plain white background, and simple technical contour linework. This blueprint is for unobstructed 3D body/anatomy modeling reference, not costume or equipment modeling.
 
@@ -1634,13 +1641,17 @@ IDENTITY SOURCE — AUTHORITATIVE:
 ${identity}
 
 RESOLVED CHARACTER BODY — PRESERVE, BUT STRIP PRESENTATION LAYERS:
-${character}.
+${blueprintCharacter}.
+Resolved hairstyle for the actual character and all non-B&W modes: ${resolvedHairstyle} hair.
+B&W BLUEPRINT-ONLY HAIR VISIBILITY OVERRIDE — MANDATORY:
+Temporarily omit the resolved hairstyle from this B&W base-model sheet only so the scalp and head construction are unobstructed. This is a presentation-only override and MUST NOT rewrite, replace, save over, or mutate the character's actual hairstyle. Realistic, Anime, Base/Master, and Blender Finished modes must continue using the resolved hairstyle above. Do not reinterpret this temporary bald blueprint presentation as the character having shaved hair.
+
 The Finished Blender reference wardrobe remains: ${wardrobe}. DO NOT draw this wardrobe on the B&W base-model body.
 The Finished Blender reference equipment remains: ${equipment}. DO NOT draw this equipment on the B&W base-model body.
 ${nsfw}.
 
 BASE-MODEL SYNCHRONIZATION LOCK:
-This blueprint is the anatomical/base-model companion to the Finished Blender reference, not an alternate character. Preserve the same resolved sex/form, age style, face construction, build, body proportions, racial anatomy, ears, horns, wings, tails, markings/surface traits, hands, feet, and silhouette. Deliberately strip ONLY hair, clothing, armor, jewelry, accessories, weapons, equipment, color, lighting, and finished surface rendering so the underlying model is unobstructed. Do not humanize away legitimate racial anatomy and do not invent unsupported fantasy anatomy.
+This blueprint is the anatomical/base-model companion to the Finished Blender reference, not an alternate character. Preserve the same resolved sex/form, age style, face construction, build, body proportions, racial anatomy, ears, horns, wings, tails, markings/surface traits, hands, feet, and silhouette. Deliberately HIDE hair only in this B&W presentation and strip clothing, armor, jewelry, accessories, weapons, equipment, color, lighting, and finished surface rendering so the underlying model is unobstructed. The blueprint's bald appearance is temporary and must never become part of the persistent character identity or cross-style snapshot. Do not humanize away legitimate racial anatomy and do not invent unsupported fantasy anatomy.
 
 This is visual 3D modeling reference only; do not claim to output an actual .blend file, mesh topology, UV layout, armature, rig, or production-ready geometry.`;
   generatedStylePrompts.blenderBlueprint=blenderBlueprintPrompt;
@@ -2600,3 +2611,5 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
 
 </body>
 </html>
+
+<!-- R5.0.24 Hair Scope Fix: random non-bald hair in character modes; bald presentation restricted to Blender B&W only. -->
