@@ -10,6 +10,7 @@
     aspectRatio: "1:1",
     imageCount: 1,
     quality: "High",
+    variationMode: "fresh",
     seed: "",
     negativePrompt: ""
   };
@@ -20,6 +21,20 @@
   }
   function write(key, value){
     localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  function variationDirective(mode){
+    const nonce = "RFV-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,9);
+    if(mode === "preserve"){
+      return `RENDERFORGE CHARACTER VARIATION MODE — PRESERVE CHARACTER:
+Preserve the exact individual character already defined by the prompt: same facial structure, eye shape, nose, mouth, body proportions, racial markings, hair design, and other identity-bearing details. Change only rendering stochasticity and details that do not redesign the person.`;
+    }
+    if(mode === "variation"){
+      return `RENDERFORGE CHARACTER VARIATION MODE — VARIATION OF CHARACTER — ${nonce}:
+Keep the Locked Racial Identity, anatomy allowlist, sex/form, age category, major equipment, clothing category, and race-defining markings authoritative. Create a visibly different individual interpretation: change facial geometry, eye/brow shape, nose/mouth construction, subtle body proportions, hair arrangement within the selected hairstyle, and personal presence. It should feel related to the prompt but not like the same face copied again.`;
+    }
+    return `RENDERFORGE CHARACTER VARIATION MODE — FRESH RANDOM INDIVIDUAL — ${nonce}:
+Create a NEW individual for this generation. Locked Racial Identity, fusion ratios, anatomy allowlist, race-specific coloration/markings, selected sex/form, age category, clothing/equipment requirements, and scene controls remain authoritative. Do NOT reuse the face, facial geometry, hair arrangement, body proportions, pose micro-details, or overall personal styling of a previous RenderForge generation. Any earlier individual-character snapshot wording is only a race-compatible starting point, NOT an instruction to clone the same person. Deliberately vary face shape, eye/brow construction, nose, mouth, cheek/jaw structure, subtle stature/proportions, hair arrangement within the selected hairstyle, expression nuance, and personal presence. Avoid a recurring default fantasy-model face.`;
   }
 
   window.RenderForgeImage = {
@@ -49,6 +64,7 @@
         throw new Error("No prepared RenderForge prompt.");
       }
       const s = this.saveSettings(settings || this.getSettings());
+      const promptWithVariation = this.currentPrompt.prompt + "\n\n" + variationDirective(s.variationMode || "fresh");
       return {
         app: "RenderForge",
         phase: 3,
@@ -56,7 +72,7 @@
         created: new Date().toISOString(),
         characterId: this.currentPrompt.entry?.id || null,
         promptMode: this.currentPrompt.mode || "master",
-        prompt: this.currentPrompt.prompt,
+        prompt: promptWithVariation,
         settings: s
       };
     },

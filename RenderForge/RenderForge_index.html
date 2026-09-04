@@ -37,7 +37,7 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
   <header class="hero">
     <h1>RenderForge</h1>
     <p>Character workbench connected to Race Generator.</p>
-    <span class="badge">Phase 4B.1 • PWA Install Fix</span>
+    <span class="badge">Phase 4C • Character Variation</span>
   </header>
 
 
@@ -120,6 +120,13 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
             <option>Maximum</option>
           </select>
         </label>
+        <label>Character Variation
+          <select id="rfVariationMode">
+            <option value="fresh" selected>Fresh Random Individual</option>
+            <option value="preserve">Preserve This Character</option>
+            <option value="variation">Variation of This Character</option>
+          </select>
+        </label>
         <label>Seed (optional)
           <input id="rfSeed" inputmode="numeric" placeholder="Random" style="font:inherit;border:1px solid var(--border);border-radius:12px;background:#21172e;color:var(--ink);padding:11px 12px">
         </label>
@@ -192,6 +199,7 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
       aspectRatio:$('rfAspect').value,
       imageCount:Number($('rfCount').value)||1,
       quality:$('rfQuality').value,
+      variationMode:$('rfVariationMode').value,
       seed:$('rfSeed').value.trim(),
       negativePrompt:$('rfNegative').value.trim()
     };
@@ -209,6 +217,7 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
     $('rfAspect').value=s.aspectRatio||'1:1';
     $('rfCount').value=String(s.imageCount||1);
     $('rfQuality').value=s.quality||'High';
+    $('rfVariationMode').value=s.variationMode||'fresh';
     $('rfSeed').value=s.seed||'';
     $('rfNegative').value=s.negativePrompt||'';
     $('studioPrompt').textContent=prepared.prompt;
@@ -364,7 +373,7 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
       try {
-        const reg = await navigator.serviceWorker.register('./sw.js?build=4B1-20260902', { scope: './', updateViaCache: 'none' });
+        const reg = await navigator.serviceWorker.register('./sw.js?build=4C-20260904', { scope: './', updateViaCache: 'none' });
         reg.update();
         let reloading = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
