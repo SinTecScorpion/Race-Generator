@@ -73,9 +73,9 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div>
         <h1>Race Generator</h1>
         <p class="subtitle">Offline fantasy & ancient humanoid race generation.</p>
-        <span class="build-version">Build 12R5.0.21 • Fresh Generation State Fix</span>
+        <span class="build-version">Build 12R5.0.25 • Race Expansion + Image Generator Button</span>
       </div>
-      <div class="hero-actions"><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
+      <div class="hero-actions"><button id="openRenderForgeBtn" class="primary" type="button">🖼️ Open Image Generator</button><button id="masterResetBtn" class="danger" type="button">↺ Master Reset</button><button id="installBtn" class="ghost hidden">Install App</button></div>
     </header>
 
     <main>
@@ -90,7 +90,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <h3>Manual Race</h3>
           <label>
             Choose Race
-            <input id="manualRaceInput" class="search" list="raceOptions" placeholder="Search any of the 5,000 races..." autocomplete="off" />
+            <input id="manualRaceInput" class="search" list="raceOptions" placeholder="Search any of the 5,056 races..." autocomplete="off" />
           </label>
           <p class="manual-note">Generate the exact selected base race with no fusion and no random race selection. All character, wardrobe, weapon, style, and Blender controls still apply.</p>
           <div id="manualRaceStatus" class="manual-status">Choose a race by name or number, then tap Generate Manual Race.</div>
@@ -682,7 +682,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
           <button id="resetBtn" class="danger">Reset App Data</button>
         </div>
         <div id="zipImportStatus" class="tiny zip-import-status">ZIP backups preserve the exact saved record, locked character snapshot, and all archived prompt text. Imported copies are merged without silently overwriting existing saves.</div>
-        <p class="tiny">Full 5,000-race encyclopedia loaded from the updateable race library file.</p>
+        <p class="tiny">Full 5,056-race encyclopedia loaded from the updateable race library file.</p>
       </section>
     </main>
   </div>
@@ -1847,7 +1847,7 @@ function generate(){
     current=buildSingle(pick(pool));
   }else if(mode==='manualrace'){
     const r=raceFromInput($('manualRaceInput').value);
-    if(!r){alert('Choose a race from the 5,000-race list first.');return;}
+    if(!r){alert('Choose a race from the 5,056-race list first.');return;}
     current=buildSingle(r);
   }else if(mode==='fusion'){
     let a=pick(pool),b=pick(db.filter(x=>x.id!==a.id));
@@ -2565,6 +2565,11 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     el.textContent=message;
     el.style.color=ok ? '#d6bcfa' : '#ffb4c1';
   }
+  const openRenderForgeBtn=document.getElementById('openRenderForgeBtn');
+  if(openRenderForgeBtn){
+    openRenderForgeBtn.addEventListener('click',()=>{ window.location.href='./RenderForge/RenderForge_index.html'; });
+  }
+
   function currentRenderForgePackage(){
     if(typeof current==='undefined' || !current) return null;
     let archive=null;
