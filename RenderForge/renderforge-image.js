@@ -90,7 +90,7 @@ Create a NEW individual for this generation. Locked Racial Identity, fusion rati
         prompt: request.prompt,
         settings: request.settings,
         images: Array.isArray(response.images) ? response.images : [],
-        model: response.model || "gpt-image-2"
+        model: response.model || "cloudflare-flux-1-schnell"
       });
       return {request, response, result};
     },

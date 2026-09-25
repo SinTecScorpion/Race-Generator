@@ -1,6 +1,6 @@
-// RenderForge Phase 4A — Secure Image Engine Connector
-// The API key NEVER belongs in this browser file.
-// Point RenderForge at your deployed secure server endpoint.
+// RenderForge Free Test Engine Connector — Cloudflare Workers AI
+// Cloudflare credentials stay inside the Worker; never place them in this browser file.
+// Point RenderForge at your deployed Cloudflare Worker URL.
 
 (function(){
   const CONFIG_KEY = "renderforge_connector_config_v1";
@@ -32,7 +32,7 @@
 
     async test(){
       const {endpoint} = this.getConfig();
-      if(!endpoint) throw new Error("Enter your secure connector URL first.");
+      if(!endpoint) throw new Error("Enter your RenderForge Worker URL first.");
       const r = await fetch(endpoint + "/health", {method:"GET", cache:"no-store"});
       if(!r.ok) throw new Error("Connector health check failed (" + r.status + ").");
       return r.json();
@@ -40,7 +40,7 @@
 
     async generate(request){
       const {endpoint} = this.getConfig();
-      if(!endpoint) throw new Error("RenderForge connector URL is not configured.");
+      if(!endpoint) throw new Error("RenderForge Worker URL is not configured.");
       const r = await fetch(endpoint + "/generate", {
         method:"POST",
         headers:{"Content-Type":"application/json"},
