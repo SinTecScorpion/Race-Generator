@@ -178,9 +178,14 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
               <option selected>Random</option><option>Adult</option><option>Young Adult</option><option>Mature</option><option>Ancient</option>
             </select>
           </label>
-          <label>Body Build
+          <label>Body Build / Size
             <select id="buildStyle">
-              <option>Random</option><option>Slender</option><option>Athletic</option><option>Lean</option><option>Powerful</option><option>Curvy</option><option>Massive</option>
+              <option selected>Random</option><option>Petite</option><option>Slim</option><option>Slender</option><option>Lean</option><option>Average</option><option>Athletic</option><option>Toned</option><option>Curvy</option><option>Voluptuous</option><option>Stocky</option><option>Muscular</option><option>Powerful</option><option>Heavy Muscular</option><option>Plus-Size</option><option>Large / Heavy</option><option>Massive</option>
+            </select>
+          </label>
+          <label id="bustSizeLabel">Female Bust Size
+            <select id="bustSize">
+              <option selected>Random</option><option>Very Small</option><option>Small</option><option>Medium</option><option>Large</option><option>Very Large</option>
             </select>
           </label>
           <label>Expression
@@ -725,7 +730,8 @@ function detailText(level){
   return 'highly detailed face, distinctive racial anatomy, cultural clothing details, cinematic environment';
 }
 
-const characterBuildPool=['slender','athletic','lean','powerful','curvy','massive'];
+const characterBuildPool=['petite','slim','slender','lean','average','athletic','toned','curvy','voluptuous','stocky','muscular','powerful','heavy muscular','plus-size','large / heavy','massive'];
+const femaleBustPool=['Very Small','Small','Medium','Large','Very Large'];
 const expressionPool=['calm','fierce','regal','mysterious','joyful','battle-ready'];
 const hairPool=[
   'long flowing','braided','short','wild','ornate','loose waves','high ponytail',
@@ -744,6 +750,13 @@ function selectedSex(){
   }
   randomSexResolution=value==='male'?'male':'female';
   return randomSexResolution;
+}
+
+function syncBustSizeVisibility(){
+  const label=$('bustSizeLabel');
+  if(!label)return;
+  const sexValue=($('sexForm')?.value||'random').toLowerCase();
+  label.style.display=sexValue==='male'?'none':'';
 }
 
 function chatGPTCompatibilityEnabled(){
@@ -824,8 +837,14 @@ function characterControlText(){
   const build=buildValue==='Random'?pick(characterBuildPool):buildValue;
   const expression=expressionValue==='Random'?pick(expressionPool):expressionValue;
   const hair=hairValue==='Random'?pick(hairPool):hairValue;
+  let bustText='';
+  if(sex==='female'){
+    const bustValue=$('bustSize')?.value||'Random';
+    const bust=bustValue==='Random'?pick(femaleBustPool):bustValue;
+    bustText=`, ${bust.toLowerCase()} bust proportion`;
+  }
 
-  return `${age.toLowerCase()} ${sex} character, ${build.toLowerCase()} build, ${expression.toLowerCase()} expression, ${hair.toLowerCase()} hair`;
+  return `${age.toLowerCase()} ${sex} character, ${build.toLowerCase()} build${bustText}, ${expression.toLowerCase()} expression, ${hair.toLowerCase()} hair`;
 }
 
 
@@ -2467,6 +2486,8 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPro
 $('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.add('hidden')}};
 
 renderLibrary();renderLists();populateRaceOptions();updateRatioLabels();syncManualPickState();updateMasterSummary();
+syncBustSizeVisibility();
+if($('sexForm'))$('sexForm').addEventListener('change',syncBustSizeVisibility);
 </script>
 
 <script>
