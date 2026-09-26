@@ -181,7 +181,9 @@ Create a NEW individual for this generation. Locked Racial Identity, fusion rati
         originalPromptLength: request.originalPromptLength,
         enginePromptLength: request.enginePromptLength,
         settings: request.settings,
-        images: Array.isArray(response.images) ? response.images : [],
+        // Do NOT persist generated base64 image data in localStorage.
+        // Images remain available in `response` for immediate on-screen display/download.
+        imageCount: Array.isArray(response.images) ? response.images.length : 0,
         model: response.model || "gpt-image-2"
       });
       return {request, response, result};
@@ -193,8 +195,25 @@ Create a NEW individual for this generation. Locked Racial Identity, fusion rati
         id: "RFI-" + Date.now(),
         created: new Date().toISOString()
       }, result || {});
+      // Generation history must stay lightweight. Older builds stored base64
+      // PNGs here, which quickly exceeded the browser localStorage quota.
+      if (entry.images) delete entry.images;
       rows.unshift(entry);
-      write(RESULTS_KEY, rows.slice(0, 100));
+
+      const lightweightRows = rows.slice(0, 100).map(row => {
+        const clean = Object.assign({}, row);
+        if (clean.images) delete clean.images;
+        return clean;
+      });
+
+      try {
+        write(RESULTS_KEY, lightweightRows);
+      } catch (e) {
+        // If legacy oversized history is still occupying this key, clear it
+        // and save only the current lightweight metadata entry.
+        try { localStorage.removeItem(RESULTS_KEY); } catch (_) {}
+        write(RESULTS_KEY, [entry]);
+      }
       return entry;
     },
 
