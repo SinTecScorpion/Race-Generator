@@ -37,7 +37,7 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
   <header class="hero">
     <h1>RenderForge</h1>
     <p>Character workbench connected to Race Generator.</p>
-    <span class="badge">Phase 4D • Free Test Engine</span>
+    <span class="badge">Phase 4D • Cloudflare Image Engine</span>
   </header>
 
 
@@ -75,14 +75,14 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
   </section>
 
   <section class="card">
-    <h2>Free Test Image Engine</h2>
-    <div class="status">RenderForge uses Cloudflare Workers AI for free-tier testing. Your Cloudflare credentials stay inside the Worker; this app stores only the Worker URL.</div>
-    <label style="margin-top:12px">RenderForge Worker URL
-      <input id="rfConnectorUrl" type="url" placeholder="https://renderforge-image.YOUR-SUBDOMAIN.workers.dev" style="font:inherit;border:1px solid var(--border);border-radius:12px;background:#21172e;color:var(--ink);padding:11px 12px">
+    <h2>Secure Image Connector</h2>
+    <div class="status">RenderForge connects to your Cloudflare Worker. No image API key is stored in this app.</div>
+    <label style="margin-top:12px">Connector URL
+      <input id="rfConnectorUrl" type="url" placeholder="https://renderforge-image.sintecscorpion.workers.dev" style="font:inherit;border:1px solid var(--border);border-radius:12px;background:#21172e;color:var(--ink);padding:11px 12px">
     </label>
     <div class="actions" style="margin-top:10px">
-      <button id="saveConnectorBtn">Save RenderForge Worker URL</button>
-      <button id="testConnectorBtn">Test Free Engine</button>
+      <button id="saveConnectorBtn">Save Connector URL</button>
+      <button id="testConnectorBtn">Test Connection</button>
     </div>
     <div id="connectorStatus" class="status" style="margin-top:10px">Not connected yet.</div>
   </section>
@@ -142,7 +142,7 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
       </div>
 
       <div id="generationResult" class="status" style="margin-top:10px">
-        When configured, Generate Image will send this prompt to Cloudflare FLUX.1 Schnell and display the returned image here.
+        Generate Image sends the prepared prompt to your Cloudflare Workers AI engine and displays the returned image here.
       </div>
     </div>
   </section>
@@ -246,7 +246,7 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
       $('generateImageBtn').disabled=true;
       $('generateImageBtn').textContent='Generating…';
       $('generationResult').className='status';
-      $('generationResult').textContent='Sending prompt to the free Cloudflare image engine…';
+      $('generationResult').textContent='Sending prompt to the RenderForge Cloudflare image engine…';
       const result=await RenderForgeImage.requestImageGeneration(studioSettings());
       renderGeneratedImages(result.response?.images || []);
       return result;
@@ -307,14 +307,14 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
   $('saveConnectorBtn').addEventListener('click',()=>{
     const c=RenderForgeConnector.saveConfig({endpoint:$('rfConnectorUrl').value});
     $('connectorStatus').className=c.endpoint?'status ok':'status warn';
-    $('connectorStatus').textContent=c.endpoint?'RenderForge Worker URL saved. Tap Test Free Engine.':'Enter your RenderForge Worker URL first.';
+    $('connectorStatus').textContent=c.endpoint?'Connector URL saved. Tap Test Connection.':'Enter a connector URL first.';
   });
 
   $('testConnectorBtn').addEventListener('click',async()=>{
     try{
       RenderForgeConnector.saveConfig({endpoint:$('rfConnectorUrl').value});
       $('connectorStatus').className='status';
-      $('connectorStatus').textContent='Testing free Cloudflare image engine…';
+      $('connectorStatus').textContent='Testing secure connector…';
       const data=await RenderForgeConnector.test();
       $('connectorStatus').className='status ok';
       $('connectorStatus').textContent='Connected successfully • '+(data.model||'image service');
@@ -373,7 +373,7 @@ label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.8
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
       try {
-        const reg = await navigator.serviceWorker.register('./sw.js?build=4D-free-20260925', { scope: './', updateViaCache: 'none' });
+        const reg = await navigator.serviceWorker.register('./sw.js?build=4D-20260926', { scope: './', updateViaCache: 'none' });
         reg.update();
         let reloading = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {

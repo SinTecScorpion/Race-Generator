@@ -1,4 +1,4 @@
-const RF_CACHE = "renderforge-pwa-v4-free-cloudflare";
+const RF_CACHE = "renderforge-pwa-v4d";
 const RF_SHELL = [
   "./RenderForge_index.html",
   "./character-save.js",
