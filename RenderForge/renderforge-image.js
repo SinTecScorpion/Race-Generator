@@ -64,7 +64,92 @@ Create a NEW individual for this generation. Locked Racial Identity, fusion rati
         throw new Error("No prepared RenderForge prompt.");
       }
       const s = this.saveSettings(settings || this.getSettings());
-      const promptWithVariation = this.currentPrompt.prompt + "\n\n" + variationDirective(s.variationMode || "fresh");
+
+      // Keep the complete Master prompt untouched inside RenderForge.
+      // FLUX Schnell accepts a maximum prompt length of 2048 characters,
+      // so only the copy sent to the image engine is compacted.
+      const originalPrompt = String(this.currentPrompt.prompt || "");
+      const directive = variationDirective(s.variationMode || "fresh");
+
+      function normalize(v){
+        return String(v || "")
+          .replace(/\\r/g, "")
+          .replace(/[ \\t]+/g, " ")
+          .replace(/\\n{3,}/g, "\\n\\n")
+          .trim();
+      }
+
+      function firstMatch(source, patterns){
+        for(const pattern of patterns){
+          const match = source.match(pattern);
+          if(match && match[0]) return normalize(match[0]);
+        }
+        return "";
+      }
+
+      function makeFluxSafePrompt(master, variation){
+        const LIMIT = 2048;
+        const source = normalize(master);
+
+        const identity = firstMatch(source, [
+          /=== RACE IDENTITY BANNER[\\s\\S]*?=== END RACE IDENTITY BANNER ===/i,
+          /RACE IDENTITY BANNER[\\s\\S]*?(?=\\n\\n|ANATOMY ALLOWLIST|$)/i,
+          /Locked Racial Identity:[\\s\\S]*?(?=\\n\\n|$)/i
+        ]);
+
+        const anatomy = firstMatch(source, [
+          /ANATOMY ALLOWLIST[\\s\\S]*?(?=\\n\\n[A-Z][A-Z _-]{3,}:|$)/i
+        ]);
+
+        const fusion = firstMatch(source, [
+          /FUSION RATIO:[\\s\\S]*?(?=\\n\\n|$)/i,
+          /LOCKED IDENTITY RULE:[\\s\\S]*?(?=\\n\\n|$)/i
+        ]);
+
+        const render = firstMatch(source, [
+          /REALISTIC STYLE LOCK[\\s\\S]*?(?=\\n\\n|$)/i,
+          /REFERENCE SHEET MODE[\\s\\S]*?(?=\\n\\n|$)/i,
+          /ANIME CHARACTER REFERENCE SHEET[\\s\\S]*?(?=\\n\\n|$)/i
+        ]);
+
+        let opening = source;
+        const bannerEnd = opening.search(/=== END RACE IDENTITY BANNER ===/i);
+        if(bannerEnd >= 0){
+          opening = opening.slice(
+            bannerEnd + "=== END RACE IDENTITY BANNER ===".length
+          ).trim();
+        }
+        opening = opening.slice(0, 900);
+
+        const compactVariation = normalize(variation)
+          .replace(/RENDERFORGE CHARACTER VARIATION MODE[^:]*:/i, "Variation:")
+          .slice(0, 420);
+
+        const parts = [];
+        for(const part of [identity, fusion, anatomy, opening, render, compactVariation]){
+          const p = normalize(part);
+          if(p && !parts.includes(p)) parts.push(p);
+        }
+
+        let out = "";
+        for(const part of parts){
+          const candidate = out ? out + "\\n\\n" + part : part;
+          if(candidate.length <= LIMIT){
+            out = candidate;
+          }else{
+            const remaining = LIMIT - out.length - (out ? 2 : 0);
+            if(remaining > 80){
+              out += (out ? "\\n\\n" : "") + part.slice(0, remaining);
+            }
+            break;
+          }
+        }
+
+        return normalize(out).slice(0, LIMIT);
+      }
+
+      const enginePrompt = makeFluxSafePrompt(originalPrompt, directive);
+
       return {
         app: "RenderForge",
         phase: 3,
@@ -72,7 +157,11 @@ Create a NEW individual for this generation. Locked Racial Identity, fusion rati
         created: new Date().toISOString(),
         characterId: this.currentPrompt.entry?.id || null,
         promptMode: this.currentPrompt.mode || "master",
-        prompt: promptWithVariation,
+        prompt: enginePrompt,
+        originalPrompt: originalPrompt,
+        originalPromptLength: originalPrompt.length,
+        enginePromptLength: enginePrompt.length,
+        promptLimit: 2048,
         settings: s
       };
     },
@@ -87,10 +176,13 @@ Create a NEW individual for this generation. Locked Racial Identity, fusion rati
         requestId: request.requestId,
         characterId: request.characterId,
         promptMode: request.promptMode,
-        prompt: request.prompt,
+        prompt: request.originalPrompt || request.prompt,
+        enginePrompt: request.prompt,
+        originalPromptLength: request.originalPromptLength,
+        enginePromptLength: request.enginePromptLength,
         settings: request.settings,
         images: Array.isArray(response.images) ? response.images : [],
-        model: response.model || "@cf/black-forest-labs/flux-1-schnell"
+        model: response.model || "gpt-image-2"
       });
       return {request, response, result};
     },
